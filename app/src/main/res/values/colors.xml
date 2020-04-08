@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="tabs_default_color">#FFFF</color>
+    <color name="Red">#E44848</color>
+    <color name="Gray">#8B8B8B</color>
+    <color name="Yellow">#DDE448</color>
+    <color name="Purple">#6E38A0</color>
+    <color name="Green">#37B242</color>
+    <color name="Brown">#997B2F</color>
+    <color name="Pink">#E045C6</color>
+</resources>
