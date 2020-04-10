@@ -1,44 +1,47 @@
 package com.example.avi;
 
+import com.google.android.gms.common.util.IOUtils;
+
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
+
 import java.net.URL;
-import android.
+
 
 public class WeatherData {
 
     public WeatherData(String lat, String lon){
-        URL url;
-        HttpURLConnection conn;
-        HttpClient client;
         try{
-            url = new URL("api.openweathermap.org");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
+            URL myURL = new URL("https://www.wrh.noaa.gov/mesowest/getobextXml.php?sid=agd&num=72");
+            HttpURLConnection connection = (HttpURLConnection)myURL.openConnection();
 
-            DataOutputStream wr = new DataOutputStream (
-                    conn.getOutputStream());
-            wr.writeBytes("/data/2.5/weather?lat={" + lat + "}&lon={"+ lon +"}&appid={9341d1b894727a76de3b79ee66011e5a}");
-            wr.close();
-            InputStream is = conn.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            String line;
-            StringBuffer response = new StringBuffer();
-            while((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("User-Agent","AviWeatherApp");
+            connection.setUseCaches(false);
+
+            int responseCode = connection.getResponseCode();
+            //String responseMsg = connection.getResponseMessage();
+
+            if (responseCode == 200) {
+                if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                    BufferedReader in = new BufferedReader(new InputStreamReader(
+                            connection.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    // print result
+                    System.out.println(response.toString());
+                }
             }
-            rd.close();
-            System.out.println(response.toString());
-
 
         } catch (Exception e) {
             e.printStackTrace();
