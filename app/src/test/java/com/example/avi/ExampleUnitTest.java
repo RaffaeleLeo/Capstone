@@ -16,7 +16,9 @@ public class ExampleUnitTest {
     }
     @Test
     public void WeatherDataTest(){
-        WeatherData data = new WeatherData(String.valueOf(40.628178), String.valueOf(-111.623462));
+        //String.valueOf(40.628178), String.valueOf(-111.623462) mountain test coordinates
+        WeatherData data = new WeatherData();
+        data.getWeatherData();
 
     }
 }
