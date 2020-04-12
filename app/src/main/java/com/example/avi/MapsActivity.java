@@ -66,6 +66,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //If the location permission has been granted, then start the TrackerService
         if (permission == PackageManager.PERMISSION_GRANTED) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
             startTrackerService();
         } else {
 
@@ -77,10 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
 
         setupTabLayout();
     }
@@ -107,9 +107,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-                mMap.animateCamera(cameraUpdate);
+                if (location != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+                    mMap.animateCamera(cameraUpdate);
+                }
             }
         });
         // Add a marker in Sydney and move the camera
@@ -126,6 +128,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
 
             //...then start the GPS tracking service//
 
