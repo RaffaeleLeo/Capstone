@@ -1,5 +1,7 @@
 package com.example.avi;
 
+import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -7,11 +9,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherData {
+public class WeatherData extends AsyncTask<String,Integer,List> {
 
     public WeatherData() {
     }
 
+    @Override
+    protected List doInBackground(String... strings) {
+        return getWeatherData();
+    }
+
+
+    @Override
+    protected void onPostExecute(List result){
+        super.onPostExecute(result);
+    }
     //Gets the current alta guard forecast
     public List getWeatherData() {
         int temp = 0;
@@ -149,4 +161,5 @@ public class WeatherData {
             return snowInteval;
         }
     }
+
 }
