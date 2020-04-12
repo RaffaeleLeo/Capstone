@@ -158,12 +158,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (tab.getText().equals(getString(R.string.nav_journal))) {
                     Intent intent = new Intent(MapsActivity.this, JournalActivity.class);
-                    // TODO pass along the credentials
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
                     Intent intent = new Intent(MapsActivity.this, ChatRoomActivity.class);
-                    // TODO pass along the credentials
+
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                    Intent intent = new Intent(MapsActivity.this, LiveUpdates.class);
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }
@@ -184,6 +189,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(0).select();
+        tabLayout.getTabAt(1).select();
     }
 }

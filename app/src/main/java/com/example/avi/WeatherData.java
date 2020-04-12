@@ -1,5 +1,7 @@
 package com.example.avi;
 
+import android.os.AsyncTask;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -7,9 +9,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherData {
+public class WeatherData extends AsyncTask<String, Integer, List> {
 
     public WeatherData() {
+    }
+
+    @Override
+    protected List doInBackground(String... strings) {
+        return getWeatherData();
+    }
+
+
+    @Override
+    protected void onPostExecute(List result) {
+        super.onPostExecute(result);
     }
 
     //Gets the current alta guard forecast
@@ -95,6 +108,7 @@ public class WeatherData {
         descVal[1] = value.substring(1, value.length() - 3);
         return descVal;
     }
+
     public static class Weather {
         final int temp;
         final int dewPoint;
@@ -148,5 +162,21 @@ public class WeatherData {
         public float getSnowInteval() {
             return snowInteval;
         }
+
+        @Override
+        public String toString() {
+            String text = String.format(
+                    "Temperature: %d\n" +
+                            "Dew Point: %d\n" +
+                            "Relative Humidity: %d\n" +
+                            "Wind Direction: %s\n" +
+                            "Wind Speed: %d\n" +
+                            "Wind Chill: %d\n" +
+                            "Accumulated Precipitation: %f\n" +
+                            "Snow Interval: %f",temp,dewPoint,relativeHumidity,windDirection,windSpeed,
+                    windChill,accumulatedPrecip,snowInteval);
+            return text;
+        }
+
     }
 }
