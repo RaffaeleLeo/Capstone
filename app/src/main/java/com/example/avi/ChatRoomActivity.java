@@ -36,12 +36,17 @@ public class ChatRoomActivity extends AppCompatActivity {
 
                 if (tab.getText().equals(getString(R.string.nav_map))) {
                     Intent intent = new Intent(ChatRoomActivity.this, MapsActivity.class);
-                    // TODO pass along the credentials
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_journal))) {
                     Intent intent = new Intent(ChatRoomActivity.this, JournalActivity.class);
-                    // TODO pass along the credentials
+
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                    Intent intent = new Intent(ChatRoomActivity.this, LiveUpdates.class);
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }
@@ -62,6 +67,6 @@ public class ChatRoomActivity extends AppCompatActivity {
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(2).select();
+        tabLayout.getTabAt(3).select();
     }
 }
