@@ -3,7 +3,12 @@ package com.example.avi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -22,6 +27,9 @@ public class LiveUpdates extends AppCompatActivity {
         }catch (Exception e){
 
         }
+
+        WebView myWebView = (WebView) findViewById(R.id.webview);
+        myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
     }
 
     private void updateWeatherData() throws ExecutionException, InterruptedException {
