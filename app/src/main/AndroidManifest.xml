@@ -20,18 +20,10 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".LiveUpdates">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
         <activity
             android:name=".ChatRoomActivity"
             android:label="@string/title_activity_chat_room"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".JournalActivity"
             android:label="@string/title_activity_journal"
@@ -43,7 +35,13 @@
         <activity
             android:name=".LiveUpdates"
             android:label="@string/nav_live_updates"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
 
         <service
             android:name=".TrackingService"
@@ -63,11 +61,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
     </application>
