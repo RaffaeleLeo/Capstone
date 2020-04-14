@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -36,6 +37,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -110,6 +115,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                 mMap.animateCamera(cameraUpdate);
+
+/*                MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "database.db", null, 1);
+                dbHandler.addToUserCoordinates(3, latLng.latitude, latLng.longitude);*/
+
+
             }
         });
         // Add a marker in Sydney and move the camera

@@ -26,6 +26,10 @@
             android:name=".JournalActivity"
             android:label="@string/title_activity_journal"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".TrackingService"
@@ -43,8 +47,8 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
