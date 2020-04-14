@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (password.equals(actualPassword)) {
 
                         Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                         startActivity(intent);
                     } else {
                         Toast.makeText(getApplicationContext(), "User not found, please try again", Toast.LENGTH_LONG).show();
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         dbHandler.addToUsers(email, first, last, password, true);
                         Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                         startActivity(intent);
 
 
