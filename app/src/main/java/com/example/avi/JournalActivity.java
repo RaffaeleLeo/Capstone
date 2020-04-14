@@ -34,12 +34,17 @@ public class JournalActivity extends AppCompatActivity {
 
                 if (tab.getText().equals(getString(R.string.nav_map))) {
                     Intent intent = new Intent(JournalActivity.this, MapsActivity.class);
-                    // TODO pass along the credentials
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
                     Intent intent = new Intent(JournalActivity.this, ChatRoomActivity.class);
-                    // TODO pass along the credentials
+
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                    Intent intent = new Intent(JournalActivity.this, LiveUpdates.class);
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }
@@ -60,7 +65,7 @@ public class JournalActivity extends AppCompatActivity {
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(1).select();
+        tabLayout.getTabAt(2).select();
     }
 
 }

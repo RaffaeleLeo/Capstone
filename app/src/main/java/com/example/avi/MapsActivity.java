@@ -9,7 +9,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.content.Intent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -37,10 +36,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -71,6 +66,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //If the location permission has been granted, then start the TrackerService
         if (permission == PackageManager.PERMISSION_GRANTED) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
             startTrackerService();
         } else {
 
@@ -82,10 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
 
         setupTabLayout();
     }
@@ -112,14 +107,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-                mMap.animateCamera(cameraUpdate);
-
-/*                MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "database.db", null, 1);
-                dbHandler.addToUserCoordinates(3, latLng.latitude, latLng.longitude);*/
-
-
+                if (location != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+                    mMap.animateCamera(cameraUpdate);
+                }
             }
         });
         // Add a marker in Sydney and move the camera
@@ -136,6 +128,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
 
             //...then start the GPS tracking service//
 
@@ -168,12 +164,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (tab.getText().equals(getString(R.string.nav_journal))) {
                     Intent intent = new Intent(MapsActivity.this, JournalActivity.class);
-                    // TODO pass along the credentials
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
                     Intent intent = new Intent(MapsActivity.this, ChatRoomActivity.class);
-                    // TODO pass along the credentials
+
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                    Intent intent = new Intent(MapsActivity.this, LiveUpdates.class);
+
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }
@@ -194,6 +195,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(0).select();
+        tabLayout.getTabAt(1).select();
     }
 }
