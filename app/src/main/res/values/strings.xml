@@ -12,7 +12,7 @@
     <string name="nav_map">Map</string>
     <string name="nav_journal">Journal</string>
     <string name="nav_chat">Chat</string>
-    <string name="nav_live_updates">Updates</string>
+    <string name="nav_live_updates">Home</string>
 
     <!--    Tab Names-->
     <string name="stats_tab">Stats</string>
