@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -115,32 +116,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                 mMap.animateCamera(cameraUpdate);
 
-                Thread thread = new Thread(new Runnable() {
+/*                MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "database.db", null, 1);
+                dbHandler.addToUserCoordinates(3, latLng.latitude, latLng.longitude);*/
 
-                @Override
-                public void run() {
-                    try  {
-                        String connectionUrl = "jdbc:sqlserver://backcountry-ski-app.co6qgjocpjvf.us-west-1.rds.amazonaws.com:1433;databaseName=Tables;user=nathanzaltsman;password=Capstone4000";
 
-                        //String connectionUrl = "foo";
-                        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
-                            String SQL = "insert into dbo.userLocations values (2, 34.56789, -34.56789, CURRENT_TIMESTAMP, null, null)";
-                            stmt.execute(SQL);
-
-                            // Iterate through the data in the result set and display it.
-
-                        }
-                        // Handle any errors that may have occurred.
-                        catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            thread.start();
             }
         });
         // Add a marker in Sydney and move the camera

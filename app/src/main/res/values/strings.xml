@@ -16,5 +16,6 @@
     <!--    Tab Names-->
     <string name="stats_tab">Stats</string>
     <string name="goals_tab">Goals</string>
+    <string name="title_activity_login" />
 
 </resources>
