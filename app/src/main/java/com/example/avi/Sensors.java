@@ -16,7 +16,8 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 public class Sensors extends Activity implements SensorEventListener {
 
-    public int compassAngleDegree = 0;
+    float incline = 0;
+    float compassAngleDegree = 0;
     SensorManager manageSensors;
     Sensor compass;
     Sensor accelerometer;
@@ -49,7 +50,21 @@ public class Sensors extends Activity implements SensorEventListener {
             AccelerometerStateY = event.values[1];
             AccelerometerStateZ = event.values[2];
         }
-
+        float[] r = new float[9];
+        float[] i = new float[9];
+        float[] gravity =  new float[3];
+        gravity[0] = AccelerometerStateX;
+        gravity[1] = AccelerometerStateY;
+        gravity[2] = AccelerometerStateZ;
+        float[] geomagnetic = new float[3];
+        geomagnetic[0] = compassStateX;
+        geomagnetic[1] = compassStateY;
+        geomagnetic[2] = compassStateZ;
+        float[] orientation = new float[3];
+        manageSensors.getRotationMatrix(r, i, gravity, geomagnetic);
+        manageSensors.getOrientation(r, orientation);
+        incline = manageSensors.getInclination(i);
+        compassAngleDegree = (float) Math.toDegrees(orientation[0]);
     }
 
     @Override
