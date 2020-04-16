@@ -3,14 +3,11 @@ package com.example.avi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.concurrent.ExecutionException;
