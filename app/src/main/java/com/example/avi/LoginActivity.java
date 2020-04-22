@@ -53,91 +53,49 @@ public class LoginActivity extends AppCompatActivity {
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
         mAuth = FirebaseAuth.getInstance();
 
-        if(mAuth.getCurrentUser() != null){
-            Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
-            startActivity(intent);
-        }
 
-        else {
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = loginEmail.getText().toString().toLowerCase();
+                String password = loginPassword.getText().toString();
 
 
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String email = loginEmail.getText().toString().toLowerCase();
-                    String password = loginPassword.getText().toString();
-
-                    String actualPassword = dbHandler.findUser(email, password);
-
-                    try {
-
-                        if (email.equals("") || password.equals("")) {
-                            Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
-                        } else {
-                            if (password.equals(actualPassword)) {
-
-                                loginUser(email, password);
-                                Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "User not found, please try again", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                    } catch (SQLException e) {
-                        Toast.makeText(getApplicationContext(), "User not found, please try again", Toast.LENGTH_LONG).show();
-                    }
-
+                if (email.equals("") || password.equals("")) {
+                    Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
+                } else {
+                    loginUser(email, password, dbHandler);
                 }
-            });
-
-            createButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String first = createFirst.getText().toString();
-                    String last = createLast.getText().toString();
-                    String email = createEmail.getText().toString().toLowerCase();
-                    String password = createPassword.getText().toString();
-
-                    if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
-                        Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
-                    } else if (password.length() < 6) {
-                        Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
-                    } else {
-
-                        try {
-                            dbHandler.addToUsers(email, first, last, password, true);
-
-                            registerUser(email, password);
-
-                            Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
-                            startActivity(intent);
 
 
-                        } catch (SQLException e) {
-                            Toast.makeText(getApplicationContext(), "An account with this email already exists, please login using your created account.", Toast.LENGTH_LONG).show();
-                        }
+            }
+        });
 
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String first = createFirst.getText().toString();
+                String last = createLast.getText().toString();
+                String email = createEmail.getText().toString().toLowerCase();
+                String password = createPassword.getText().toString();
 
-                    }
-
-
+                if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
+                    Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
+                } else if (password.length() < 6) {
+                    Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
+                } else {
+                    registerUser(email, password, dbHandler);
                 }
-            });
 
 
-            //setupTabLayout();
-        }
-    }
 
-    //TODO: Put all button/login logic in here. 
-    @Override
-    protected void onStart() {
 
-        super.onStart();
+
+            }
+        });
+
+
+        //setupTabLayout();
     }
 
 
@@ -182,29 +140,45 @@ public class LoginActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).select();
     }*/
 
-    private void registerUser(String email, String password){
+    private void registerUser(String email, String password, final MyDBHandler dbHandler){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
+                            try {
+                                dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
+                            }
+                            catch (SQLiteConstraintException e){
+                            }
+                            Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                            startActivity(intent);
                         } else {
-                            throw new SQLException();
+                            Toast.makeText(getApplicationContext(), "Registration failed, please try again.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
     }
 
-    private void loginUser(String email, String password){
+    private void loginUser(String email, String password, final MyDBHandler dbHandler){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
+                            try {
+                                dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
+                            }
+                            catch (SQLiteConstraintException e){
+                            }
+                            Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                            startActivity(intent);
                         } else {
-                            throw new SQLException();
+                            Toast.makeText(getApplicationContext(), "User not found, please try again", Toast.LENGTH_LONG).show();
                         }
 
                     }
