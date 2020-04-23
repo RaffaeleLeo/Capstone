@@ -29,6 +29,8 @@ public class LiveUpdates extends AppCompatActivity {
         myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
     }
 
+
+
     private void updateWeatherData() throws ExecutionException, InterruptedException {
         WeatherData data = new WeatherData();
         data.execute("hi");
