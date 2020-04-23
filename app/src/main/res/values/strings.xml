@@ -18,5 +18,7 @@
     <string name="stats_tab">Stats</string>
     <string name="goals_tab">Goals</string>
     <string name="title_activity_login" />
+    <string name="title_activity_loading" />
+    <string name="title_activity_choose_login" />
 
 </resources>

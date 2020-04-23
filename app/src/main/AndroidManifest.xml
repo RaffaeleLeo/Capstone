@@ -39,6 +39,14 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ChooseLoginActivity"
+            android:label="@string/title_activity_choose_login"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LoadingActivity"
+            android:label="@string/title_activity_loading"
             android:theme="@style/AppTheme.NoActionBar" >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

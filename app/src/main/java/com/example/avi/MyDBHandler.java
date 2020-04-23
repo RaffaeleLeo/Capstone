@@ -22,9 +22,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //String query = "Create Table userCoordinates (userID Integer, latX Double, latY Double)";
         //db.execSQL(query);
-        String query = "drop table users";
-        db.execSQL(query);
-        query = "Create Table users (userID VARCHAR(100) PRIMARY KEY, userName VARCHAR(100), " +
+        String query = "Create Table users (userID VARCHAR(100) PRIMARY KEY, userName VARCHAR(100), " +
                 "userEmail VARCHAR(100), " +
                 "userRegistrationMethod VARCHAR(8))";
         db.execSQL(query);

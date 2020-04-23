@@ -1,5 +1,7 @@
 package com.example.avi;
 
+import android.app.Activity;
+import android.app.job.JobInfo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Timer;
@@ -16,60 +22,34 @@ import java.util.TimerTask;
 public class LoadingActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private ProgressBar progBar;
-    private int prog = 0;
-    private Handler handler = new Handler();
+    private GoogleSignInClient mGoogleSignInClient;
 
-    Timer timer;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
-        progBar = (ProgressBar) findViewById(R.id.progressBar);
+        mAuth = FirebaseAuth.getInstance();
 
-        class toRun extends TimerTask{
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("969128169123-acm8ho281ikele7r252r4urcspbf0qvs.apps.googleusercontent.com")
+                .requestEmail()
+                .build();
 
-            @Override
-            public void run() {
-                if(mAuth.getCurrentUser() != null){
-                    Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
-                    startActivity(intent);
-                    timer.cancel();
-                }
-                else{
-                    Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
-                    startActivity(intent);
-                    timer.cancel();
-                }
-            }
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+
+
+
+        if(mAuth.getCurrentUser() != null || googleAccount != null){
+            Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoadingActivity.this, JournalActivity.class);
+            startActivity(intent);
         }
-
-
-
-        timer = new Timer();
-        timer.schedule(new toRun(), 5000);
-        new Thread(new Runnable() {
-            public void run() {
-                while (prog < 100) {
-                    prog += 1;
-                    // Update the progress bar and display the
-                    //current value in the text view
-                    handler.post(new Runnable() {
-                        public void run() {
-                            progBar.setProgress(prog);
-                        }
-                    });
-                    try {
-                        // Sleep for 200 milliseconds.
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-
+        else{
+            Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
+            startActivity(intent);
+        }
 
 
 
@@ -78,6 +58,7 @@ public class LoadingActivity extends AppCompatActivity {
 
 
     }
+
 
 
 
