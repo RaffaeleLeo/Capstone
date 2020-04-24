@@ -35,52 +35,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcomeText" />
 
-    <ImageButton
+    <com.facebook.login.widget.LoginButton
         android:id="@+id/facebookButton"
-        android:layout_width="71dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="41dp"
-        android:layout_marginLeft="41dp"
-        android:layout_marginBottom="47dp"
-        app:layout_constraintBottom_toTopOf="@+id/emailButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/download" />
-
-    <EditText
-        android:id="@+id/facebookText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="57dp"
-        android:layout_marginRight="57dp"
-        android:layout_marginBottom="70dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Login with Facebook"
-        app:layout_constraintBottom_toTopOf="@+id/emailText"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="109dp"
+        android:layout_marginLeft="109dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/emailButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/googleButton" />
 
     <ImageButton
         android:id="@+id/emailButton"
         android:layout_width="71dp"
         android:layout_height="64dp"
-        android:layout_marginStart="42dp"
-        android:layout_marginLeft="42dp"
-        android:layout_marginBottom="280dp"
+        android:layout_marginStart="168dp"
+        android:layout_marginLeft="168dp"
+        android:layout_marginBottom="308dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_email" />
-
-    <EditText
-        android:id="@+id/emailText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="56dp"
-        android:layout_marginRight="56dp"
-        android:layout_marginBottom="280dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Login with Email"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
