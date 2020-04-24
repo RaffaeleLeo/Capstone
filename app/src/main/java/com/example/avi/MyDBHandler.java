@@ -22,8 +22,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //String query = "Create Table userCoordinates (userID Integer, latX Double, latY Double)";
         //db.execSQL(query);
-        String query = "Create Table users (userID Integer PRIMARY KEY, userRegistration VARCHAR(100) UNIQUE, " +
-                "userPassword VARCHAR(50), userFirstName VARCHAR(50), userLastName VARCHAR(50), " +
+        String query = "Create Table users (userID VARCHAR(100) PRIMARY KEY, userName VARCHAR(100), " +
+                "userEmail VARCHAR(100), " +
                 "userRegistrationMethod VARCHAR(8))";
         db.execSQL(query);
 
@@ -44,35 +44,16 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }*/
 
-    public void addToUsers(String userRegistration, String firstName, String lastName, String password, boolean isEmail){
+    public void addToUsers(String uID, String name, String email, String regMethod){
         ContentValues vals = new ContentValues();
-        vals.put("userRegistration", userRegistration);
-        vals.put("userPassword", password);
-        vals.put("userFirstName", firstName);
-        vals.put("userLastName", lastName);
-        if(isEmail){
-            vals.put("userRegistrationMethod", "Email");
-        }
-        else{
-            vals.put("userRegistrationMethod", "Facebook");
-        }
+        vals.put("userID", uID);
+        vals.put("userName", name);
+        vals.put("userEmail", email);
+        vals.put("userRegistrationMethod", regMethod);
         SQLiteDatabase db = this.getWritableDatabase();
         db.insertOrThrow("users", null, vals);
         db.close();
     }
 
-    public String findUser(String reg, String password){
-        String query = "Select userRegistration, userPassword from users " +
-                "where userRegistration = \'" + reg + "\' and userPassword = \'" + password + "\'";
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if(cursor.moveToFirst()){
-           cursor.moveToFirst();
-           return cursor.getString(1);
-        }
-        else{
-            return "";
-        }
 
-    }
 }
