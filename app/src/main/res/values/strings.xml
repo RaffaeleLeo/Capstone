@@ -24,5 +24,7 @@
     <string name="facebook_app_id">2681104482213131</string>
     <string name="fb_login_protocol_scheme">fb2681104482213131</string>
 
+    <string name="title_activity_add_journal">AddJournalActivity</string>
+    <string name="title_activity_edit_journal">EditJournal</string>
 
 </resources>

@@ -46,7 +46,11 @@ public class LoadingActivity extends AppCompatActivity {
 
         if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoadingActivity.this, JournalActivity.class);
+
+            //CHANGE THIS LINE
+            Intent intent = new Intent(LoadingActivity.this, ChatRoomActivity.class);
+
+
             startActivity(intent);
         }
         else{
