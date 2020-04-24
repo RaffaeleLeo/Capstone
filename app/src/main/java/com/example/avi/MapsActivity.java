@@ -2,8 +2,16 @@ package com.example.avi;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.LocationManager;
 
 import android.content.Intent;
@@ -22,18 +30,35 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
     private GoogleMap mMap;
     private static final int PERMISSIONS_REQUEST = 100;
     private FusedLocationProviderClient mLocationClient;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
+    //compass stuff
+    private ImageView compassButton;
+    private float currentDegree = 0f;
+    private SensorManager mSensorManager;
+    private boolean pressed = false;
+    //x and y coordinates for button
+    private float orgX;
+    private float orgY;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +68,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //get the users current location
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        compassButton = findViewById(R.id.compass_button);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        compassButton.setOnClickListener(this);
+        orgX = compassButton.getX();
+        orgY = compassButton.getY();
+
 
         if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             finish();
@@ -73,6 +104,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         setupTabLayout();
+
+        //compass stuff
+
+
     }
 
 
@@ -180,11 +215,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         };
-
         TabLayout tabLayout = findViewById(R.id.TabLayout);
 
         tabLayout.addOnTabSelectedListener(listener);
 
         tabLayout.getTabAt(1).select();
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        float degree = Math.round(event.values[0]);
+        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
+                compassButton.getY()+compassButton.getHeight()/2);
+
+        ra.setDuration(100);
+        ra.setFillAfter(true);
+        compassButton.startAnimation(ra);
+        currentDegree = -degree;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // to stop the listener and save battery
+        mSensorManager.unregisterListener(this);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // for the system's orientation sensor registered listeners
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+                SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (!pressed) {
+            compassButton.setScaleX(5);
+            compassButton.setScaleY(5);
+            compassButton.setX(this.getResources().getDisplayMetrics().widthPixels / 2 - compassButton.getWidth()/2);
+            compassButton.setY(this.getResources().getDisplayMetrics().heightPixels / 2 - compassButton.getHeight()/2);
+            pressed = true;
+        }else{
+            compassButton.setScaleX(1);
+            compassButton.setScaleY(1);
+            compassButton.setX(orgX);
+            compassButton.setY(orgY);
+            pressed = false;
+        }
+
+
+    }
+
 }
