@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -27,7 +28,7 @@ public class EditJournal extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_journal);
-
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
         Intent intent = getIntent();
 
 
@@ -38,7 +39,7 @@ public class EditJournal extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createDialog("save");
+                createDialog("save", dbHandler);
 
             }
         });
@@ -49,7 +50,7 @@ public class EditJournal extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                createDialog("delete");
+                createDialog("delete", dbHandler);
 
 
             }
@@ -57,7 +58,7 @@ public class EditJournal extends AppCompatActivity {
 
     }
 
-    private void createDialog(String action) {
+    private void createDialog(String action, final MyDBHandler dbHandler) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setCancelable(false);
@@ -73,12 +74,11 @@ public class EditJournal extends AppCompatActivity {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes delete the Goal");
 
-                   //TODO: connect to database
-
                     Toast.makeText(EditJournal.this, "The Goal Has Been Deleted", Toast.LENGTH_LONG).show();
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 
+                    dbHandler.deleteFromJournals(getIntent().getStringExtra("Name"));
                     startActivity(intent);
                 }
             });
@@ -105,11 +105,14 @@ public class EditJournal extends AppCompatActivity {
 
 
 
+
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 
-                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
-                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
-                    intent.putExtra("Tracking", getIntent().getBooleanExtra("Tracking", false));
+                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"));
+
+//                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
+//                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
+//                    intent.putExtra("Tracking", getIntent().getBooleanExtra("Tracking", false));
 
                     startActivity(intent);
                 }

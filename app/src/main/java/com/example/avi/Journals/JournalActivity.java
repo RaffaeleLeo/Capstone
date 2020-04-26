@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.content.Intent;
@@ -43,6 +45,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
                 startActivity(intent);
             }
         });
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
 
 
         setupTabLayout();
@@ -57,9 +60,6 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-//        ArrayList<String> POIList = new ArrayList<String>();
-
-//        POIs = new HashMap<String, POI>();
         Journals = new ArrayList<Journal>();
 
         //IF WE ARE USING FIREBASE THIS WILL BE USEFUL
@@ -88,12 +88,13 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
             }
         });
         **/
-        Journal j = new Journal();
-        j.description = "Short trip, intermediate terrain";
-        j.name = "South ridge";
-        j.start_recording = true;
-        j.data_points = null;
-        Journals.add(j);
+        Journals = dbHandler.getAllJournals();
+//        Journal j = new Journal();
+//        j.description = "Short trip, intermediate terrain";
+//        j.name = "South ridge";
+//        j.start_recording = true;
+//        j.data_points = null;
+//        Journals.add(j);
         mAdapter = new JournalAdapter(Journals, this);
 
         recyclerView.setAdapter(mAdapter);
@@ -107,16 +108,16 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
 
         Intent intent = getIntent();
 
-        Journal j = new Journal();
-        j.description = intent.getStringExtra("Name");
-        j.name = intent.getStringExtra("Description");
-        j.start_recording = intent.getBooleanExtra("Tracking", false);
-        j.data_points = null;
+//        Journal j = new Journal();
+//        j.description = intent.getStringExtra("Name");
+//        j.name = intent.getStringExtra("Description");
+//        j.start_recording = intent.getBooleanExtra("Tracking", false);
+//        j.data_points = null;
 
-        if(j.description != null)
-        {
-            Journals.add(j);
-        }
+//        if(j.description != null)
+//        {
+//            Journals.add(j);
+//        }
 
 
         for(int i = 0; i < Journals.size(); i++){

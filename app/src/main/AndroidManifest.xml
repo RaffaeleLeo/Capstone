@@ -25,7 +25,8 @@
         <activity
             android:name=".Journals.AddJournalActivity"
             android:label="@string/title_activity_add_journal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".ChatRoomActivity"
             android:label="@string/title_activity_chat_room"
@@ -33,7 +34,14 @@
         <activity
             android:name=".Journals.JournalActivity"
             android:label="@string/title_activity_journal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
+<!--        </intent-filter>-->
+        </activity>
+
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
