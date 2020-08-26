@@ -10,7 +10,7 @@ public class Journal {
     public String description;
     public boolean start_recording;
 
-    Journal(){
+    public Journal(){
 
     }
 }

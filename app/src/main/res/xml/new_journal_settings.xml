@@ -25,7 +25,7 @@
 
         <SwitchPreferenceCompat
             app:key="reminder"
-            app:title="Start recording immidetly?" />
+            app:title="Start recording immediately?" />
 
     </PreferenceCategory>
 

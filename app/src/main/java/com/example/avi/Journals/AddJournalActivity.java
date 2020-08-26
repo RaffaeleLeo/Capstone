@@ -21,6 +21,7 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.avi.MyDBHandler;
 import com.example.avi.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -36,6 +37,8 @@ public class AddJournalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
 
         settingsFrag = new AddJournalActivity.SettingsFragment();
         getSupportFragmentManager()
@@ -58,7 +61,7 @@ public class AddJournalActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 //                settingsFrag.addGoal(view);
-                addJournal(view, SP);
+                addJournal(view, SP, dbHandler);
 
             }
         });
@@ -70,7 +73,7 @@ public class AddJournalActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void addJournal(View view, SharedPreferences sp) {
+    private void addJournal(View view, SharedPreferences sp, MyDBHandler dbHandler) {
         System.out.println(sp.getString("Journal_Name", "NA"));
 
         Journal Journal = new Journal();
@@ -111,9 +114,11 @@ public class AddJournalActivity extends AppCompatActivity {
             ref.child(Journal.name).setValue(Journal);
         }
         **/
+        //add journal to database
+        dbHandler.addToJournals(Journal.name, Journal.description);
 
 
-        // Go back to the goals tab
+        // Go back to the journals tab
         Intent intent = new Intent(AddJournalActivity.this, JournalActivity.class);
         intent.putExtra("Name", Journal.name);
         intent.putExtra("Description", Journal.description);

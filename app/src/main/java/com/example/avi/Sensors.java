@@ -7,12 +7,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import com.google.android.gms.maps.GoogleMap;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import static androidx.core.content.ContextCompat.getSystemService;
-
-//https://www.deviantdev.com/journal/android-compass-azimuth-calculating
 
 public class Sensors extends Activity implements SensorEventListener {
 
@@ -34,7 +33,6 @@ public class Sensors extends Activity implements SensorEventListener {
         manageSensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         compass = manageSensors.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
         accelerometer = manageSensors.getDefaultSensor(Sensor.TYPE_GRAVITY);
-
     }
 
 

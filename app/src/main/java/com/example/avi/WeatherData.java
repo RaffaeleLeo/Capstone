@@ -172,8 +172,8 @@ public class WeatherData extends AsyncTask<String, Integer, List> {
                             "Wind Direction: %s\n" +
                             "Wind Speed: %d\n" +
                             "Wind Chill: %d\n" +
-                            "Accumulated Precipitation: %f\n" +
-                            "Snow Interval: %f",temp,dewPoint,relativeHumidity,windDirection,windSpeed,
+                            "Accumulated Precip: %.2f\n" +
+                            "Snow Interval: %.2f",temp,dewPoint,relativeHumidity,windDirection,windSpeed,
                     windChill,accumulatedPrecip,snowInteval);
             return text;
         }
