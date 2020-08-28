@@ -33,7 +33,6 @@ public class Sensors extends Activity implements SensorEventListener {
         manageSensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         compass = manageSensors.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
         accelerometer = manageSensors.getDefaultSensor(Sensor.TYPE_GRAVITY);
-
     }
 
 

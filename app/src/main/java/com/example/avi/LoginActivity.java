@@ -150,7 +150,11 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
                             }
+<<<<<<< HEAD
                             catch (SQLiteConstraintException e){
+=======
+                            catch (Exception e){
+>>>>>>> 91279a1764f02d5f63e8ad59e577ec441cca41ab
                             }
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
@@ -172,7 +176,11 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
                             }
+<<<<<<< HEAD
                             catch (SQLiteConstraintException e){
+=======
+                            catch (Exception e){
+>>>>>>> 91279a1764f02d5f63e8ad59e577ec441cca41ab
                             }
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);

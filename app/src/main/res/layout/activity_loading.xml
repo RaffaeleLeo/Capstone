@@ -31,6 +31,7 @@
 
     <EditText
         android:id="@+id/editText"
+<<<<<<< HEAD
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -40,5 +41,20 @@
         android:textSize="36sp"
         tools:layout_editor_absoluteX="99dp"
         tools:layout_editor_absoluteY="344dp" />
+=======
+        android:layout_width="241dp"
+        android:layout_height="68dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Loading..."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="@+id/aviImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/aviImage"
+        app:layout_constraintVertical_bias="0.639" />
+>>>>>>> 91279a1764f02d5f63e8ad59e577ec441cca41ab
 
 </androidx.constraintlayout.widget.ConstraintLayout>

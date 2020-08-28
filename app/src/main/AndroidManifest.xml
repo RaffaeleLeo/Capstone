@@ -25,7 +25,8 @@
         <activity
             android:name=".Journals.AddJournalActivity"
             android:label="@string/title_activity_add_journal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".ChatRoomActivity"
             android:label="@string/title_activity_chat_room"
@@ -33,7 +34,9 @@
         <activity
             android:name=".Journals.JournalActivity"
             android:label="@string/title_activity_journal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
@@ -49,16 +52,26 @@
         <activity
             android:name=".ChooseLoginActivity"
             android:label="@string/title_activity_choose_login"
+<<<<<<< HEAD
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoadingActivity"
             android:label="@string/title_activity_loading"
             android:theme="@style/AppTheme.NoActionBar" >
+=======
+            android:theme="@style/AppTheme.NoActionBar">
+>>>>>>> 91279a1764f02d5f63e8ad59e577ec441cca41ab
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoadingActivity"
+            android:label="@string/title_activity_loading"
+            android:theme="@style/AppTheme.NoActionBar" >
+
         </activity>
 
         <service
