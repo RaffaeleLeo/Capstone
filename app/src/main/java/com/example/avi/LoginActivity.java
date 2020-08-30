@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(getApplicationContext(), "Registration failed, please try again.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Email already associated with account, please log in.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(getApplicationContext(), "User not found, please try again", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "User / password combination not found, please try again", Toast.LENGTH_LONG).show();
                         }
 
                     }
