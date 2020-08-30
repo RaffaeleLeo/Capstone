@@ -50,7 +50,6 @@ public class LoadingActivity extends AppCompatActivity {
             //CHANGE THIS LINE
             Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
 
-
             startActivity(intent);
         }
         else{

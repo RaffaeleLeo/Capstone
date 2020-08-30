@@ -152,6 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                                 dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
                             }
                             catch (Exception e){
+
                             }
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
