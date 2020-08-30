@@ -66,9 +66,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-<<<<<<< HEAD
 
-=======
     public void addToJournals(String name, String description){
         ContentValues vals = new ContentValues();
         vals.put("name", name);
@@ -118,5 +116,4 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         return Journals;
     }
->>>>>>> 91279a1764f02d5f63e8ad59e577ec441cca41ab
 }
