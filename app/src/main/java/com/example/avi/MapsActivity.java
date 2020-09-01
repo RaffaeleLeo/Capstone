@@ -137,6 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                     mMap.animateCamera(cameraUpdate);
                 }
+
             }
         });
         // Add a marker in Sydney and move the camera
