@@ -2,9 +2,14 @@ package com.example.avi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.avi.Journals.JournalActivity;
@@ -12,7 +17,12 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.concurrent.ExecutionException;
 
-public class LiveUpdates extends AppCompatActivity {
+public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+
+    private Spinner spinner;
+
+    //***This is what the dropdown will show, update this to update options***
+    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Some Other Page"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +35,19 @@ public class LiveUpdates extends AppCompatActivity {
 
         }
 
+
         WebView myWebView = (WebView) findViewById(R.id.webview);
         myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
-    }
 
+        //Boilerplate spinner code, no need to update any of this
+        Spinner spinner = (Spinner)findViewById(R.id.spinner2);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(LiveUpdates.this,
+                android.R.layout.simple_spinner_item, paths);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+    }
 
 
     private void updateWeatherData() throws ExecutionException, InterruptedException {
@@ -76,4 +95,23 @@ public class LiveUpdates extends AppCompatActivity {
 
         tabLayout.getTabAt(0).select();
     }
+
+    //Update this method to update action of actual spinner.
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (position == 0) {
+            //Go to Traffic Updates Page
+        } else if (position == 1) {
+            //Go to avalanche history page
+        }
+        else{
+            //Go to other page
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }
+
