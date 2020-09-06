@@ -3,26 +3,21 @@ package com.example.avi.Journals;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 
-import com.example.avi.ChatRoomActivity;
+import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.LiveUpdates;
 import com.example.avi.MapsActivity;
 import com.example.avi.R;
 import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class JournalActivity extends AppCompatActivity implements JournalAdapter.JournalViewHolder.OnJournalListener{
 

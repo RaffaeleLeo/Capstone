@@ -1,14 +1,23 @@
-package com.example.avi;
+package com.example.avi.ChatRoom;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.avi.Journals.JournalActivity;
+import com.example.avi.LiveUpdates;
+import com.example.avi.MapsActivity;
+import com.example.avi.R;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatRoomActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
