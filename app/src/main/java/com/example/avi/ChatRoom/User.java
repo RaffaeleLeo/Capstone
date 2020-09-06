@@ -1,20 +1,15 @@
 package com.example.avi.ChatRoom;
 
 public class User {
-    String nickname;
-    String profileUrl;
+    String name;
 
 
-    public User(String name, String url){
-        this.nickname = name;
-        this.profileUrl = url;
+    public User(String name){
+        this.name = name;
     }
 
-    public String getNickname(){
-        return this.nickname;
+    public String getName(){
+        return this.name;
     }
 
-    public String getProfileUrl(){
-        return this.profileUrl;
-    }
 }

@@ -20,7 +20,7 @@ public class Message {
          return this.sender;
      }
 
-     public boolean getCreatedAt(){
+     public boolean isCurrentUser(){
          return this.isCurrentUser;
      }
 
