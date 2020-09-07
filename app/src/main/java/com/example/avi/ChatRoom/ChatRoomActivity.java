@@ -68,7 +68,6 @@ public class ChatRoomActivity extends AppCompatActivity {
                 });
 
                 editText.setText("");
-                Toast.makeText(getApplicationContext(), "Button clicked", Toast.LENGTH_LONG).show();
             }
         });
     }

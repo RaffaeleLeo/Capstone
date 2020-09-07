@@ -22,7 +22,7 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
     private Spinner spinner;
 
     //***This is what the dropdown will show, update this to update options***
-    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Some Other Page"};
+    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Settings"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +105,8 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
             //Go to avalanche history page
         }
         else{
-            //Go to other page
+            Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
+            startActivity(intent);
         }
     }
 
