@@ -2,7 +2,6 @@ package com.example.avi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
 
@@ -22,7 +22,7 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
     private Spinner spinner;
 
     //***This is what the dropdown will show, update this to update options***
-    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Some Other Page"};
+    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Settings"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +102,11 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         if (position == 0) {
             //Go to Traffic Updates Page
         } else if (position == 1) {
-            //Go to avalanche history page
-        }
+            Intent intent = new Intent(LiveUpdates.this, AvalancheDataActivity.class);
+            startActivity(intent);        }
         else{
-            //Go to other page
+            Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
+            startActivity(intent);
         }
     }
 
