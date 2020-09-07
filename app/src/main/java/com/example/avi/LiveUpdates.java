@@ -102,8 +102,8 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         if (position == 0) {
             //Go to Traffic Updates Page
         } else if (position == 1) {
-            //Go to avalanche history page
-        }
+            Intent intent = new Intent(LiveUpdates.this, AvalancheDataActivity.class);
+            startActivity(intent);        }
         else{
             Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
             startActivity(intent);
