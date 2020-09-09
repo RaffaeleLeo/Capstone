@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -32,7 +33,7 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         try{
         updateWeatherData();
         }catch (Exception e){
-
+        Log.e("Weather error", e.getMessage());
         }
 
 
@@ -50,12 +51,17 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
     }
 
 
-    private void updateWeatherData() throws ExecutionException, InterruptedException {
-        WeatherData data = new WeatherData();
-        data.execute("hi");
-        WeatherData.Weather weather = (WeatherData.Weather) data.get().get(0);
-        TextView text = findViewById(R.id.textView);
-        text.setText(weather.toString());
+    private void updateWeatherData() {
+        try {
+            WeatherData data = new WeatherData();
+            data.execute("hi");
+            WeatherData.Weather weather = (WeatherData.Weather) data.get().get(0);
+            TextView text = findViewById(R.id.textView);
+            text.setText(weather.toString());
+        } catch (Exception e){
+            TextView text = findViewById(R.id.textView);
+            text.setText("Weather data could not be obtained");
+        }
     }
 
     private void setupTabLayout() {

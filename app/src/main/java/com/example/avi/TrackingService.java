@@ -23,12 +23,16 @@ import android.location.Location;
 import android.content.pm.PackageManager;
 import android.app.Service;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 
 public class TrackingService extends Service {
 
     private static final String TAG = TrackingService.class.getSimpleName();
 
     public static SharedPreferences sp;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -41,8 +45,7 @@ public class TrackingService extends Service {
         sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
         //buildNotification();
         loginToDatabase();
-
-
+        requestLocationUpdates();
     }
 
 
@@ -74,9 +77,10 @@ public class TrackingService extends Service {
         //How often the app will track the users location
         request.setInterval(10000);
 
+
         //Try to get as accurate of an approximation as we can
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        final FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -87,10 +91,21 @@ public class TrackingService extends Service {
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
-
+                    Location loc = locationResult.getLastLocation();
+                    String lat = Double.toString(loc.getLatitude());
+                    String lon = Double.toString(loc.getLongitude());
                     //TODO: now we can place the users current location into the database
+                    try {
+                        ElevationData eleData = new ElevationData();
+                        eleData.execute(lat, lon);
+                        eleData.get();
+                    } catch (Exception e){
+
+                    }
                 }
             }, null);
         }
     }
+
+
 }
