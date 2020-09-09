@@ -93,6 +93,8 @@ public class WeatherData extends AsyncTask<String, Integer, List> {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally{
+
         }
         return currentWeatherData;
 

@@ -41,9 +41,6 @@ public class LoadingActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-
-
-
         if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
 
