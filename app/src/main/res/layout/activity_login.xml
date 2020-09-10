@@ -83,6 +83,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/CreatePassword" />
 
+                <TextView
+                    android:id="@+id/LoginTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text="Or Login Below"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toTopOf="@+id/LoginEmail"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/CreateButton" />
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/LoginEmail"
                     android:layout_width="match_parent"
@@ -118,19 +131,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/LoginPassword" />
-
-                <TextView
-                    android:id="@+id/LoginTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:text="Or Login Below"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toTopOf="@+id/LoginEmail"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/CreateButton" />
         </LinearLayout>
     />
 
