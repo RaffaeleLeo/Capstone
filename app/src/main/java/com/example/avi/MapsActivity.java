@@ -38,6 +38,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
     private GoogleMap mMap;
@@ -113,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Input a list of latitudes and longitudes. This method will make the map display a line from the beginning of the list to the end of the list.
      */
     public void createAndShowPathOnMap(List<Double > coords){
-        Iterable<LatLng> newCoords = new List<LatLng>();
+        Iterable<LatLng> newCoords = new ArrayList<LatLng>();
         for (int i = 0; i < coords.size(); i += 2)
         {
             newCoords.add(new LatLng(coords.at(i), coords.at(i+1)));
