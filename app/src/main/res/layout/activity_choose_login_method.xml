@@ -6,14 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
     <TextView
         android:id="@+id/welcomeText"
-        android:layout_width="379dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="49dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Welcome! Please choose a login option below:"
@@ -24,12 +26,8 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="142dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="142dp"
-        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toTopOf="@+id/facebookButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,13 +35,8 @@
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/facebookButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="109dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="110dp"
-        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toTopOf="@+id/emailButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,16 +44,14 @@
 
     <ImageButton
         android:id="@+id/emailButton"
-        android:layout_width="71dp"
-        android:layout_height="64dp"
-        android:layout_marginStart="168dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="172dp"
-        android:layout_marginBottom="308dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/facebookButton"
         app:srcCompat="@android:drawable/ic_dialog_email" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

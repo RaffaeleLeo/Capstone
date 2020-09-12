@@ -33,9 +33,12 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
@@ -52,9 +55,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float orgX;
     private float orgY;
 
+    //For the path being displayed.
+    private Iterable<LatLng> coordinates;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Empty right now.
+        coordinates = new ArrayList<LatLng>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
@@ -103,6 +111,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Input a list of latitudes and longitudes. This method will make the map display a line from the beginning of the list to the end of the list.
+     */
+    public void createAndShowPathOnMap(List<Double > coords){
+        Iterable<LatLng> newCoords = new ArrayList<LatLng>();
+        for (int i = 0; i < coords.size(); i += 2)
+        {
+            newCoords.add(new LatLng(coords.at(i), coords.at(i+1)));
+        }
+        this.coordinates = newCoords;
+    }
 
     /**
      * Manipulates the map once available.
@@ -118,6 +137,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.setMyLocationEnabled(true);
+
+        Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
 
         //make the camera go to the users location
         //TODO: currently this will only go to the user once the app is opened, but won't move along with the user
