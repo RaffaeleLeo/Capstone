@@ -94,6 +94,8 @@ public class AddJournalActivity extends AppCompatActivity {
             return;
         }
 
+        Journal.start_recording = sp.getBoolean("is_tracking", false);
+
         // clear the goal settings after a successful
         SharedPreferences.Editor editor = sp.edit();
 
@@ -115,8 +117,14 @@ public class AddJournalActivity extends AppCompatActivity {
         }
         **/
         //add journal to database
-        dbHandler.addToJournals(Journal.name, Journal.description);
-
+        if(Journal.start_recording)
+        {
+            dbHandler.addToJournals(Journal.name, Journal.description, 1);
+        }
+        else
+        {
+            dbHandler.addToJournals(Journal.name, Journal.description, 0);
+        }
 
         // Go back to the journals tab
         Intent intent = new Intent(AddJournalActivity.this, JournalActivity.class);

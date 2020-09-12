@@ -24,7 +24,7 @@
     <PreferenceCategory app:title="Record your journey">
 
         <SwitchPreferenceCompat
-            app:key="reminder"
+            app:key="is_tracking"
             app:title="Start recording immediately?" />
 
     </PreferenceCategory>

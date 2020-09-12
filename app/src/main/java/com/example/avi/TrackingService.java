@@ -1,6 +1,7 @@
 package com.example.avi;
 
 
+import com.example.avi.Journals.Journal;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -25,6 +26,7 @@ import android.app.Service;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 public class TrackingService extends Service {
@@ -94,7 +96,23 @@ public class TrackingService extends Service {
                     Location loc = locationResult.getLastLocation();
                     String lat = Double.toString(loc.getLatitude());
                     String lon = Double.toString(loc.getLongitude());
-                    //TODO: now we can place the users current location into the database
+
+                    //get all journals to loop through
+                    final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                            "journals.db", null, 1);
+                    final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
+                            "data_points.db", null, 1);
+                    ArrayList<Journal> Journals = new ArrayList<Journal>();
+                    Journals = dbHandler.getAllJournals();
+
+                    for(Journal j : Journals)
+                    {
+                        if(j.start_recording)
+                        {
+                            dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
+                        }
+                    }
+
                     try {
                         ElevationData eleData = new ElevationData();
                         eleData.execute(lat, lon);

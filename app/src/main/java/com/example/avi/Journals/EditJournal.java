@@ -20,6 +20,8 @@ import android.widget.ToggleButton;
 
 import com.example.avi.R;
 
+import java.util.ArrayList;
+
 public class EditJournal extends AppCompatActivity {
 
     private String journal_name;
@@ -65,16 +67,16 @@ public class EditJournal extends AppCompatActivity {
 
 
         if(action.equals("delete")) {
-            alertDialog.setMessage("Are You Sure You Want To Delete This Goal?");
-            alertDialog.setTitle("Delete Goal");
+            alertDialog.setMessage("Are You Sure You Want To Delete This Journal?");
+            alertDialog.setTitle("Delete Journal");
 
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
-                    System.out.println("onClick: Yes delete the Goal");
+                    System.out.println("onClick: Yes delete the Journal");
 
-                    Toast.makeText(EditJournal.this, "The Goal Has Been Deleted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(EditJournal.this, "The Journal Has Been Deleted", Toast.LENGTH_LONG).show();
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 
@@ -86,12 +88,12 @@ public class EditJournal extends AppCompatActivity {
             alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    System.out.println("onClick: No do not delete the Goal");
+                    System.out.println("onClick: No do not delete the Journal");
                 }
             });
         }else{
 
-            alertDialog.setMessage("Save Changes to Current Goal?");
+            alertDialog.setMessage("Save Changes to Current Journal?");
             alertDialog.setTitle("Save Changes");
 
 
@@ -99,7 +101,7 @@ public class EditJournal extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
-                    System.out.println("onClick: Yes save changes to the Goal");
+                    System.out.println("onClick: Yes save changes to the Journal");
 
                     //TODO: CONNECT TO A DATABASE
 
@@ -108,7 +110,7 @@ public class EditJournal extends AppCompatActivity {
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 
-                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"));
+                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"), getIntent().getBooleanExtra("Tracking", false));
 
 //                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
 //                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
@@ -147,6 +149,14 @@ public class EditJournal extends AppCompatActivity {
 
         ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
         remindersToggle.setChecked(intent.getBooleanExtra("Tracking", false));
+
+        TextView data_points = findViewById(R.id.data_points_temp);
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                "data_points.db", null, 1);
+        ArrayList<String> data = new ArrayList<String>();
+        data = dbHandler.getAllData(this.journal_name);
+
+
 
     }
 

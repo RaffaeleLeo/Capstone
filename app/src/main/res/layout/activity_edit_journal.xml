@@ -11,7 +11,7 @@
         android:id="@+id/goalReminders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reminders"
+        android:text="Track Location:"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,6 +85,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.436" />
 
+    <TextView
+        android:id="@+id/data_points_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="data points"
+        android:textSize="24sp"
+        android:scrollbars = "vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6" />
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="156dp"
@@ -96,7 +110,7 @@
         app:layout_constraintHorizontal_bias="0.129"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.608" />
+        app:layout_constraintVertical_bias="0.808" />
 
     <Button
         android:id="@+id/deleteButton"
@@ -110,7 +124,7 @@
         app:layout_constraintHorizontal_bias="0.42"
         app:layout_constraintStart_toEndOf="@+id/saveButton"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.608" />
+        app:layout_constraintVertical_bias="0.808" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
