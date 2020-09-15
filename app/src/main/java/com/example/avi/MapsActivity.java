@@ -20,6 +20,9 @@ import android.os.Bundle;
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -119,6 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         setupTabLayout();
+        requestLocationUpdates();
 
         //compass stuff
 
@@ -334,4 +338,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void requestLocationUpdates() {
+        LocationRequest request = new LocationRequest();
+
+        //How often the app will track the users location
+        request.setInterval(10000);
+
+
+        //Try to get as accurate of an approximation as we can
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        final FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        //If the user already gave permission to track their location
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+
+            //...then request location updates
+            client.requestLocationUpdates(request, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    Location loc = locationResult.getLastLocation();
+                    String lat = Double.toString(loc.getLatitude());
+                    String lon = Double.toString(loc.getLongitude());
+                    //TODO: now we can place the users current location into the database
+                    try {
+                        ElevationData eleData = new ElevationData();
+                        eleData.execute(lat, lon);
+                        TextView elevationText = (TextView) findViewById(R.id.altimeter_value);
+                        elevationText.setText(eleData.get());
+                    } catch (Exception e) {
+
+                    }
+                }
+            }, null);
+        }
+    }
 }
