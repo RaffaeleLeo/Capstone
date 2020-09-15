@@ -23,7 +23,8 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
     private Spinner spinner;
 
     //***This is what the dropdown will show, update this to update options***
-    private static final String[] paths = {"Traffic Updates", "Avalanche History", "Settings"};
+    private static final String[] paths = {"Avalanche Report", "Traffic Updates", "Avalanche History", "Settings"};
+    WebView myWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         }
 
 
-        WebView myWebView = (WebView) findViewById(R.id.webview);
+        myWebView = (WebView) findViewById(R.id.webview);
         myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
 
         //Boilerplate spinner code, no need to update any of this
@@ -106,13 +107,14 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
+            myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
             //Go to Traffic Updates Page
-        } else if (position == 1) {
-            Intent intent = new Intent(LiveUpdates.this, AvalancheDataActivity.class);
-            startActivity(intent);        }
+        } else if (position == 1){
+            myWebView.loadUrl("https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
+        } else if (position == 2) {
+            myWebView.loadUrl("https://utahavalanchecenter.org/avalanches");    }
         else{
-            Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
-            startActivity(intent);
+
         }
     }
 
