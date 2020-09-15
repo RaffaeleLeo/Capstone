@@ -4,6 +4,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Service;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -31,13 +33,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
@@ -49,11 +56,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //compass stuff
     private ImageView compassButton;
     private float currentDegree = 0f;
-    private SensorManager mSensorManager;
+    private SensorManager sensorManager;
     private boolean pressed = false;
     //x and y coordinates for button
     private float orgX;
     private float orgY;
+
+    private float[] gravityData = new float[3];
+    private float[] geomagneticData  = new float[3];
+    private boolean hasGravityData = false;
+    private boolean hasGeomagneticData = false;
+    private float rotationInDegrees;
+
 
     //For the path being displayed.
     private Iterable<LatLng> coordinates;
@@ -70,7 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         compassButton = findViewById(R.id.compass_button);
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
         compassButton.setOnClickListener(this);
         orgX = compassButton.getX();
         orgY = compassButton.getY();
@@ -115,10 +129,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Input a list of latitudes and longitudes. This method will make the map display a line from the beginning of the list to the end of the list.
      */
     public void createAndShowPathOnMap(List<Double > coords){
-        Iterable<LatLng> newCoords = new ArrayList<LatLng>();
+        ArrayList<LatLng> newCoords = new ArrayList<LatLng>();
         for (int i = 0; i < coords.size(); i += 2)
         {
-            newCoords.add(new LatLng(coords.at(i), coords.at(i+1)));
+            newCoords.add(new LatLng(coords.get(i), coords.get(i+1)));
         }
         this.coordinates = newCoords;
     }
@@ -239,14 +253,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        float degree = Math.round(event.values[0]);
-        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
-                compassButton.getY()+compassButton.getHeight()/2);
+        switch (event.sensor.getType()){
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(event.values, 0, gravityData, 0, 3);
+                hasGravityData = true;
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(event.values, 0, geomagneticData, 0, 3);
+                hasGeomagneticData = true;
+                break;
+            default:
+                return;
+        }
 
-        ra.setDuration(100);
-        ra.setFillAfter(true);
-        compassButton.startAnimation(ra);
-        currentDegree = -degree;
+        if (hasGravityData && hasGeomagneticData) {
+            float identityMatrix[] = new float[9];
+            float rotationMatrix[] = new float[9];
+            float incline;
+            boolean success = SensorManager.getRotationMatrix(rotationMatrix, identityMatrix,
+                    gravityData, geomagneticData);
+
+
+            if (success) {
+                float orientationMatrix[] = new float[3];
+                SensorManager.getOrientation(rotationMatrix, orientationMatrix);
+                float rotationInRadians = orientationMatrix[0];
+                rotationInDegrees = (float) Math.round(Math.toDegrees(rotationInRadians));
+
+                float degree = rotationInDegrees;
+                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
+                        compassButton.getY()+compassButton.getHeight()/2);
+                ra.setDuration(100);
+                ra.setFillAfter(true);
+                compassButton.startAnimation(ra);
+                currentDegree = -degree;
+                incline =(float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
+                TextView inclineTxt = (TextView) findViewById(R.id.inclinometer_value);
+                inclineTxt.setText(Float.toString(incline));
+                // do something with the rotation in degrees
+            }
+        }
+
+
     }
 
     @Override
@@ -258,15 +306,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onPause();
 
         // to stop the listener and save battery
-        mSensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this);
     }
     @Override
     public void onResume() {
         super.onResume();
-
-        // for the system's orientation sensor registered listeners
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
