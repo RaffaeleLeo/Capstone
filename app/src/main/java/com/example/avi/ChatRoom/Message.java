@@ -2,13 +2,13 @@ package com.example.avi.ChatRoom;
 
 public class Message {
 
-    String message;
-     User sender;
+     String message;
+     String sender;
      boolean isCurrentUser;
 
-     public Message(String msg, User usr, boolean isCurrUser){
+     public Message(String msg, String sndr, boolean isCurrUser){
         this.message = msg;
-        this.sender = usr;
+        this.sender = sndr;
         this.isCurrentUser = isCurrUser;
      }
 
@@ -16,12 +16,14 @@ public class Message {
          return this.message;
      }
 
-     public User getUser(){
+     public String getSender(){
          return this.sender;
      }
 
-     public boolean isCurrentUser(){
-         return this.isCurrentUser;
+     public boolean isCurrentUser(){ return this.isCurrentUser; }
+
+     public void setSender(String sndr){
+         this.sender = sndr;
      }
 
 

@@ -31,6 +31,10 @@ public class MessageAdapter extends BaseAdapter {
         notifyDataSetChanged(); // to render the list we need to notify
     }
 
+    public void clear(){
+        messages.clear();
+    }
+
     @Override
     public int getCount() {
         return messages.size();
@@ -66,7 +70,7 @@ public class MessageAdapter extends BaseAdapter {
             holder.messageBody = (TextView) convertView.findViewById(R.id.message_body);
             convertView.setTag(holder);
 
-            holder.name.setText(message.getUser().getName());
+            holder.name.setText(message.getSender());
             holder.messageBody.setText(message.getMessage());
             GradientDrawable drawable = (GradientDrawable) holder.avatar.getBackground();
             //drawable.setColor(Color.parseColor(message.getUser().getColor()));
