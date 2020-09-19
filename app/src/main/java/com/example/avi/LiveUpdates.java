@@ -114,7 +114,9 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         } else if (position == 2) {
             myWebView.loadUrl("https://utahavalanchecenter.org/avalanches");    }
         else{
+            Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
 
+            startActivity(intent);
         }
     }
 
