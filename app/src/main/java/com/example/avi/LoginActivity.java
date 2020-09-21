@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -84,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (password.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
                 } else {
-                    registerUser(email, password, dbHandler);
+                    registerUser(email, password, first + " " + last, dbHandler);
                 }
 
 
@@ -140,19 +142,27 @@ public class LoginActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).select();
     }*/
 
-    private void registerUser(String email, String password, final MyDBHandler dbHandler){
+    private void registerUser(String email, String password, final String displayName, final MyDBHandler dbHandler){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            try {
-                                dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Email");
-                            }
-                            catch (Exception e){
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(displayName).build();
 
-                            }
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
+                                                Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                                                startActivity(intent);
+                                            }
+                                        }
+                                    });
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
