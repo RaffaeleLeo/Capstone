@@ -147,18 +147,18 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<String> getAllData(String name){
+    public ArrayList<Double> getAllData(String name){
         SQLiteDatabase db = this.getWritableDatabase();
-        //Cursor c = db.rawQuery("select * from data_points where journal_name='" + name + "'",null);
-        Cursor c = db.rawQuery("select * from data_points", null);
-        ArrayList<String> data_points = new ArrayList<String>();
+        Cursor c = db.rawQuery("select * from data_points where journal_name='" + name + "'",null);
+        //Cursor c = db.rawQuery("select * from data_points", null);
+        ArrayList<Double> data_points = new ArrayList<Double>();
 
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
                 Double latitude = c.getDouble(c.getColumnIndex("latitude"));
                 Double longitude = c.getDouble(c.getColumnIndex("longitude"));
-                String s = latitude.toString() + ", " + longitude.toString();
-                data_points.add(s);
+                data_points.add(latitude);
+                data_points.add(longitude);
                 c.moveToNext();
             }
         }

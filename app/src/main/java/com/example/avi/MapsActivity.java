@@ -16,6 +16,7 @@ import android.location.Location;
 import android.os.Bundle;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
+import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,11 +34,13 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
@@ -57,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     //For the path being displayed.
     private Iterable<LatLng> coordinates;
+    private String journal_name;
 
 
     @Override
@@ -74,6 +78,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         compassButton.setOnClickListener(this);
         orgX = compassButton.getX();
         orgY = compassButton.getY();
+
+        Intent intent = getIntent();
+
+        if(intent.hasExtra("journal_name"))
+        {
+            this.journal_name = intent.getStringExtra("journal_name");
+        }
+        else
+        {
+            this.journal_name = null;
+        }
 
 
         if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -114,11 +129,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Input a list of latitudes and longitudes. This method will make the map display a line from the beginning of the list to the end of the list.
      */
-    public void createAndShowPathOnMap(List<Double > coords){
-        Iterable<LatLng> newCoords = new ArrayList<LatLng>();
+    public void createAndShowPathOnMap(List<Double> coords){
+        ArrayList<LatLng> newCoords = new ArrayList<LatLng>();
         for (int i = 0; i < coords.size(); i += 2)
         {
-            newCoords.add(new LatLng(coords.at(i), coords.at(i+1)));
+            newCoords.add(new LatLng(coords.get(i), coords.get(i+1)));
         }
         this.coordinates = newCoords;
     }
@@ -137,6 +152,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.setMyLocationEnabled(true);
+
+        //get points from a journal and show it on the map
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                "journals.db", null, 1);
+        final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
+                "data_points.db", null, 1);
+        ArrayList<Journal> Journals = new ArrayList<Journal>();
+        Journals = dbHandler.getAllJournals();
+
+        for(Journal j : Journals)
+        {
+            if(j.name.equals(this.journal_name))
+            {
+                createAndShowPathOnMap(dbHandler_location.getAllData(j.name));
+            }
+        }
 
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
 

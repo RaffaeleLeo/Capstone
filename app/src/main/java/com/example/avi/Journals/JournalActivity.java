@@ -11,6 +11,7 @@ import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
+import android.widget.Button;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.LiveUpdates;
@@ -41,6 +42,8 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
             }
         });
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
+
+
 
 
         setupTabLayout();
@@ -84,12 +87,6 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         });
         **/
         Journals = dbHandler.getAllJournals();
-//        Journal j = new Journal();
-//        j.description = "Short trip, intermediate terrain";
-//        j.name = "South ridge";
-//        j.start_recording = true;
-//        j.data_points = null;
-//        Journals.add(j);
         mAdapter = new JournalAdapter(Journals, this);
 
         recyclerView.setAdapter(mAdapter);

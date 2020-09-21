@@ -9,6 +9,7 @@ public class Journal {
     public ArrayList<LatLng> data_points;
     public String description;
     public boolean start_recording;
+    public boolean show_line;
 
     public Journal(){
 

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.avi.MapsActivity;
 import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,7 +32,7 @@ public class EditJournal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_journal);
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
 
         setupUI(intent);
@@ -58,6 +59,25 @@ public class EditJournal extends AppCompatActivity {
             }
         });
 
+        Button view_on_map = findViewById(R.id.view_on_map);
+
+        view_on_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPathOnMap(intent);
+
+            }
+        });
+
+    }
+
+    private void showPathOnMap(Intent intent)
+    {
+        Intent intent_2 = new Intent(EditJournal.this, MapsActivity.class);
+
+        //intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+        intent_2.putExtra("journal_name", intent.getStringExtra("Name"));
+        startActivity(intent_2);
     }
 
     private void createDialog(String action, final MyDBHandler dbHandler) {
@@ -103,14 +123,13 @@ public class EditJournal extends AppCompatActivity {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes save changes to the Journal");
 
-                    //TODO: CONNECT TO A DATABASE
-
 
 
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
+                    ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
 
-                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"), getIntent().getBooleanExtra("Tracking", false));
+                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"), remindersToggle.isChecked());
 
 //                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
 //                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
@@ -150,11 +169,10 @@ public class EditJournal extends AppCompatActivity {
         ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
         remindersToggle.setChecked(intent.getBooleanExtra("Tracking", false));
 
-        TextView data_points = findViewById(R.id.data_points_temp);
-        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
-                "data_points.db", null, 1);
-        ArrayList<String> data = new ArrayList<String>();
-        data = dbHandler.getAllData(this.journal_name);
+//        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+//                "data_points.db", null, 1);
+//        ArrayList<String> data = new ArrayList<String>();
+//        data = dbHandler.getAllData(this.journal_name);
 
 
 
