@@ -4,6 +4,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Service;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,6 +21,9 @@ import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +37,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Polyline;
@@ -39,7 +45,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
-
+import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,11 +58,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //compass stuff
     private ImageView compassButton;
     private float currentDegree = 0f;
-    private SensorManager mSensorManager;
+    private SensorManager sensorManager;
     private boolean pressed = false;
     //x and y coordinates for button
     private float orgX;
     private float orgY;
+
+    private float[] gravityData = new float[3];
+    private float[] geomagneticData  = new float[3];
+    private boolean hasGravityData = false;
+    private boolean hasGeomagneticData = false;
+    private float rotationInDegrees;
+
 
     //For the path being displayed.
     private Iterable<LatLng> coordinates;
@@ -74,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         compassButton = findViewById(R.id.compass_button);
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
         compassButton.setOnClickListener(this);
         orgX = compassButton.getX();
         orgY = compassButton.getY();
@@ -120,6 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         setupTabLayout();
+        requestLocationUpdates();
 
         //compass stuff
 
@@ -270,14 +284,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        float degree = Math.round(event.values[0]);
-        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
-                compassButton.getY()+compassButton.getHeight()/2);
+        switch (event.sensor.getType()){
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(event.values, 0, gravityData, 0, 3);
+                hasGravityData = true;
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(event.values, 0, geomagneticData, 0, 3);
+                hasGeomagneticData = true;
+                break;
+            default:
+                return;
+        }
 
-        ra.setDuration(100);
-        ra.setFillAfter(true);
-        compassButton.startAnimation(ra);
-        currentDegree = -degree;
+        if (hasGravityData && hasGeomagneticData) {
+            float identityMatrix[] = new float[9];
+            float rotationMatrix[] = new float[9];
+            float incline;
+            boolean success = SensorManager.getRotationMatrix(rotationMatrix, identityMatrix,
+                    gravityData, geomagneticData);
+
+
+            if (success) {
+                float orientationMatrix[] = new float[3];
+                SensorManager.getOrientation(rotationMatrix, orientationMatrix);
+                float rotationInRadians = orientationMatrix[0];
+                rotationInDegrees = (float) Math.round(Math.toDegrees(rotationInRadians));
+
+                float degree = rotationInDegrees;
+                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
+                        compassButton.getY()+compassButton.getHeight()/2);
+                ra.setDuration(100);
+                ra.setFillAfter(true);
+                compassButton.startAnimation(ra);
+                currentDegree = -degree;
+                incline =(float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
+                TextView inclineTxt = (TextView) findViewById(R.id.inclinometer_value);
+                inclineTxt.setText(Float.toString(incline));
+                // do something with the rotation in degrees
+            }
+        }
+
+
     }
 
     @Override
@@ -289,15 +337,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onPause();
 
         // to stop the listener and save battery
-        mSensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this);
     }
     @Override
     public void onResume() {
         super.onResume();
-
-        // for the system's orientation sensor registered listeners
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-                SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -319,4 +365,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void requestLocationUpdates() {
+        LocationRequest request = new LocationRequest();
+
+        //How often the app will track the users location
+        request.setInterval(10000);
+
+
+        //Try to get as accurate of an approximation as we can
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        final FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        //If the user already gave permission to track their location
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+
+            //...then request location updates
+            client.requestLocationUpdates(request, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    Location loc = locationResult.getLastLocation();
+                    String lat = Double.toString(loc.getLatitude());
+                    String lon = Double.toString(loc.getLongitude());
+                    //TODO: now we can place the users current location into the database
+                    try {
+                        ElevationData eleData = new ElevationData();
+                        eleData.execute(lat, lon);
+                        TextView elevationText = (TextView) findViewById(R.id.altimeter_value);
+                        elevationText.setText(eleData.get());
+                    } catch (Exception e) {
+
+                    }
+                }
+            }, null);
+        }
+    }
 }
