@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -33,7 +34,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class ChooseLoginActivity extends AppCompatActivity {
 
-    ImageButton emailButton;
+    Button emailButton;
 
     private FirebaseAuth mAuth;
 
@@ -42,14 +43,18 @@ public class ChooseLoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
 
 
+    Button pseudoFacebook;
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_login_method);
 
 
         //facebookButton = (ImageButton) findViewById(R.id.facebookButton);
-        SignInButton googleButton = findViewById(R.id.googleButton);
-        emailButton = (ImageButton) findViewById(R.id.emailButton);
+        Button googleButton = findViewById(R.id.googleButton);
+
+        emailButton = findViewById(R.id.emailButton);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("969128169123-acm8ho281ikele7r252r4urcspbf0qvs.apps.googleusercontent.com")
@@ -62,7 +67,15 @@ public class ChooseLoginActivity extends AppCompatActivity {
 
         mCallbackManager = CallbackManager.Factory.create();
 
-        LoginButton facebookButton = findViewById(R.id.facebookButton);
+        final LoginButton facebookButton = findViewById(R.id.facebookButton);
+        pseudoFacebook = findViewById(R.id.facebook_button);
+        pseudoFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    facebookButton.performClick();
+            }
+        });
+
         facebookButton.setPermissions("email", "public_profile");
         facebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -99,7 +112,6 @@ public class ChooseLoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
     }
 
