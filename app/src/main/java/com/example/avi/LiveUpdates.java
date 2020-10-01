@@ -1,57 +1,55 @@
 package com.example.avi;
 
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class LiveUpdates extends Activity {
 
-    private Spinner spinner;
-
-    //***This is what the dropdown will show, update this to update options***
-    private static final String[] paths = {"Avalanche Report", "Traffic Updates", "Avalanche History", "Settings"};
-    WebView myWebView;
+    private ViewPager viewPager;
+    private MyPagerAdapter adapter;
+    private List<View> webViewList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_updates);
         setupTabLayout();
-        try{
-        updateWeatherData();
-        }catch (Exception e){
-        Log.e("Weather error", e.getMessage());
-        }
 
+        adapter = new MyPagerAdapter();
+        viewPager = findViewById(R.id.pager);
 
-        myWebView = (WebView) findViewById(R.id.webview);
-        myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
+        webViewList = new ArrayList<View>();
+        addWebView(webViewList, "https://utahavalanchecenter.org/forecast/salt-lake");
+        addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
+        addWebView(webViewList, "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
 
-        //Boilerplate spinner code, no need to update any of this
-        Spinner spinner = (Spinner)findViewById(R.id.spinner2);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(LiveUpdates.this,
-                android.R.layout.simple_spinner_item, paths);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        viewPager.setAdapter(adapter);
     }
 
+    private void addWebView(List<View> viewList, String url)
+    {
+        WebView webView=new WebView(this);
+        webView.loadUrl(url);
+        viewList.add(webView);
+    }
 
+    /* preserving for future
     private void updateWeatherData() {
         try {
             WeatherData data = new WeatherData();
@@ -64,7 +62,7 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
             text.setText("Weather data could not be obtained");
         }
     }
-
+*/
     private void setupTabLayout() {
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override
@@ -103,26 +101,30 @@ public class LiveUpdates extends AppCompatActivity implements AdapterView.OnItem
         tabLayout.getTabAt(0).select();
     }
 
-    //Update this method to update action of actual spinner.
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            myWebView.loadUrl("https://utahavalanchecenter.org/forecast/salt-lake");
-            //Go to Traffic Updates Page
-        } else if (position == 1){
-            myWebView.loadUrl("https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
-        } else if (position == 2) {
-            myWebView.loadUrl("https://utahavalanchecenter.org/avalanches");    }
-        else{
-            Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
+    private class MyPagerAdapter extends PagerAdapter {
 
-            startActivity(intent);
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            (container).removeView(webViewList.get(position));
+        }
+
+        @Override
+        public int getCount() {
+            return webViewList.size();
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            container.addView(webViewList.get(position), 0);
+            return webViewList.get(position);
+        }
+
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            return arg0 == (arg1);
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }
 
