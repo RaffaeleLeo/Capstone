@@ -38,22 +38,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/welcomeText"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginBottom="20dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Welcome! Please choose a login option below:"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/googleButton"
-            app:layout_constraintDimensionRatio="8:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
 
         <Button
             android:id="@+id/googleButton"
@@ -61,12 +45,13 @@
             android:layout_height="0dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/google_label"
-            android:text="Log in with Google      "
+            android:text="Sign in with Google      "
             android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintBottom_toTopOf="@+id/facebook_button"
-            app:layout_constraintDimensionRatio="6:1"
+            app:layout_constraintDimensionRatio="250:36"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -76,13 +61,14 @@
             android:layout_height="0dp"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="50dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/facebook_label"
-            android:text="Log in with Facebook"
+            android:text="Sign in with Facebook"
             android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/emailButton"
-            app:layout_constraintDimensionRatio="6:1"
+            app:layout_constraintDimensionRatio="250:36"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -94,10 +80,11 @@
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="100dp"
             android:background="@drawable/email_label"
-            android:text="Log in with Email        "
+            android:text="Sign in with Email        "
             android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="6:1"
+            app:layout_constraintDimensionRatio="250:36"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
