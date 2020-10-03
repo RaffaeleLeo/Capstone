@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.avi.ChatRoom.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,10 +32,16 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChooseLoginActivity extends AppCompatActivity {
 
     Button emailButton;
+
+    private FirebaseFirestore db;
 
     private FirebaseAuth mAuth;
 
@@ -66,6 +73,8 @@ public class ChooseLoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         mCallbackManager = CallbackManager.Factory.create();
+
+        db = FirebaseFirestore.getInstance();
 
         final LoginButton facebookButton = findViewById(R.id.facebookButton);
         pseudoFacebook = findViewById(R.id.facebook_button);
@@ -145,12 +154,14 @@ public class ChooseLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            try {
-                                final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
-                                dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Google");
-                            }
-                            catch (SQLiteConstraintException e){
-                            }
+
+                            List<String> friends = new ArrayList<String>();
+                            friends.add("1234");
+                            List<String> requests = new ArrayList<String>();
+                            requests.add("2345");
+                            User usr = new User(user.getUid(), user.getEmail(), friends, requests);
+                            db.collection("users").document(usr.getId()).set(usr);
+
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
@@ -172,12 +183,14 @@ public class ChooseLoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            try {
-                                final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
-                                dbHandler.addToUsers(user.getUid(), user.getDisplayName(), user.getEmail(), "Facebook");
-                            }
-                            catch (SQLiteConstraintException e){
-                            }
+
+                            List<String> friends = new ArrayList<String>();
+                            friends.add("abcd");
+                            List<String> requests = new ArrayList<String>();
+                            requests.add("bcde");
+                            User usr = new User(user.getUid(), user.getEmail(), friends, requests);
+                            db.collection("users").document(usr.getId()).set(usr);
+
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
