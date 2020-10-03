@@ -73,7 +73,8 @@ public class LiveUpdates extends Activity {
 
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
-                    Intent intent = new Intent(LiveUpdates.this, ChatRoomActivity.class);
+                    //Intent intent = new Intent(LiveUpdates.this, ChatRoomActivity.class);
+                    Intent intent = new Intent(LiveUpdates.this, SocialMediaHomeActivity.class);
 
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_journal))) {

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/TabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@color/colorPrimaryDark"
+        app:tabTextColor="@color/tabs_default_color">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/TabUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_live_updates"
+            android:textColor="@color/tabs_default_color" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/TabMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_map"
+            android:textColor="@color/tabs_default_color" />
+
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/TabExplore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_journal"
+            android:textColor="@color/tabs_default_color" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/TabStats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nav_chat"
+            android:textColor="@color/tabs_default_color" />
+
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <ListView
+        android:id="@+id/request_list"
+        android:layout_width="163dp"
+        android:layout_height="351dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="101dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="236dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/friends_list"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ListView
+        android:id="@+id/friends_list"
+        android:layout_width="163dp"
+        android:layout_height="351dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="237dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/request_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/friends"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="82dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="25dp"
+        android:text="Friends"
+        app:layout_constraintBottom_toTopOf="@+id/friends_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/requests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginBottom="26dp"
+        android:text="Requests"
+        app:layout_constraintBottom_toTopOf="@+id/request_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/sendRequestInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="76dp"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sendRequestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="76dp"
+        android:text="Send Request"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/AcceptButton"
+        android:layout_width="89dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="23dp"
+        android:layout_marginBottom="97dp"
+        android:text="Accept"
+        app:layout_constraintBottom_toTopOf="@+id/sendRequestInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/friends_list" />
+
+    <Button
+        android:id="@+id/IgnoreButton"
+        android:layout_width="89dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="96dp"
+        android:text="Ignore"
+        app:layout_constraintBottom_toTopOf="@+id/sendRequestButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/request_list" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
