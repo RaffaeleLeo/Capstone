@@ -3,6 +3,7 @@ package com.example.avi;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         createButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 String first = createFirst.getText().toString();
@@ -86,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
                 String password = createPassword.getText().toString();
 
                 if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
+                    Notifications notifier = new Notifications();
+                    notifier.notification("test", "this is a test", 0);
+
                     Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
                 } else if (password.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
