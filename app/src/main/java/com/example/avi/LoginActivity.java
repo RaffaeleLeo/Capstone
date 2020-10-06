@@ -35,6 +35,9 @@ public class LoginActivity extends AppCompatActivity {
    EditText createFirst, createLast, createEmail, createPassword, loginEmail, loginPassword;
 
    private FirebaseAuth mAuth;
+   public static final String EXTRA_ACCESS_ID = "com.auth0.ACCESS_ID";
+
+    public static String USER_EMAIL = "";
 
 
     @Override
@@ -79,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 String first = createFirst.getText().toString();
                 String last = createLast.getText().toString();
                 String email = createEmail.getText().toString().toLowerCase();
+                USER_EMAIL = email;
                 String password = createPassword.getText().toString();
 
                 if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
@@ -143,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
     }*/
 
     private void registerUser(String email, String password, final String displayName, final MyDBHandler dbHandler){
+        USER_EMAIL = email;
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -174,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String email, String password, final MyDBHandler dbHandler){
+        USER_EMAIL = email;
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

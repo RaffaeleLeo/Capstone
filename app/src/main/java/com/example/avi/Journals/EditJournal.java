@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.avi.LoginActivity;
 import com.example.avi.MapsActivity;
 import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,8 +21,11 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.avi.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class EditJournal extends AppCompatActivity {
 
@@ -96,6 +100,14 @@ public class EditJournal extends AppCompatActivity {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes delete the Journal");
 
+                    //removes the object from firebase
+                    //right now the code still pulls from the local database
+                    String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
+                    clean_email + "/journals").child(journal_name);
+
+                    ref.removeValue();
+
                     Toast.makeText(EditJournal.this, "The Journal Has Been Deleted", Toast.LENGTH_LONG).show();
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
@@ -123,11 +135,18 @@ public class EditJournal extends AppCompatActivity {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes save changes to the Journal");
 
+                    String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
+                            clean_email + "/journals").child(journal_name);
 
-
+                    HashMap<String, Object> changes = new HashMap<String, Object>();
 
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
                     ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
+
+                    changes.put("reminders", remindersToggle.isChecked());
+
+                    ref.updateChildren(changes);
 
                     dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"), remindersToggle.isChecked());
 

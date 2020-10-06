@@ -9,6 +9,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.content.Context;
 import androidx.core.content.ContextCompat;
 
 import android.content.SharedPreferences;
+import android.icu.text.SimpleDateFormat;
 import android.os.IBinder;
 import android.content.Intent;
 import android.util.Log;
@@ -26,7 +29,10 @@ import android.app.Service;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class TrackingService extends Service {
@@ -77,7 +83,7 @@ public class TrackingService extends Service {
         LocationRequest request = new LocationRequest();
 
         //How often the app will track the users location
-        request.setInterval(10000);
+        request.setInterval(100000);
 
 
         //Try to get as accurate of an approximation as we can
@@ -110,6 +116,13 @@ public class TrackingService extends Service {
                         if(j.start_recording)
                         {
                             dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
+
+                            String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
+                                    clean_email + "/journals/" + j.name + "/latlong");
+                            Date timeStamp = new Date();
+                            String s = timeStamp.toString();
+                            ref.child(s).setValue(lat + lon);
                         }
                     }
 

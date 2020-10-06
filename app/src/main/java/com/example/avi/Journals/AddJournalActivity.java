@@ -21,10 +21,13 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.avi.LoginActivity;
 import com.example.avi.MyDBHandler;
 import com.example.avi.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class AddJournalActivity extends AppCompatActivity {
 
@@ -104,18 +107,16 @@ public class AddJournalActivity extends AppCompatActivity {
 
         editor.apply();
 
-        // add the goal to the database
-        sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
+        //add goal to firebase
+        String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
 
-        //WILL BE USEFUL IF WE HAVE FIREBASE
-        /**
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(sp.getString(LoginActivity.EXTRA_ACCESS_ID, "invalid") + "/Journal");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(clean_email + "/journals");
 
         if (Journal != null) {
             //Save the journal data to the database//
             ref.child(Journal.name).setValue(Journal);
         }
-        **/
+
         //add journal to database
         if(Journal.start_recording)
         {

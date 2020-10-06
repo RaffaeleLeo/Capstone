@@ -3,10 +3,12 @@ package com.example.avi.Journals;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.avi.LoginActivity;
 import com.example.avi.MyDBHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -18,7 +20,13 @@ import com.example.avi.LiveUpdates;
 import com.example.avi.MapsActivity;
 import com.example.avi.R;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class JournalActivity extends AppCompatActivity implements JournalAdapter.JournalViewHolder.OnJournalListener{
 
@@ -62,7 +70,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
 
         //IF WE ARE USING FIREBASE THIS WILL BE USEFUL
         /**
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LoginActivity.mPreferences.getString(LoginActivity.EXTRA_ACCESS_ID, "invalid") + "/Journals");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LoginActivity.USER_EMAIL + "/Journals");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
