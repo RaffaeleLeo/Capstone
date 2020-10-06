@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -117,9 +118,10 @@ public class TrackingService extends Service {
                         {
                             dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
 
-                            String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                            //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                            String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                                    clean_email + "/journals/" + j.name + "/latlong");
+                                    currentUser + "/journals/" + j.name + "/latlong");
                             Date timeStamp = new Date();
                             String s = timeStamp.toString();
                             ref.child(s).setValue(lat + lon);

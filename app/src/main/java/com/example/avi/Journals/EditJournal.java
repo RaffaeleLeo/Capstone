@@ -21,6 +21,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.avi.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -102,9 +103,10 @@ public class EditJournal extends AppCompatActivity {
 
                     //removes the object from firebase
                     //right now the code still pulls from the local database
-                    String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                    clean_email + "/journals").child(journal_name);
+                            currentUser + "/journals").child(journal_name);
 
                     ref.removeValue();
 
@@ -135,9 +137,10 @@ public class EditJournal extends AppCompatActivity {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes save changes to the Journal");
 
-                    String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                    String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                            clean_email + "/journals").child(journal_name);
+                            currentUser + "/journals").child(journal_name);
 
                     HashMap<String, Object> changes = new HashMap<String, Object>();
 

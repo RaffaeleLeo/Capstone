@@ -26,6 +26,7 @@ import com.example.avi.MyDBHandler;
 import com.example.avi.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -83,7 +84,7 @@ public class AddJournalActivity extends AppCompatActivity {
 
         Journal.name = sp.getString("Journal_Name", "NA");
         if(Journal.name.equals("NA") || Journal.name.equals("")){
-            Snackbar.make(view, "Journalnts of interest must have a name", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Journals of interest must have a name", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
             return;
@@ -108,9 +109,11 @@ public class AddJournalActivity extends AppCompatActivity {
         editor.apply();
 
         //add goal to firebase
-        String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+        //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(clean_email + "/journals");
+        String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
 
         if (Journal != null) {
             //Save the journal data to the database//
