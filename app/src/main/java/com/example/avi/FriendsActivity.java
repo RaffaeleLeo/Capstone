@@ -75,7 +75,6 @@ public class FriendsActivity extends AppCompatActivity {
         requests.setAdapter(requests_adapter);
 
 
-
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -108,12 +107,16 @@ public class FriendsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(lastClicked != null){
                     int index = requestsList.indexOf(lastClicked);
+                    lastClicked = null;
                     if(index >= 0) {
                         String id = requestsTracker.get(index);
                         String name = requestsList.get(index);
                         requestsList.remove(index);
                         requestsTracker.remove(index);
                         requests_adapter.notifyDataSetChanged();
+                        friendsList.add(name);
+                        friendsTracker.add(name);
+                        friends_adapter.notifyDataSetChanged();
 
                         //Add to current user's friends
                         String dest = "friends." + id;
@@ -121,6 +124,7 @@ public class FriendsActivity extends AppCompatActivity {
                                 .update(
                                         dest, name
                                 );
+
 
                         //Remove request from current user
                         dest = "requests." + id;
@@ -157,6 +161,7 @@ public class FriendsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(lastClicked != null) {
                     int index = requestsList.indexOf(lastClicked);
+                    lastClicked = null;
                     if (index >= 0) {
                         String id = requestsTracker.get(index);
                         requestsList.remove(index);

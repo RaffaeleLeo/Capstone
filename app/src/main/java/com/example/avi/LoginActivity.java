@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (password.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
                 } else {
-                    registerUser(email, password, first + " " + last, dbHandler);
+                    registerUser(email, password, first.trim() + " " + last.trim(), dbHandler);
                 }
 
 
@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 //friends.put("0000", "Jim");
                                                                 HashMap<String, String> requests = new HashMap<>();
                                                                 //requests.put("2345", "Ted");
-                                                                User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+                                                                User usr = new User(user.getUid(), displayName, user.getEmail(), friends, requests);
                                                                 db.collection("users").document(usr.getId()).set(usr);
                                                             }
                                                         } else {
@@ -199,12 +199,25 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                                         }
                                     });
-                            HashMap<String, String> friends = new HashMap<>();
-                            //friends.put("4444", "Kenny");
-                            HashMap<String, String> requests = new HashMap<>();
-                            //requests.put("5555", "Stevie");
-                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
-                            db.collection("users").document(usr.getId()).set(usr);
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                        } else {
+                                            HashMap<String, String> friends = new HashMap<>();
+                                            //friends.put("0000", "Jim");
+                                            HashMap<String, String> requests = new HashMap<>();
+                                            //requests.put("2345", "Ted");
+                                            User usr = new User(user.getUid(), displayName, user.getEmail(), friends, requests);
+                                            db.collection("users").document(usr.getId()).set(usr);
+                                        }
+                                    } else {
+                                    }
+                                }
+                            });
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
