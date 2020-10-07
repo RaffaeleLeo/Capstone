@@ -156,10 +156,10 @@ public class ChooseLoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             List<String> friends = new ArrayList<String>();
-                            friends.add("1234");
+                            friends.add("John");
                             List<String> requests = new ArrayList<String>();
-                            requests.add("2345");
-                            User usr = new User(user.getUid(), user.getEmail(), friends, requests);
+                            requests.add("Bill");
+                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
                             db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
@@ -185,10 +185,10 @@ public class ChooseLoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             List<String> friends = new ArrayList<String>();
-                            friends.add("abcd");
+                            friends.add("Bob");
                             List<String> requests = new ArrayList<String>();
-                            requests.add("bcde");
-                            User usr = new User(user.getUid(), user.getEmail(), friends, requests);
+                            requests.add("Jim");
+                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
                             db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();

@@ -5,14 +5,16 @@ import java.util.List;
 
 public class User {
     String id;
+    String name;
     String email;
     List<String> friends;
     List<String> requests;
 
+    public User() {}
 
-
-    public User(String id, String email, List<String> friends, List<String> requests){
+    public User(String id, String name, String email, List<String> friends, List<String> requests){
         this.id = id;
+        this.name =  name;
         this.email = email;
         this.friends = friends;
         this.requests = requests;
@@ -22,9 +24,11 @@ public class User {
         return this.id;
     }
 
-    public String getEmail(){
-        return this.email;
+    public String getName(){
+        return this.name;
     }
+
+    public String getEmail(){ return this.email; }
 
     public List<String> getFriends(){
         return this.friends;
