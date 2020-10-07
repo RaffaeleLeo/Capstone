@@ -32,9 +32,12 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ChooseLoginActivity extends AppCompatActivity {
@@ -153,14 +156,34 @@ public class ChooseLoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            final FirebaseUser user = mAuth.getCurrentUser();
 
-                            List<String> friends = new ArrayList<String>();
-                            friends.add("John");
-                            List<String> requests = new ArrayList<String>();
-                            requests.add("Bill");
-                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
-                            db.collection("users").document(usr.getId()).set(usr);
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                        } else {
+                                            HashMap<String, String> friends = new HashMap<>();
+                                            //friends.put("0000", "Jim");
+                                            HashMap<String, String> requests = new HashMap<>();
+                                            //requests.put("2345", "Ted");
+                                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+                                            db.collection("users").document(usr.getId()).set(usr);
+                                        }
+                                    } else {
+                                    }
+                                }
+                            });
+
+//                            HashMap<String, String> friends = new HashMap<>();
+//                            //friends.put("9999", "John");
+//                            HashMap<String, String> requests = new HashMap<>();
+//                            //requests.put("1234", "Bill");
+//                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+//                            db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
@@ -182,14 +205,34 @@ public class ChooseLoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            final FirebaseUser user = mAuth.getCurrentUser();
 
-                            List<String> friends = new ArrayList<String>();
-                            friends.add("Bob");
-                            List<String> requests = new ArrayList<String>();
-                            requests.add("Jim");
-                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
-                            db.collection("users").document(usr.getId()).set(usr);
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                        } else {
+                                            HashMap<String, String> friends = new HashMap<>();
+                                            //friends.put("0000", "Jim");
+                                            HashMap<String, String> requests = new HashMap<>();
+                                            //requests.put("2345", "Ted");
+                                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+                                            db.collection("users").document(usr.getId()).set(usr);
+                                        }
+                                    } else {
+                                    }
+                                }
+                            });
+
+//                            HashMap<String, String> friends = new HashMap<>();
+//                            //friends.put("0000", "Jim");
+//                            HashMap<String, String> requests = new HashMap<>();
+//                            //requests.put("2345", "Ted");
+//                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+//                            db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);

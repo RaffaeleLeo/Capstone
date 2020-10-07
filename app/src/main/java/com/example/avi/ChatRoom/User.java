@@ -1,18 +1,18 @@
 package com.example.avi.ChatRoom;
 
 
-import java.util.List;
+import java.util.HashMap;
 
 public class User {
     String id;
     String name;
     String email;
-    List<String> friends;
-    List<String> requests;
+    HashMap<String, String> friends;
+    HashMap<String, String> requests;
 
     public User() {}
 
-    public User(String id, String name, String email, List<String> friends, List<String> requests){
+    public User(String id, String name, String email, HashMap<String, String> friends, HashMap<String, String> requests){
         this.id = id;
         this.name =  name;
         this.email = email;
@@ -30,11 +30,11 @@ public class User {
 
     public String getEmail(){ return this.email; }
 
-    public List<String> getFriends(){
+    public HashMap<String, String> getFriends(){
         return this.friends;
     }
 
-    public List<String> getRequests(){
+    public HashMap<String, String> getRequests(){
         return this.requests;
     }
 
