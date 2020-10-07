@@ -31,10 +31,22 @@
             android:name=".ChatRoom.ChatRoomActivity"
             android:label="@string/title_activity_chat_room"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".SettingsActivity"
             android:label="SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".SocialMediaHomeActivity"
+            android:label="SocialMediaHomeActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".FriendsActivity"
+            android:label="FriendsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
 
         <activity
             android:name=".Journals.JournalActivity"
@@ -57,17 +69,16 @@
         <activity
             android:name=".ChooseLoginActivity"
             android:label="@string/title_activity_choose_login"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LoadingActivity"
+            android:label="LoadingActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-        </activity>
-        <activity
-            android:name=".LoadingActivity"
-            android:label="@string/title_activity_loading"
-            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
 
         <service

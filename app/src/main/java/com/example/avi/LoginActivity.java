@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.avi.ChatRoom.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -28,6 +29,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
    public static final String EXTRA_ACCESS_ID = "com.auth0.ACCESS_ID";
 
     public static String USER_EMAIL = "";
+
+   private FirebaseFirestore db;
+
 
 
     @Override
@@ -58,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
         mAuth = FirebaseAuth.getInstance();
 
+        db = FirebaseFirestore.getInstance();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (password.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long.", Toast.LENGTH_LONG).show();
                 } else {
-                    registerUser(email, password, first + " " + last, dbHandler);
+                    registerUser(email, password, first.trim() + " " + last.trim(), dbHandler);
                 }
 
 
@@ -153,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(displayName).build();
 
@@ -162,12 +172,57 @@ public class LoginActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
+
+                                                DocumentReference docRef = db.collection("users").document(user.getUid());
+                                                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                        if (task.isSuccessful()) {
+                                                            DocumentSnapshot document = task.getResult();
+                                                            if (document.exists()) {
+                                                            } else {
+                                                                HashMap<String, String> friends = new HashMap<>();
+                                                                //friends.put("0000", "Jim");
+                                                                HashMap<String, String> requests = new HashMap<>();
+                                                                //requests.put("2345", "Ted");
+                                                                User usr = new User(user.getUid(), displayName, user.getEmail(), friends, requests);
+                                                                db.collection("users").document(usr.getId()).set(usr);
+                                                            }
+                                                        } else {
+                                                        }
+                                                    }
+                                                });
+//                                                HashMap<String, String> friends = new HashMap<>();
+//                                                //friends.put("4444", "Kenny");
+//                                                HashMap<String, String> requests = new HashMap<>();
+//                                                //requests.put("4444", "Stevie");
+//                                                User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
+//                                                db.collection("users").document(usr.getId()).set(usr);
                                                 Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                                                 Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                                                 startActivity(intent);
                                             }
                                         }
                                     });
+                            DocumentReference docRef = db.collection("users").document(user.getUid());
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document.exists()) {
+                                        } else {
+                                            HashMap<String, String> friends = new HashMap<>();
+                                            //friends.put("0000", "Jim");
+                                            HashMap<String, String> requests = new HashMap<>();
+                                            //requests.put("2345", "Ted");
+                                            User usr = new User(user.getUid(), displayName, user.getEmail(), friends, requests);
+                                            db.collection("users").document(usr.getId()).set(usr);
+                                        }
+                                    } else {
+                                    }
+                                }
+                            });
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
