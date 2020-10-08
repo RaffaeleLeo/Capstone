@@ -23,7 +23,7 @@ public class Notifications {
        notificationManager.createNotificationChannel(notificationChannel);
 
 
-       NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel_id);
+       NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channel_id);
                builder.setSmallIcon(R.mipmap.ic_launcher);
                builder.setContentTitle(title);
                builder.setContentText(text);
