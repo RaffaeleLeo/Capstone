@@ -10,16 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-public class Notifications extends Activity {
-
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
+public class Notifications {
+    
     //Sends a notificaiton.
    @RequiresApi(api = Build.VERSION_CODES.O)
    public void notification(String title, String text, int notificationId){
