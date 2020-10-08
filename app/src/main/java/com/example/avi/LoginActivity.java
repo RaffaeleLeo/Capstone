@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
                     Notifications notifier = new Notifications();
-                    notifier.notification("test", "this is a test", 0);
+                    notifier.notification("test", "this is a test", 0, Context);
 
                     Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
                 } else if (password.length() < 6) {
