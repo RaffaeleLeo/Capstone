@@ -20,7 +20,7 @@ public class Notifications extends Activity {
 
     }
 
-
+    //Sends a notificaiton.
    @RequiresApi(api = Build.VERSION_CODES.O)
    public void notification(String title, String text, int notificationId){
 
