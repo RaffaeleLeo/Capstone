@@ -33,7 +33,6 @@ public class ElevationData extends AsyncTask<String, Integer, String> {
             connection.setRequestMethod("GET");
 
             if (connection.getResponseCode() == 200) {
-                    Log.i("Response", "got to resp");
                     BufferedReader in = new BufferedReader(new InputStreamReader(
                             connection.getInputStream()));
                     String line;
@@ -47,7 +46,6 @@ public class ElevationData extends AsyncTask<String, Integer, String> {
         } catch (Exception e) {
             Log.e("Err", e.toString());
         }
-        Log.d("Ele", elevation);
         return elevation;
     }
 }

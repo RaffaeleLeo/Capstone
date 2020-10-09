@@ -49,7 +49,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        setupTabLayout();
 
     }
 

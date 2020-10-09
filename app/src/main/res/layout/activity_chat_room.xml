@@ -45,46 +45,5 @@
             android:background="@drawable/send_button"/>
     </LinearLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/TabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tabBackground="@color/colorPrimaryDark"
-        app:tabTextColor="@color/tabs_default_color">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabUpdate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_live_updates"
-            android:textColor="@color/tabs_default_color" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_map"
-            android:textColor="@color/tabs_default_color" />
-
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabExplore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_journal"
-            android:textColor="@color/tabs_default_color" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabStats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_chat"
-            android:textColor="@color/tabs_default_color" />
-
-
-    </com.google.android.material.tabs.TabLayout>
+    <include layout = "@layout/bottom_tab_layout"/>
 </LinearLayout>
