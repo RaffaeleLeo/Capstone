@@ -252,7 +252,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
-                    Intent intent = new Intent(MapsActivity.this, ChatRoomActivity.class);
+                    Intent intent = new Intent(MapsActivity.this, SocialMediaHomeActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);

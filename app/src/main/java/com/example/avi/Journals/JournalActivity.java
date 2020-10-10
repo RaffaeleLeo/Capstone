@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avi.LoginActivity;
 import com.example.avi.MyDBHandler;
+import com.example.avi.SocialMediaHomeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
@@ -167,7 +168,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
-                    Intent intent = new Intent(JournalActivity.this, ChatRoomActivity.class);
+                    Intent intent = new Intent(JournalActivity.this, SocialMediaHomeActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
