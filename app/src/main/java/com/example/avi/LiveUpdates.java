@@ -7,17 +7,18 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class LiveUpdates extends Activity {
 
@@ -39,7 +40,20 @@ public class LiveUpdates extends Activity {
         addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
         addWebView(webViewList, "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
 
+
+        AviDangerPngHtmlParser danger = new AviDangerPngHtmlParser();
+        danger.execute("hi");
+        Bitmap bitmap = null;
+        try {
+           bitmap = danger.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        addWebView(webViewList, "");
         viewPager.setAdapter(adapter);
+
     }
 
     private void addWebView(List<View> viewList, String url)
@@ -69,7 +83,7 @@ public class LiveUpdates extends Activity {
             public void onTabSelected(TabLayout.Tab tab) {
 
                 if (tab.getText().equals(getString(R.string.nav_map))) {
-                    Intent intent = new Intent(LiveUpdates.this, MapsActivity.class);
+                    Intent intent = new Intent(LiveUpdates.this, AviDangerActivity.class);
 
                     startActivity(intent);
                 } else if (tab.getText().equals(getString(R.string.nav_chat))) {
