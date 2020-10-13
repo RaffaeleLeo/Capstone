@@ -2,14 +2,27 @@ package com.example.avi;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
+import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -17,10 +30,23 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     Button chat;
     Button friends;
 
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private User user;
+    private Tours tours;
+    private Tours.Tour tour;
+    private ArrayList<Tours.Tour> acceptedUserTours;
+    private ArrayList<Tours.Tour> pendingUserTours;
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social_media_home);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        acceptedUserTours = new ArrayList<>();
+        pendingUserTours = new ArrayList<>();
 
         settings = (Button) findViewById(R.id.gotoSettings);
         chat = (Button) findViewById(R.id.gotoChat);
@@ -51,6 +77,41 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
         setupTabLayout();
 
+        final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+                Log.d("user", mAuth.getUid());
+
+            }
+        });
+        final DocumentReference userToursDocRef = db.collection("userTours").document(mAuth.getUid());
+        userToursDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                tours = documentSnapshot.toObject(Tours.class);
+                Log.d("user", tours.toString());
+                 db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedToursIds()).get().addOnSuccessListener(
+                        new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                acceptedUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                Log.d("user", acceptedUserTours.get(0).toString());
+                            }
+                        }
+                );
+                db.collection("tours").whereIn(FieldPath.documentId(), tours.getPendingTourIds()).get().addOnSuccessListener(
+                        new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                Log.d("user", pendingUserTours.get(0).toString());
+                            }
+                        }
+                );
+            }
+        });
     }
 
     private void setupTabLayout() {

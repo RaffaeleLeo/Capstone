@@ -10,16 +10,19 @@ import java.util.List;
 public class Tours {
 
     //List of tourIds that a user has created or accepted
-    private ArrayList<String> acceptedToursIds;
+    private List<String> acceptedToursIds;
     //List of tourIds that a user has been invited to
-    private ArrayList<String> pendingTourIds;
+    private List<String> pendingTourIds;
 
-    public Tours(ArrayList<String> acceptedToursIds, ArrayList<String> pendingTourIds){
+    public Tours() {
+    }
+
+    public Tours(List<String> acceptedToursIds, List<String> pendingTourIds){
         this.acceptedToursIds = acceptedToursIds;
         this.pendingTourIds = pendingTourIds;
     }
 
-    public ArrayList<String> getAcceptedToursIds() {
+    public List<String> getAcceptedToursIds() {
         return acceptedToursIds;
     }
 
@@ -27,7 +30,7 @@ public class Tours {
         this.acceptedToursIds = acceptedToursIds;
     }
 
-    public ArrayList<String> getPendingTourIds() {
+    public List<String> getPendingTourIds() {
         return pendingTourIds;
     }
 
@@ -39,20 +42,30 @@ public class Tours {
         //Tour name, date, and owner are the only required for creation
         public String tourName;
         //One who created the tour and any with owner permissions
-        public ArrayList<String> tourOwners;
+        public List<String> tourOwners;
         public String date;
         public String time;
         public String notes;
-        public ArrayList<String> acceptedInvitees;
-        public ArrayList<String> pendingInvitees;
-        public ArrayList<String> declinedInvitees;
+        public List<String> acceptedInvitees;
+        public List<String> pendingInvitees;
+        public List<String> declinedInvitees;
         public String latitude;
         public String longitude;
 
-        public Tour(String tourName, ArrayList<String> tourOwners, String date){
+        public Tour() {
+        }
+
+        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, List<String> declinedInvitees, String latitude, String longitude) {
             this.tourName = tourName;
             this.tourOwners = tourOwners;
             this.date = date;
+            this.time = time;
+            this.notes = notes;
+            this.acceptedInvitees = acceptedInvitees;
+            this.pendingInvitees = pendingInvitees;
+            this.declinedInvitees = declinedInvitees;
+            this.latitude = latitude;
+            this.longitude = longitude;
         }
 
         public String getTourName() {
@@ -63,7 +76,7 @@ public class Tours {
             this.tourName = tourName;
         }
 
-        public ArrayList<String> getTourOwners() {
+        public List<String> getTourOwners() {
             return tourOwners;
         }
 
@@ -95,7 +108,7 @@ public class Tours {
             this.notes = notes;
         }
 
-        public ArrayList<String> getAcceptedInvitees() {
+        public List<String> getAcceptedInvitees() {
             return acceptedInvitees;
         }
 
@@ -103,7 +116,7 @@ public class Tours {
             this.acceptedInvitees = acceptedInvitees;
         }
 
-        public ArrayList<String> getPendingInvitees() {
+        public List<String> getPendingInvitees() {
             return pendingInvitees;
         }
 
@@ -111,7 +124,7 @@ public class Tours {
             this.pendingInvitees = pendingInvitees;
         }
 
-        public ArrayList<String> getDeclinedInvitees() {
+        public List<String> getDeclinedInvitees() {
             return declinedInvitees;
         }
 
@@ -134,7 +147,29 @@ public class Tours {
         public void setLongitude(String longitude) {
             this.longitude = longitude;
         }
+
+        @Override
+        public String toString() {
+            return "Tour{" +
+                    "tourName='" + tourName + '\'' +
+                    ", tourOwners=" + tourOwners +
+                    ", date='" + date + '\'' +
+                    ", time='" + time + '\'' +
+                    ", notes='" + notes + '\'' +
+                    ", acceptedInvitees=" + acceptedInvitees +
+                    ", pendingInvitees=" + pendingInvitees +
+                    ", declinedInvitees=" + declinedInvitees +
+                    ", latitude='" + latitude + '\'' +
+                    ", longitude='" + longitude + '\'' +
+                    '}';
+        }
     }
 
-
+    @Override
+    public String toString() {
+        return "Tours{" +
+                "acceptedToursIds=" + acceptedToursIds +
+                ", pendingTourIds=" + pendingTourIds +
+                '}';
+    }
 }
