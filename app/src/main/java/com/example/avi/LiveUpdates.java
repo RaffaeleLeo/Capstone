@@ -10,7 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
@@ -36,8 +39,9 @@ public class LiveUpdates extends Activity {
 
         webViewList = new ArrayList<View>();
         addWebView(webViewList, "https://utahavalanchecenter.org/forecast/salt-lake");
-        addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
         addWebView(webViewList, "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
+        addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
+
 
         viewPager.setAdapter(adapter);
     }
@@ -45,6 +49,9 @@ public class LiveUpdates extends Activity {
     private void addWebView(List<View> viewList, String url)
     {
         WebView webView=new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDomStorageEnabled(true);
         webView.loadUrl(url);
         viewList.add(webView);
     }
