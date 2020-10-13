@@ -9,24 +9,14 @@ import java.util.List;
 
 public class Tours {
 
-    private String userId;
     //List of tourIds that a user has created or accepted
     private ArrayList<String> acceptedToursIds;
     //List of tourIds that a user has been invited to
     private ArrayList<String> pendingTourIds;
 
-    public Tours(String userId, ArrayList<String> acceptedToursIds, ArrayList<String> pendingTourIds){
-        this.userId = userId;
+    public Tours(ArrayList<String> acceptedToursIds, ArrayList<String> pendingTourIds){
         this.acceptedToursIds = acceptedToursIds;
         this.pendingTourIds = pendingTourIds;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public ArrayList<String> getAcceptedToursIds() {
@@ -46,8 +36,7 @@ public class Tours {
     }
 
     static class Tour {
-        //Tour Id, name, date, and owner are the only required for creation
-        public String tourId;
+        //Tour name, date, and owner are the only required for creation
         public String tourName;
         //One who created the tour and any with owner permissions
         public ArrayList<String> tourOwners;
@@ -60,19 +49,10 @@ public class Tours {
         public String latitude;
         public String longitude;
 
-        public Tour(String tourId, String tourName, ArrayList<String> tourOwners, String date){
-            this.tourId = tourId;
+        public Tour(String tourName, ArrayList<String> tourOwners, String date){
             this.tourName = tourName;
             this.tourOwners = tourOwners;
             this.date = date;
-        }
-
-        public String getTourId() {
-            return tourId;
-        }
-
-        public void setTourId(String tourId) {
-            this.tourId = tourId;
         }
 
         public String getTourName() {
