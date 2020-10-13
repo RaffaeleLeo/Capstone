@@ -68,15 +68,15 @@ public class LiveUpdates extends Activity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getText().equals(getString(R.string.nav_map))) {
+                if (tab.getPosition() == 1) {
                     Intent intent = new Intent(LiveUpdates.this, MapsActivity.class);
 
                     startActivity(intent);
-                } else if (tab.getText().equals(getString(R.string.nav_chat))) {
+                } else if (tab.getPosition() == 3) {
                     Intent intent = new Intent(LiveUpdates.this, ChatRoomActivity.class);
 
                     startActivity(intent);
-                } else if (tab.getText().equals(getString(R.string.nav_journal))) {
+                } else if (tab.getPosition() == 2) {
                     Intent intent = new Intent(LiveUpdates.this, JournalActivity.class);
 
                     startActivity(intent);

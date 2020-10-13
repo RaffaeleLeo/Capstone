@@ -13,64 +13,69 @@
         android:layout_height="wrap_content"
         android:text="Track Location:"
         android:textSize="36sp"
+        android:textColor="@color/quantum_black_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.092"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.435" />
-
+        app:layout_constraintVertical_bias="0.35" />
+    <!--
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:background="@drawable/skiing_icon"
+        android:background="@drawable/waypoint_map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.065"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.039" />
-
-    <TextView
-        android:id="@+id/journalName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Journal Name"
-        android:textSize="48sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.323"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.046" />
-
+    -->
+    <!--
     <TextView
         android:id="@+id/journalDescriptionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Description:"
         android:textSize="36sp"
+        android:textColor="@color/quantum_black_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.122"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.213" />
+    -->
 
+    <TextView
+        android:id="@+id/journalName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="92dp"
+        android:text="Journal Name"
+        android:textColor="@color/quantum_black_text"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.052" />
 
     <TextView
         android:id="@+id/journal_desc_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Goal Description"
+        android:text="Journal Description"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.139"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.29" />
+        app:layout_constraintVertical_bias="0.2" />
 
 
     <ToggleButton
@@ -83,47 +88,60 @@
         app:layout_constraintHorizontal_bias="0.596"
         app:layout_constraintStart_toEndOf="@+id/goalReminders"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.436" />
+        app:layout_constraintVertical_bias="0.35" />
+
+    <Button
+        android:id="@+id/download"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/download_icon"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.56" />
 
     <Button
         android:id="@+id/view_on_map"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:background="@drawable/button_dark_blue"
-        android:text="View Path On Map"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/waypoint_map"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintVertical_bias="0.56" />
 
     <Button
         android:id="@+id/saveButton"
-        android:layout_width="156dp"
-        android:layout_height="51dp"
-        android:background="@drawable/save_button"
-        android:text="Save"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/save_icon"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.75" />
+        app:layout_constraintVertical_bias="0.8" />
 
     <Button
         android:id="@+id/deleteButton"
-        android:layout_width="156dp"
-        android:layout_height="51dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/delete_button"
-        android:text="Delete"
+        android:background="@drawable/trash_can"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.55"
         app:layout_constraintStart_toEndOf="@+id/saveButton"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.75" />
+        app:layout_constraintVertical_bias="0.8" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,6 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_live_updates"
+            android:icon = "@drawable/home_icon"
             android:textColor="@color/tabs_default_color" />
 
         <com.google.android.material.tabs.TabItem
@@ -39,6 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_map"
+            android:icon = "@drawable/location_icon"
             android:textColor="@color/tabs_default_color" />
 
 
@@ -47,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_journal"
+            android:icon = "@drawable/folder_icon"
             android:textColor="@color/tabs_default_color" />
 
         <com.google.android.material.tabs.TabItem
@@ -54,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nav_chat"
+            android:icon = "@drawable/speech_bubble"
             android:textColor="@color/tabs_default_color" />
 
 

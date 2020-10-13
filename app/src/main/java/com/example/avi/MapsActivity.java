@@ -133,6 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         setupTabLayout();
+
         requestLocationUpdates();
 
         //compass stuff
@@ -246,17 +247,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getText().equals(getString(R.string.nav_journal))) {
+                if (tab.getPosition() == 2) {
                     Intent intent = new Intent(MapsActivity.this, JournalActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                } else if (tab.getText().equals(getString(R.string.nav_chat))) {
+                } else if (tab.getPosition() == 3) {
                     Intent intent = new Intent(MapsActivity.this, ChatRoomActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                }else if (tab.getPosition() == 0){
                     Intent intent = new Intent(MapsActivity.this, LiveUpdates.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
