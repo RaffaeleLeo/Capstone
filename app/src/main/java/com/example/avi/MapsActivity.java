@@ -97,7 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String currDate = split[1] + " " + split[2] + " " + split[5];
         String lastDate = dbHandler.getDangerDate();
 
-        if(!currDate.equals(lastDate) ) {
+        if(!currDate.equals(lastDate)) {
             ArrayList<String> res = new ArrayList<String>();
             PullDangerData danger = new PullDangerData();
             danger.execute();
