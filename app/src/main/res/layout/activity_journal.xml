@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/blue"
     tools:context=".Journals.JournalActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -22,7 +23,6 @@
             android:layout_marginBottom ="@dimen/butt_margin"
             android:layout_marginEnd ="@dimen/fab_margin"
             android:layout_marginRight ="@dimen/fab_margin"
-
             app:srcCompat="@android:drawable/ic_input_add" />
 
         <androidx.recyclerview.widget.RecyclerView

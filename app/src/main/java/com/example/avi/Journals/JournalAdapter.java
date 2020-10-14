@@ -82,7 +82,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         holder.locationView.setText(location_text);
         holder.frequencyView.setText(span_text);
 
-        holder.typeView.setImageResource(R.drawable.skiing_icon);
+        holder.typeView.setImageResource(R.drawable.journal_icon);
     }
 
     @Override

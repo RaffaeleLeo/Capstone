@@ -25,21 +25,22 @@
 
         <Button
             android:id="@+id/gotoSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:text="Settings"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="50dp"
+            android:text=""
+            android:background="@drawable/settings_wheel_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/gotoFriends"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/gotoChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="Chat Room"
-
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="50dp"
+            android:text=""
+            android:background="@drawable/speech_bubble"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/gotoFriends"
             app:layout_constraintTop_toTopOf="parent" />

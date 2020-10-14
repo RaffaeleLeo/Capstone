@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#86c5da</color>
+    <color name="blue">#88FDFE</color>
     <color name="colorAccent">#D81B60</color>
     <color name="tabs_default_color">#FFFF</color>
     <color name="Red">#E44848</color>

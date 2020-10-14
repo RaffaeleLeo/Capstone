@@ -162,17 +162,17 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getText().equals(getString(R.string.nav_map))) {
+                if (tab.getPosition() == 1) {
                     Intent intent = new Intent(JournalActivity.this, MapsActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                } else if (tab.getText().equals(getString(R.string.nav_chat))) {
+                } else if (tab.getPosition() == 3) {
                     Intent intent = new Intent(JournalActivity.this, SocialMediaHomeActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                }else if (tab.getPosition() == 0){
                     Intent intent = new Intent(JournalActivity.this, LiveUpdates.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
