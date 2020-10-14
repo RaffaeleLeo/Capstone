@@ -21,8 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -92,7 +90,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 tours = documentSnapshot.toObject(Tours.class);
                 Log.d("user", tours.toString());
-                 db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedToursIds()).get().addOnSuccessListener(
+                 db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
                         new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

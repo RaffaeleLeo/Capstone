@@ -1,33 +1,29 @@
 package com.example.avi;
 
-import android.location.Location;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class Tours {
 
     //List of tourIds that a user has created or accepted
-    private List<String> acceptedToursIds;
+    private List<String> acceptedTourIds;
     //List of tourIds that a user has been invited to
     private List<String> pendingTourIds;
 
     public Tours() {
     }
 
-    public Tours(List<String> acceptedToursIds, List<String> pendingTourIds){
-        this.acceptedToursIds = acceptedToursIds;
+    public Tours(List<String> acceptedTourIds, List<String> pendingTourIds){
+        this.acceptedTourIds = acceptedTourIds;
         this.pendingTourIds = pendingTourIds;
     }
 
-    public List<String> getAcceptedToursIds() {
-        return acceptedToursIds;
+    public List<String> getAcceptedTourIds() {
+        return acceptedTourIds;
     }
 
-    public void setAcceptedToursIds(ArrayList<String> acceptedToursIds) {
-        this.acceptedToursIds = acceptedToursIds;
+    public void setAcceptedTourIds(ArrayList<String> acceptedTourIds) {
+        this.acceptedTourIds = acceptedTourIds;
     }
 
     public List<String> getPendingTourIds() {
@@ -168,7 +164,7 @@ public class Tours {
     @Override
     public String toString() {
         return "Tours{" +
-                "acceptedToursIds=" + acceptedToursIds +
+                "acceptedToursIds=" + acceptedTourIds +
                 ", pendingTourIds=" + pendingTourIds +
                 '}';
     }
