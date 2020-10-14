@@ -84,24 +84,22 @@
                 android:src="@android:drawable/ic_input_add" />
 
             <include
-                android:id="@+id/TourBox"
                 layout="@layout/tour_box"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="25dp"
-                android:layout_marginRight="50dp" />
+                android:layout_marginRight="50dp"
+                android:background="@android:drawable/ic_input_add" />
 
             <include
-                android:id="@+id/TourBox"
-                layout="@layout/tour_box"
+                layout="@layout/pending_tour_box"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginRight="50dp" />
             <include
-                android:id="@+id/TourBox"
                 layout="@layout/tour_box"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
