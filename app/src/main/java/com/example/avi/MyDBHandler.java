@@ -184,4 +184,26 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         return data_points;
     }
+
+    public String getDangerDate(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("select date from danger limit 1",null);
+        String date = "";
+        if (c.moveToFirst()) {
+            date = c.getString(c.getColumnIndex("date"));
+        }
+
+        return date;
+    }
+
+    public int getDangerAtLocation(int loc){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("select danger from danger where location equals " + loc,null);
+        int danger = 0;
+        if (c.moveToFirst()) {
+            danger = c.getInt(c.getColumnIndex("danger"));
+        }
+
+        return danger;
+    }
 }

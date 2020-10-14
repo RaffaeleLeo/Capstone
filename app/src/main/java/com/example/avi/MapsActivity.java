@@ -46,8 +46,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import org.w3c.dom.Text;
+
+import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import com.example.avi.MyDBHandler;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
@@ -82,6 +88,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coordinates = new ArrayList<LatLng>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
+
+        Date currentTime = Calendar.getInstance().getTime();
+        String temp = currentTime.toString();
+        String split[] = temp.split(" ");
+        String currDate = split[1] + " " + split[2] + " " + split[5];
+        String lastDate = dbHandler.getDangerDate();
+
+        if(!currDate.equals(lastDate) ) {
+            ArrayList<String> res = new ArrayList<String>();
+            PullDangerData danger = new PullDangerData();
+            danger.execute();
+            try {
+                res = danger.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String url = res.get(24);
+            String overall = res.get(25);
+            String loc = res.get(26);
+
+            for (int i = 0; i < 24; i++) {
+                dbHandler.addToDanger(i, Integer.parseInt(res.get(i)), url, overall, loc, currDate);
+            }
+        }
+
+
 
         //get the users current location
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
