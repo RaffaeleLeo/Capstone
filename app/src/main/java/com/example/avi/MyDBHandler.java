@@ -38,6 +38,11 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String data_points= "Create Table data_points (DataID Integer PRIMARY KEY, journal_name VARCHAR(100), " +
                 "latitude Double(40, 20), longitude Double(40,20), FOREIGN KEY (journal_name) REFERENCES journals(name) ON DELETE CASCADE)";
         db.execSQL(data_points);
+
+        String danger = "Create Table danger (location Integer, danger Integer, image_url VARCHAR(100), " +
+                "overall_danger VARCHAR(20), region VARCHAR(20), date VARCHAR(20))";
+
+        db.execSQL(danger);
     }
 
     @Override
@@ -73,6 +78,20 @@ public class MyDBHandler extends SQLiteOpenHelper {
         vals.put("is_tracking", is_tracking);
         SQLiteDatabase db = this.getWritableDatabase();
         db.insertOrThrow("journals", null, vals);
+        db.close();
+    }
+
+    public void addToDanger(int loc, int danger, String image, String overall, String region, String date){
+        ContentValues vals = new ContentValues();
+        vals.put("location", loc);
+        vals.put("danger", danger);
+        vals.put("image_url", image);
+        vals.put("overall_danger", overall);
+        vals.put("region", region);
+        vals.put("date", date);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.insertOrThrow("danger", null, vals);
         db.close();
     }
 
