@@ -50,6 +50,7 @@ import org.w3c.dom.Text;
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -75,11 +76,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean hasGravityData = false;
     private boolean hasGeomagneticData = false;
     private float rotationInDegrees;
+    private String currentElevation;
 
+    private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
+        put(0, " (No rating)");
+        put(1, " (Pockets of low danger)");
+        put(2, " (Low danger)");
+        put(3, " (Pockets of moderate danger)");
+        put(4, " (Moderate danger)");
+        put(5, " (Pockets of considerable danger)");
+        put(6, " (Considerable danger)");
+        put(7, " (Pockets of high danger)");
+        put(8, " (High danger)");
+        put(9, " (Pockets of extreme danger)");
+        put(10, " (Extreme danger)");
+
+    }};
 
     //For the path being displayed.
     private Iterable<LatLng> coordinates;
     private String journal_name;
+
+    private MyDBHandler dbHandler;
 
 
     @Override
@@ -89,34 +107,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
+        dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
 
         Date currentTime = Calendar.getInstance().getTime();
         String temp = currentTime.toString();
         String split[] = temp.split(" ");
         String currDate = split[1] + " " + split[2] + " " + split[5];
         String lastDate = dbHandler.getDangerDate();
-
-        if(!currDate.equals(lastDate)) {
-            ArrayList<String> res = new ArrayList<String>();
-            PullDangerData danger = new PullDangerData();
-            danger.execute();
-            try {
-                res = danger.get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            String url = res.get(24);
-            String overall = res.get(25);
-            String loc = res.get(26);
-
-            for (int i = 0; i < 24; i++) {
-                dbHandler.addToDanger(i, Integer.parseInt(res.get(i)), url, overall, loc, currDate);
-            }
+        dbHandler.clearDangerTable();
+        for(int i = 0; i < 24; i++){
+            dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
         }
+
+//        if(!currDate.equals(lastDate)) {
+//            dbHandler.clearDangerTable();
+//            ArrayList<String> res = new ArrayList<String>();
+//            PullDangerData danger = new PullDangerData();
+//            danger.execute();
+//            try {
+//                res = danger.get();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            String url = res.get(24);
+//            String overall = res.get(25);
+//            String loc = res.get(26);
+//
+//            for (int i = 0; i < 24; i++) {
+//                dbHandler.addToDanger(i, Integer.parseInt(res.get(i)), url, overall, loc, currDate);
+//            }
+//        }
 
 
 
@@ -354,6 +377,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ra.setDuration(100);
                 ra.setFillAfter(true);
                 compassButton.startAnimation(ra);
+
+                if(currentElevation != null && !currentElevation.isEmpty()) {
+                    int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                    TextView danger = (TextView) findViewById(R.id.Danger_value);
+                    TextView dangerD = (TextView) findViewById(R.id.Danger_explanation);
+                    if (comp == -1) {
+                        danger.setText("N/A");
+                        dangerD.setText(" (Elevation below 5000)");
+                    } else {
+                        int d = dbHandler.getDangerAtLocation(comp);
+                        danger.setText(Integer.toString(d));
+                        dangerD.setText(dangerDesc.get(d));
+                    }
+                }
+
                 currentDegree = -degree;
                 incline =(float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
                 TextView inclineTxt = (TextView) findViewById(R.id.inclinometer_value);
@@ -430,12 +468,78 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ElevationData eleData = new ElevationData();
                         eleData.execute(lat, lon);
                         TextView elevationText = (TextView) findViewById(R.id.altimeter_value);
-                        elevationText.setText(eleData.get());
+                        currentElevation = eleData.get();
+                        elevationText.setText(currentElevation);
+
+                        if(currentElevation != null && !currentElevation.isEmpty()) {
+                            int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                            TextView danger = (TextView) findViewById(R.id.Danger_value);
+                            TextView dangerD = (TextView) findViewById(R.id.Danger_explanation);
+                            if (comp == -1) {
+                                danger.setText("N/A");
+                                dangerD.setText(" (Elevation below 5000)");
+                            } else {
+                                int d = dbHandler.getDangerAtLocation(comp);
+                                danger.setText(Integer.toString(d));
+                                dangerD.setText(dangerDesc.get(d));
+                            }
+                        }
+
                     } catch (Exception e) {
 
                     }
                 }
             }, null);
         }
+    }
+
+    private int getCompassLocation(float elevation, float degrees){
+        int res = 0;
+        if(elevation < 5000){
+            return -1;
+        }
+        else if(elevation <= 7000){
+            res = 16;
+        }
+        else if(elevation <= 8500){
+            res = 8;
+        }
+        else{
+            res = 0;
+        }
+
+        if(degrees >= 22.5 && degrees < 67.5){
+            res = res + 1;
+        }
+
+        else if(degrees >= 67.5 && degrees < 112.5){
+            res = res + 2;
+        }
+
+        else if(degrees >= 112.5 && degrees < 157.5){
+            res = res + 3;
+        }
+
+        else if(degrees >= 157.5 && degrees < 202.5){
+            res = res + 4;
+        }
+
+        else if(degrees >= 202.5 && degrees < 247.5){
+            res = res + 5;
+        }
+
+        else if(degrees >= 247.5 && degrees < 292.5){
+            res = res + 6;
+        }
+
+        else if(degrees >= 292.5 && degrees < 337.5){
+            res = res + 7;
+        }
+        else{
+            res = res + 0;
+        }
+
+
+        return res;
     }
 }

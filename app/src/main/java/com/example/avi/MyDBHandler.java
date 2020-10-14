@@ -186,24 +186,42 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     public String getDangerDate(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("select date from danger limit 1",null);
-        String date = "";
-        if (c.moveToFirst()) {
-            date = c.getString(c.getColumnIndex("date"));
+        Cursor c = null;
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            c = db.rawQuery("select date from danger limit 1", null);
+            String date = "";
+            if (c.moveToFirst()) {
+                date = c.getString(c.getColumnIndex("date"));
+            }
+            c.close();
+            return date;
         }
-
-        return date;
+        finally {
+            c.close();
+        }
     }
 
     public int getDangerAtLocation(int loc){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("select danger from danger where location equals " + loc,null);
-        int danger = 0;
-        if (c.moveToFirst()) {
-            danger = c.getInt(c.getColumnIndex("danger"));
+        Cursor c = null;
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            c = db.rawQuery("select danger from danger where location = " + loc, null);
+            int danger = 0;
+            if (c.moveToFirst()) {
+                danger = c.getInt(c.getColumnIndex("danger"));
+            }
+            c.close();
+            return danger;
         }
+        finally {
+            c.close();
+        }
+    }
 
-        return danger;
+    public void clearDangerTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "delete from danger";
+        db.execSQL(query);
     }
 }
