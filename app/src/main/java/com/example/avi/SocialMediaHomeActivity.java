@@ -89,25 +89,27 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 tours = documentSnapshot.toObject(Tours.class);
-                Log.d("user", tours.toString());
-                 db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
-                        new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                acceptedUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                Log.d("user", acceptedUserTours.get(0).toString());
+                if (tours != null) {
+                    Log.d("user", tours.toString());
+                    db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
+                            new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    acceptedUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                    Log.d("user", acceptedUserTours.get(0).toString());
+                                }
                             }
-                        }
-                );
-                db.collection("tours").whereIn(FieldPath.documentId(), tours.getPendingTourIds()).get().addOnSuccessListener(
-                        new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                Log.d("user", pendingUserTours.get(0).toString());
+                    );
+                    db.collection("tours").whereIn(FieldPath.documentId(), tours.getPendingTourIds()).get().addOnSuccessListener(
+                            new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                    Log.d("user", pendingUserTours.get(0).toString());
+                                }
                             }
-                        }
-                );
+                    );
+                }
             }
         });
     }
