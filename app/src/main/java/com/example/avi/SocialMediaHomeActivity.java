@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -44,6 +45,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private ArrayList<Tours.Tour> acceptedUserTours;
     private ArrayList<Tours.Tour> pendingUserTours;
     private LinearLayout toursLinearLayout;
+    private ImageButton addTourButtion;
+    private ConstraintLayout rootLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,10 +58,21 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         acceptedUserTours = new ArrayList<>();
         pendingUserTours = new ArrayList<>();
 
+        rootLayout = findViewById(R.id.social_media_constraint);
         settings = (Button) findViewById(R.id.gotoSettings);
         chat = (Button) findViewById(R.id.gotoChat);
         friends = (Button) findViewById(R.id.gotoFriends);
         toursLinearLayout = findViewById(R.id.tour_linear_layout);
+        addTourButtion = findViewById(R.id.add_tour);
+        addTourButtion.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
+
+                rootLayout.addView(newTour);
+            }
+        });
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +157,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
 
                     Tours.Tour tour = tours.get(i);
+                    pendingTourBox.setTag(pendingUserTours.get(0));
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
@@ -159,6 +174,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
 
                     Tours.Tour tour = tours.get(i);
+                    acceptedTourBox.setTag(acceptedUserTours.get(0));
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
