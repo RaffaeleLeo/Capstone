@@ -4,22 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,8 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -69,8 +65,56 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
-
                 rootLayout.addView(newTour);
+                ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+
+
+                        View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+                        TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
+                        TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
+                        TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
+                        TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+
+                        tourName.setText(newTourName.getText().toString());
+                        if (tourName.getText().toString().isEmpty()){
+                            tourName.setText("No Name");
+                        }
+                        tourDate.setText(newDate.getText().toString());
+                        if (tourDate.getText().toString().isEmpty()){
+                            tourDate.setText("No Date");
+                        }
+                        tourTime.setText(newTourTime.getText().toString());
+                        if (tourTime.getText().toString().isEmpty()){
+                            tourTime.setText("No Time");
+                        }
+                        tourNotes.setText(newTourNotes.getText().toString());
+                        if (tourNotes.getText().toString().isEmpty()){
+                            tourNotes.setText("No Notes");
+                        }
+
+                        toursLinearLayout.addView(acceptedTourBox);
+                        rootLayout.removeView(newTour);
+
+                    }
+                });
+                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
+                discardButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        rootLayout.removeView(newTour);
+                    }
+                });
+
+
             }
         });
 
@@ -154,7 +198,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
                     TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
-                    TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
+                    TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text_container);
 
                     Tours.Tour tour = tours.get(i);
                     pendingTourBox.setTag(pendingUserTours.get(0));
