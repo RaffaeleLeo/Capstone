@@ -4,9 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
@@ -21,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -35,6 +43,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private Tours.Tour tour;
     private ArrayList<Tours.Tour> acceptedUserTours;
     private ArrayList<Tours.Tour> pendingUserTours;
+    private LinearLayout toursLinearLayout;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -49,6 +58,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         settings = (Button) findViewById(R.id.gotoSettings);
         chat = (Button) findViewById(R.id.gotoChat);
         friends = (Button) findViewById(R.id.gotoFriends);
+        toursLinearLayout = findViewById(R.id.tour_linear_layout);
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,28 +100,74 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 tours = documentSnapshot.toObject(Tours.class);
                 if (tours != null) {
-                    Log.d("user", tours.toString());
-                    db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
-                            new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                    acceptedUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                    Log.d("user", acceptedUserTours.get(0).toString());
+                    if (tours.getAcceptedTourIds().size() > 0) {
+                        Log.d("user", tours.toString());
+                        db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
+                                new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        acceptedUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                        Log.d("user", acceptedUserTours.get(0).toString());
+                                        setupToursView("Accepted", acceptedUserTours);
+                                    }
                                 }
-                            }
-                    );
-                    db.collection("tours").whereIn(FieldPath.documentId(), tours.getPendingTourIds()).get().addOnSuccessListener(
-                            new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                    pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                    Log.d("user", pendingUserTours.get(0).toString());
+                        );
+                    }
+                    if (tours.getPendingTourIds().size() > 0) {
+                        db.collection("tours").whereIn(FieldPath.documentId(), tours.getPendingTourIds()).get().addOnSuccessListener(
+                                new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                        Log.d("user", pendingUserTours.get(0).toString());
+                                        setupToursView("Pending", pendingUserTours);
+                                    }
                                 }
-                            }
-                    );
+                        );
+                    }
+                }else {
+                    db.collection("userTours").document(mAuth.getUid()).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
                 }
             }
         });
+    }
+
+    private void setupToursView(String type, ArrayList<Tours.Tour> tours){
+        switch(type) {
+            case "Pending":
+                for (int i = 0; i < tours.size(); i++){
+                    View pendingTourBox = getLayoutInflater().inflate(R.layout.pending_tour_box, toursLinearLayout, false);
+                    TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
+                    TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
+                    TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
+                    TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
+
+                    Tours.Tour tour = tours.get(i);
+                    tourName.setText(tour.tourName);
+                    tourDate.setText(tour.date);
+                    tourTime.setText(tour.time);
+                    tourNotes.setText(tour.notes);
+                    toursLinearLayout.addView(pendingTourBox);
+                }
+                break;
+            case "Accepted":
+                for (int i = 0; i < tours.size(); i++){
+                    View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+                    TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
+                    TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
+                    TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
+                    TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+
+                    Tours.Tour tour = tours.get(i);
+                    tourName.setText(tour.tourName);
+                    tourDate.setText(tour.date);
+                    tourTime.setText(tour.time);
+                    tourNotes.setText(tour.notes);
+                    toursLinearLayout.addView(acceptedTourBox);
+                }
+                break;
+        }
+
     }
 
     private void setupTabLayout() {
