@@ -64,7 +64,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
+                View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
                 rootLayout.addView(newTour);
                 ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
                 saveButton.setOnClickListener(new View.OnClickListener() {
@@ -198,7 +198,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
                     TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
-                    TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text_container);
+                    TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
 
                     Tours.Tour tour = tours.get(i);
                     pendingTourBox.setTag(pendingUserTours.get(0));

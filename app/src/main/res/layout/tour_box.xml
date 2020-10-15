@@ -45,9 +45,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Date: 1/10/10"
+        android:textAlignment="center"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tour_name" />
 
     <TextView
@@ -56,9 +57,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="Time: 10:00"
+        android:textAlignment="center"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/date_text"
         app:layout_constraintTop_toBottomOf="@+id/date_text" />
 
     <TextView
@@ -77,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:text="Invites"
+        android:text="Invited"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/notes_text" />
 
@@ -85,12 +86,31 @@
         android:id="@+id/notes_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:text="this is a notes exmaple so lets see how it works maybe it doe snot work properly"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/notes_tag"
         app:layout_constraintTop_toBottomOf="@+id/time_text" />
+    <Spinner
+        android:id="@+id/spinner2"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:alpha="60"
+        app:layout_constraintStart_toEndOf="@+id/invites_pending"
+        app:layout_constraintTop_toBottomOf="@+id/notes_text" />
+
+    <TextView
+        android:id="@+id/invites_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="this is a notes exmaple so lets see how it works maybe it doe snot work properly"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/spinner2"
+        app:layout_constraintTop_toBottomOf="@+id/spinner2"
+        android:visibility="invisible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
