@@ -78,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float rotationInDegrees;
     private String currentElevation;
 
+    //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
         put(0, " (No rating)");
         put(1, " (Pockets of low danger)");
@@ -109,6 +110,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
 
+        //DANGER CODE STARTS HERE
+        //Code to add current dangers to database
+        //Usually would be the code commented out below, but
+        //there are currently no forecasts so fill database
+        //with dummy values for testing.
         Date currentTime = Calendar.getInstance().getTime();
         String temp = currentTime.toString();
         String split[] = temp.split(" ");
@@ -378,6 +384,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ra.setFillAfter(true);
                 compassButton.startAnimation(ra);
 
+                //DANGER CODE STARTS HERE
+                //If we have an elevation, get it and the current degrees, and compute
+                //the danger based at this location.
                 if(currentElevation != null && !currentElevation.isEmpty()) {
                     int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
                     TextView danger = (TextView) findViewById(R.id.Danger_value);
@@ -471,6 +480,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         currentElevation = eleData.get();
                         elevationText.setText(currentElevation);
 
+
+                        //DANGER CODE STARTS HERE
+                        //If we have an elevation, get it and the current degrees, and compute
+                        //the danger based at this location.
                         if(currentElevation != null && !currentElevation.isEmpty()) {
                             int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
                             TextView danger = (TextView) findViewById(R.id.Danger_value);
@@ -493,6 +506,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Helper method to compute compass location in array
+    //based on elevation and slope aspect.
     private int getCompassLocation(float elevation, float degrees){
         int res = 0;
         if(elevation < 5000){
