@@ -309,6 +309,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             View pendingTourBox = (View) view.getTag();
+                            String tourId = (String) pendingTourBox.getTag();
                             int boxIndex = toursLinearLayout.indexOfChild(pendingTourBox);
                             TextView pendingTourName = pendingTourBox.findViewById(R.id.tour_name);
                             TextView pendingTourDate = pendingTourBox.findViewById(R.id.date_text);
@@ -329,7 +330,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
 
                             setupTourInvitesButton(acceptedInvitesButton, acceptedTourInvites);
-                            acceptedTourBox.setTag(acceptedUserTours.get(0));
+                            acceptedTourBox.setTag(view.getTag());
                             acceptedTourName.setText(pendingTourName.getText().toString());
                             acceptedTourDate.setText(pendingTourDate.getText().toString());
                             acceptedTourTime.setText(pendingTourTime.getText().toString());
@@ -343,8 +344,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
                             toursLinearLayout.removeViewAt(boxIndex);
                             toursLinearLayout.addView(acceptedTourBox, boxIndex);
-                            db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(pendingTourBox.getTag()));
-                            db.collection("userTours").document(mAuth.getUid()).update("pendingTourIds", FieldValue.arrayRemove(pendingTourBox.getTag()));
+                            db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(tourId));
+                            db.collection("userTours").document(mAuth.getUid()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                            db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayUnion(user.getEmail()));
+                            db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
                         }
                     });
 
