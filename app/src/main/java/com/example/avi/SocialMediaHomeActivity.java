@@ -299,6 +299,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     final TextView tourInvites = pendingTourBox.findViewById(R.id.invites_text);
                     ImageButton invitesButton = pendingTourBox.findViewById(R.id.invites_button);
                     ImageButton acceptButton = pendingTourBox.findViewById(R.id.acceptButton);
+                    ImageButton declineButton = pendingTourBox.findViewById(R.id.declineButton);
 
 
                     tourInvites.setVisibility(View.INVISIBLE);
@@ -310,6 +311,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     Tours.Tour tour = tours.get(i);
                     pendingTourBox.setTag(pendingTourIds.get(i));
                     acceptButton.setTag(pendingTourBox);
+                    declineButton.setTag(pendingTourBox);
                     acceptButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -356,6 +358,17 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         }
                     });
 
+                    declineButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            View pendingTourBox = (View) view.getTag();
+                            String tourId = (String) pendingTourBox.getTag();
+                            int boxIndex = toursLinearLayout.indexOfChild(pendingTourBox);
+                            toursLinearLayout.removeViewAt(boxIndex);
+                            db.collection("userTours").document(mAuth.getUid()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                            db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
+                        }
+                    });
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
