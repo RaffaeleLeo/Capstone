@@ -191,9 +191,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         if (notesText.isEmpty()) notesText = "No Notes";
                         if (invitedText.isEmpty()) invitedText = "No Invites";
 
-                        ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
-                        params.height = 0;
-                        tourInvites.setLayoutParams(params);
+                        tourInvites.setVisibility(View.GONE);
 
                         tourName.setText(tourText);
                         tourDate.setText(dateText);
@@ -271,16 +269,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         invitesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tourInvites.getVisibility() == View.INVISIBLE){
+                if (tourInvites.getVisibility() == View.GONE){
                     tourInvites.setVisibility(View.VISIBLE);
-                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    tourInvites.setLayoutParams(params);
                 }else {
-                    tourInvites.setVisibility(View.INVISIBLE);
-                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
-                    params.height = 0;
-                    tourInvites.setLayoutParams(params);
+                    tourInvites.setVisibility(View.GONE);
                 }
             }
         });
@@ -302,10 +294,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     ImageButton declineButton = pendingTourBox.findViewById(R.id.declineButton);
 
 
-                    tourInvites.setVisibility(View.INVISIBLE);
-                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
-                    params.height = 0;
-                    tourInvites.setLayoutParams(params);
+                    tourInvites.setVisibility(View.GONE);
 
                     setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
@@ -344,10 +333,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             accepetedTourNotes.setText(pendingTourNotes.getText().toString());
                             acceptedTourInvites.setText(pendingTourInvites.getText().toString());
 
-                            acceptedTourInvites.setVisibility(View.INVISIBLE);
-                            ViewGroup.LayoutParams params = acceptedTourInvites.getLayoutParams();
-                            params.height = 0;
-                            acceptedTourInvites.setLayoutParams(params);
+                            acceptedTourInvites.setVisibility(View.GONE);
 
                             toursLinearLayout.removeViewAt(boxIndex);
                             toursLinearLayout.addView(acceptedTourBox, boxIndex);
@@ -380,7 +366,55 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 ArrayList<String> acceptedTourIds = new ArrayList<>();
                 acceptedTourIds.addAll(this.tours.getAcceptedTourIds());
                 for (int i = 0; i < tours.size(); i++){
+                    final ArrayList<String> owners = new ArrayList<>(tours.get(i).tourOwners);
                     View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+                    acceptedTourBox.setTag(acceptedTourIds.get(i));
+                    final ImageButton editTourButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
+                    final ImageButton deleteButton = acceptedTourBox.findViewById(R.id.delete_button);
+                    deleteButton.setTag(acceptedTourBox);
+                    final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
+                    if (owners.contains(user.getId())){
+                        deleteButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        });
+                        editTourButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (deleteButton.getVisibility() == View.GONE){
+                                    deleteButton.setVisibility(View.VISIBLE);
+                                    editButton.setVisibility(View.VISIBLE);
+                                }else {
+                                    deleteButton.setVisibility(View.GONE);
+                                    editButton.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                    } else {
+                        deleteButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                View tourBox = (View) view.getTag();
+                                String tourId = (String) tourBox.getTag();
+                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
+                                toursLinearLayout.removeViewAt(boxIndex);
+                                db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayRemove(user.getEmail()));
+                            }
+                        });
+                        editTourButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (deleteButton.getVisibility() == View.GONE){
+                                    deleteButton.setVisibility(View.VISIBLE);
+                                }else {
+                                    deleteButton.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                    }
+
                     TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
                     TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
                     TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
@@ -389,14 +423,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
                     ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
 
-                    tourInvites.setVisibility(View.INVISIBLE);
-                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
-                    params.height = 0;
-                    tourInvites.setLayoutParams(params);
+                    tourInvites.setVisibility(View.GONE);
 
                     setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
-                    acceptedTourBox.setTag(acceptedTourIds.get(i));
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
