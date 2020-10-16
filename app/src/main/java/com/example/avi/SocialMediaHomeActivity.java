@@ -177,9 +177,55 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
                         TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
                         final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
-                        ImageButton settingsButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
+                        ImageButton editTourButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
                         ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
+                        final ImageButton deleteButton = acceptedTourBox.findViewById(R.id.delete_button);
+                        final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
+                        deleteButton.setTag(acceptedTourBox);
+                        editTourButton.setTag(acceptedTourBox);
+                        editTourButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (deleteButton.getVisibility() == View.GONE){
+                                    deleteButton.setVisibility(View.VISIBLE);
+                                    editButton.setVisibility(View.VISIBLE);
+                                }else {
+                                    deleteButton.setVisibility(View.GONE);
+                                    editButton.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                        deleteButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                View tourBox = (View) view.getTag();
+                                final String tourId = (String) tourBox.getTag();
+                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
+                                toursLinearLayout.removeViewAt(boxIndex);
+                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                            String docId = documentSnapshot.getId();
 
+                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                                        }
+                                    }
+                                });
+                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("dbDelete", "Deletion successful "+ tourId);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
+                                    }
+                                });
+                            }
+                        });
 
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
@@ -246,12 +292,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         });
                         rootLayout.removeView(newTour);
                         setupTourInvitesButton(invitesButton, tourInvites);
-                        settingsButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
                     }
                 });
                 ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
@@ -361,6 +401,20 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Accepted:\n");
+                    for (String person : tour.acceptedInvitees){
+                        sb.append(person + "\n");
+                    }
+                    sb.append("\nPending:\n");
+                    for (String person: tour.pendingInvitees){
+                        sb.append(person + "\n");
+                    }
+                    sb.append("\nDeclined:\n");
+                    for (String person : tour.declinedInvitees){
+                        sb.append(person + "\n");
+                    }
+                    tourInvites.setText(sb.toString());
                     toursLinearLayout.addView(pendingTourBox);
                 }
                 break;
@@ -460,6 +514,20 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Accepted:\n");
+                    for (String person : tour.acceptedInvitees){
+                        sb.append(person + "\n");
+                    }
+                    sb.append("\nPending:\n");
+                    for (String person: tour.pendingInvitees){
+                        sb.append(person + "\n");
+                    }
+                    sb.append("\nDeclined:\n");
+                    for (String person : tour.declinedInvitees){
+                        sb.append(person + "\n");
+                    }
+                    tourInvites.setText(sb.toString());
                     toursLinearLayout.addView(acceptedTourBox);
                 }
                 break;
