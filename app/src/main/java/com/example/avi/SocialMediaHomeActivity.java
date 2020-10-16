@@ -169,7 +169,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
 
 
-                        View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+                        final View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
                         TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
                         TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
                         TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
@@ -206,9 +206,39 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ArrayList<String> declinedList = new ArrayList<>();
                         tourOwners.add(mAuth.getUid());
                         acceptedList.add(user.getEmail());
-                        Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, declinedList, "placeholder", "placeholder");
-                        addTourToDB(tour);
-                        toursLinearLayout.addView(acceptedTourBox);
+                        final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, declinedList, "placeholder", "placeholder");
+                        db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                final String docId = documentReference.getId();
+                                Log.d("docId", docId);
+                                db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
+                                db.collection("users").whereIn("email", tour.pendingInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                            final String userId = document.getId();
+                                            Log.d("addTour", userId);
+                                            db.collection("userTours").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    Tours tours = documentSnapshot.toObject(Tours.class);
+                                                    if (tours != null){
+                                                        tours.getPendingTourIds().add(docId);
+                                                        db.collection("userTours").document(userId).set(tours);
+                                                    }else {
+                                                        db.collection("userTours").document(userId).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                                acceptedTourBox.setTag(docId);
+                                toursLinearLayout.addView(acceptedTourBox);
+                            }
+
+                        });
                         rootLayout.removeView(newTour);
                         setupTourInvitesButton(invitesButton, tourInvites);
                         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -227,44 +257,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         rootLayout.removeView(newTour);
                     }
                 });
-
-
             }
         });
     }
 
-    private void addTourToDB(final Tours.Tour tour){
-       db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-           @Override
-           public void onSuccess(DocumentReference documentReference) {
-               final String docId = documentReference.getId();
-               Log.d("docId", docId);
-               db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
-               db.collection("users").whereIn("email", tour.pendingInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                   @Override
-                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                       for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                           final String userId = document.getId();
-                           Log.d("addTour", userId);
-                           db.collection("userTours").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                               @Override
-                               public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                   Tours tours = documentSnapshot.toObject(Tours.class);
-                                   if (tours != null){
-                                   tours.getPendingTourIds().add(docId);
-                                   db.collection("userTours").document(userId).set(tours);
-                                   }else {
-                                       db.collection("userTours").document(userId).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
-                                   }
-                               }
-                           });
-                       }
-
-                   }
-               });
-           }
-       });
-    }
 
     private void setupTourInvitesButton(ImageButton invitesButton, final TextView tourInvites){
         invitesButton.setOnClickListener(new View.OnClickListener() {
@@ -287,14 +283,18 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private void setupToursView(String type, ArrayList<Tours.Tour> tours){
         switch(type) {
             case "Pending":
+                ArrayList<String> pendingTourIds = new ArrayList<>();
+                pendingTourIds.addAll(this.tours.getPendingTourIds());
                 for (int i = 0; i < tours.size(); i++){
-                    View pendingTourBox = getLayoutInflater().inflate(R.layout.pending_tour_box, toursLinearLayout, false);
+                    final View pendingTourBox = getLayoutInflater().inflate(R.layout.pending_tour_box, toursLinearLayout, false);
                     TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
                     TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
                     final TextView tourInvites = pendingTourBox.findViewById(R.id.invites_text);
                     ImageButton invitesButton = pendingTourBox.findViewById(R.id.invites_button);
+                    ImageButton acceptButton = pendingTourBox.findViewById(R.id.acceptButton);
+
 
                     tourInvites.setVisibility(View.INVISIBLE);
                     ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
@@ -303,7 +303,51 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
                     setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
-                    pendingTourBox.setTag(pendingUserTours.get(0));
+                    pendingTourBox.setTag(pendingTourIds.get(i));
+                    acceptButton.setTag(pendingTourBox);
+                    acceptButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            View pendingTourBox = (View) view.getTag();
+                            int boxIndex = toursLinearLayout.indexOfChild(pendingTourBox);
+                            TextView pendingTourName = pendingTourBox.findViewById(R.id.tour_name);
+                            TextView pendingTourDate = pendingTourBox.findViewById(R.id.date_text);
+                            TextView pendingTourTime = pendingTourBox.findViewById(R.id.time_text);
+                            TextView pendingTourNotes = pendingTourBox.findViewById(R.id.notes_text);
+                            final TextView pendingTourInvites = pendingTourBox.findViewById(R.id.invites_text);
+
+                            View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+
+                            TextView acceptedTourName = acceptedTourBox.findViewById(R.id.tour_name);
+                            TextView acceptedTourDate = acceptedTourBox.findViewById(R.id.date_text);
+                            TextView acceptedTourTime = acceptedTourBox.findViewById(R.id.time_text);
+                            TextView accepetedTourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+
+                            final TextView acceptedTourInvites = acceptedTourBox.findViewById(R.id.invites_text);
+                            ImageButton acceptedInvitesButton = acceptedTourBox.findViewById(R.id.invites_button);
+
+
+
+                            setupTourInvitesButton(acceptedInvitesButton, acceptedTourInvites);
+                            acceptedTourBox.setTag(acceptedUserTours.get(0));
+                            acceptedTourName.setText(pendingTourName.getText().toString());
+                            acceptedTourDate.setText(pendingTourDate.getText().toString());
+                            acceptedTourTime.setText(pendingTourTime.getText().toString());
+                            accepetedTourNotes.setText(pendingTourNotes.getText().toString());
+                            acceptedTourInvites.setText(pendingTourInvites.getText().toString());
+
+                            acceptedTourInvites.setVisibility(View.INVISIBLE);
+                            ViewGroup.LayoutParams params = acceptedTourInvites.getLayoutParams();
+                            params.height = 0;
+                            acceptedTourInvites.setLayoutParams(params);
+
+                            toursLinearLayout.removeViewAt(boxIndex);
+                            toursLinearLayout.addView(acceptedTourBox, boxIndex);
+                            db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(pendingTourBox.getTag()));
+                            db.collection("userTours").document(mAuth.getUid()).update("pendingTourIds", FieldValue.arrayRemove(pendingTourBox.getTag()));
+                        }
+                    });
+
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
@@ -312,6 +356,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 }
                 break;
             case "Accepted":
+                ArrayList<String> acceptedTourIds = new ArrayList<>();
+                acceptedTourIds.addAll(this.tours.getAcceptedTourIds());
                 for (int i = 0; i < tours.size(); i++){
                     View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
                     TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
@@ -329,7 +375,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
                     setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
-                    acceptedTourBox.setTag(acceptedUserTours.get(0));
+                    acceptedTourBox.setTag(acceptedTourIds.get(i));
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
