@@ -13,12 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
@@ -372,11 +374,38 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     final ImageButton editTourButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
                     final ImageButton deleteButton = acceptedTourBox.findViewById(R.id.delete_button);
                     deleteButton.setTag(acceptedTourBox);
+                    editTourButton.setTag(acceptedTourBox);
                     final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
                     if (owners.contains(user.getId())){
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                View tourBox = (View) view.getTag();
+                                final String tourId = (String) tourBox.getTag();
+                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
+                                toursLinearLayout.removeViewAt(boxIndex);
+                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                            String docId = documentSnapshot.getId();
+
+                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                                        }
+                                    }
+                                });
+                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("dbDelete", "Deletion successful "+ tourId);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
+                                    }
+                                });
                             }
                         });
                         editTourButton.setOnClickListener(new View.OnClickListener() {
