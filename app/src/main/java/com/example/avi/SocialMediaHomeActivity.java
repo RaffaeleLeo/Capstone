@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,63 +63,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         friends = (Button) findViewById(R.id.gotoFriends);
         toursLinearLayout = findViewById(R.id.tour_linear_layout);
         addTourButtion = findViewById(R.id.add_tour);
-        addTourButtion.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
-                rootLayout.addView(newTour);
-                ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
-                saveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
-                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-
-
-                        View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
-                        TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
-                        TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
-                        TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
-                        TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
-
-                        tourName.setText(newTourName.getText().toString());
-                        if (tourName.getText().toString().isEmpty()){
-                            tourName.setText("No Name");
-                        }
-                        tourDate.setText(newDate.getText().toString());
-                        if (tourDate.getText().toString().isEmpty()){
-                            tourDate.setText("No Date");
-                        }
-                        tourTime.setText(newTourTime.getText().toString());
-                        if (tourTime.getText().toString().isEmpty()){
-                            tourTime.setText("No Time");
-                        }
-                        tourNotes.setText(newTourNotes.getText().toString());
-                        if (tourNotes.getText().toString().isEmpty()){
-                            tourNotes.setText("No Notes");
-                        }
-
-                        toursLinearLayout.addView(acceptedTourBox);
-                        rootLayout.removeView(newTour);
-
-                    }
-                });
-                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
-                discardButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
-                        rootLayout.removeView(newTour);
-                    }
-                });
-
-
-            }
-        });
+        setupAddTour();
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +137,101 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
+    private void setupAddTour(){
+        addTourButtion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
+                rootLayout.addView(newTour);
+                ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String tourText;
+                        String dateText;
+                        String timeText;
+                        String notesText;
+                        String invitedText;
+
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+
+                        View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
+                        TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
+                        final TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
+                        TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
+                        TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+                        final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
+                        ImageButton settingsButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
+                        ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
+
+
+                        tourText = newTourName.getText().toString();
+                        dateText = newDate.getText().toString();
+                        timeText = newTourTime.getText().toString();
+                        notesText = newTourNotes.getText().toString();
+                        invitedText = newInvitedText.getText().toString();
+
+                        if (tourText.isEmpty()) tourText = ("No Name");
+                        if (dateText.isEmpty()) tourDate.setText("No Date");
+                        if (timeText.isEmpty()) timeText = "No Time";
+                        if (notesText.isEmpty()) notesText = "No Notes";
+                        if (invitedText.isEmpty()) invitedText = "No Invites";
+
+                        tourName.setText(tourText);
+                        tourDate.setText(dateText);
+                        tourTime.setText(timeText);
+                        tourNotes.setText(notesText);
+                        tourInvites.setText(invitedText);
+                        toursLinearLayout.addView(acceptedTourBox);
+                        rootLayout.removeView(newTour);
+
+                        setupTourInvitesButton(invitesButton, tourInvites);
+                        settingsButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+                    }
+                });
+                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
+                discardButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        rootLayout.removeView(newTour);
+                    }
+                });
+
+
+            }
+        });
+    }
+
+    private void setupTourInvitesButton(ImageButton invitesButton, final TextView tourInvites){
+        invitesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tourInvites.getVisibility() == View.INVISIBLE){
+                    tourInvites.setVisibility(View.VISIBLE);
+                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    tourInvites.setLayoutParams(params);
+                }else {
+                    tourInvites.setVisibility(View.INVISIBLE);
+                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
+                    params.height = 0;
+                    tourInvites.setLayoutParams(params);
+                }
+            }
+        });
+    }
     private void setupToursView(String type, ArrayList<Tours.Tour> tours){
         switch(type) {
             case "Pending":
@@ -199,7 +241,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
                     TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
+                    final TextView tourInvites = pendingTourBox.findViewById(R.id.invites_text);
+                    ImageButton invitesButton = pendingTourBox.findViewById(R.id.invites_button);
 
+                    tourInvites.setVisibility(View.INVISIBLE);
+                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
+                    params.height = 0;
+                    tourInvites.setLayoutParams(params);
+
+                    setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
                     pendingTourBox.setTag(pendingUserTours.get(0));
                     tourName.setText(tour.tourName);
@@ -217,6 +267,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
 
+                    final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
+                    ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
+
+                    tourInvites.setVisibility(View.INVISIBLE);
+                    ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
+                    params.height = 0;
+                    tourInvites.setLayoutParams(params);
+
+                    setupTourInvitesButton(invitesButton, tourInvites);
                     Tours.Tour tour = tours.get(i);
                     acceptedTourBox.setTag(acceptedUserTours.get(0));
                     tourName.setText(tour.tourName);
