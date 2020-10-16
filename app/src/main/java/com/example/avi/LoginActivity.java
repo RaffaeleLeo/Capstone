@@ -74,8 +74,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = loginEmail.getText().toString().toLowerCase();
-                String password = loginPassword.getText().toString();
+                String email = loginEmail.getText().toString().toLowerCase().trim();
+                String password = loginPassword.getText().toString().trim();
 
 
                 if (email.equals("") || password.equals("")) {
@@ -94,9 +94,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String first = createFirst.getText().toString();
                 String last = createLast.getText().toString();
-                String email = createEmail.getText().toString().toLowerCase();
+                String email = createEmail.getText().toString().toLowerCase().trim();
                 USER_EMAIL = email;
-                String password = createPassword.getText().toString();
+                String password = createPassword.getText().toString().trim();
 
                 if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
 
@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
     }*/
 
     private void registerUser(String email, String password, final String displayName, final MyDBHandler dbHandler){
-        USER_EMAIL = email;
+        USER_EMAIL = email.trim();
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
