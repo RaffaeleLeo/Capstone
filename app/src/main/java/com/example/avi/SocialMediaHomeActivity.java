@@ -161,7 +161,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String notesText;
                         String invitedText;
 
-                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
                         TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
                         TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
                         TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
@@ -219,6 +219,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                         for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                                             final String userId = document.getId();
                                             Log.d("addTour", userId);
+                                            Log.d("userId", document.getId());
                                             db.collection("userTours").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -226,8 +227,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                                     if (tours != null){
                                                         tours.getPendingTourIds().add(docId);
                                                         db.collection("userTours").document(userId).set(tours);
+                                                        Log.d("addTour", userId);
                                                     }else {
-                                                        db.collection("userTours").document(userId).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
+                                                        ArrayList<String> pending = new ArrayList<>();
+                                                        pending.add(docId);
+                                                        Tours newTours = new Tours(new ArrayList<String>(), pending);
+                                                        db.collection("userTours").document(userId).set(newTours);
                                                     }
                                                 }
                                             });
