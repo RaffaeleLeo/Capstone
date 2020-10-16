@@ -12,6 +12,8 @@
     app:layout_anchorGravity="top"
     tools:context=".MapsActivity">
 
+    <!--
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -53,47 +55,47 @@
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/inclinometer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:text="Inclinometer: "
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.323"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:layout_constraintVertical_bias="0.246" />
 
-        <TextView
-            android:id="@+id/inclinometer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Inclinometer: "
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@id/map"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.323"
-            app:layout_constraintTop_toTopOf="@+id/map"
-            app:layout_constraintVertical_bias="0.246" />
+    <TextView
+        android:id="@+id/inclinometer_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="45"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.323"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:layout_constraintVertical_bias="0.246" />
 
-        <TextView
-            android:id="@+id/inclinometer_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="45"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@id/map"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.323"
-            app:layout_constraintTop_toTopOf="@+id/map"
-            app:layout_constraintVertical_bias="0.246" />
+    <TextView
+        android:id="@+id/inclinometer_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" degrees"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.323"
+        app:layout_constraintTop_toTopOf="@+id/map"
+        app:layout_constraintVertical_bias="0.246" />
 
-        <TextView
-            android:id="@+id/inclinometer_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" degrees"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@id/map"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.323"
-            app:layout_constraintTop_toTopOf="@+id/map"
-            app:layout_constraintVertical_bias="0.246" />
-
-    </LinearLayout>
+</LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -137,6 +139,19 @@
         app:layout_constraintVertical_bias="0.246" />
 
 </LinearLayout>
+
+-->
+    <Button
+        android:id="@+id/show_popup"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/information_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
     <fragment
         android:id="@+id/map"

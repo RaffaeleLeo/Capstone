@@ -1,11 +1,15 @@
 package com.example.avi;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -34,8 +38,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +61,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.example.avi.MyDBHandler;
+import com.google.common.collect.Maps;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
@@ -99,6 +106,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String journal_name;
 
     private MyDBHandler dbHandler;
+
+    //dialog view
+    View pop_up_view;
 
 
     @Override
@@ -197,6 +207,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        final Button pop_up = findViewById(R.id.show_popup);
+
+        pop_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                final Dialog fbDialogue = new Dialog(MapsActivity.this, android.R.style.Theme_Black_NoTitleBar);
+//                fbDialogue.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100, 0, 0, 0)));
+//                fbDialogue.setContentView(R.layout.sensors_layout);
+//                fbDialogue.setCancelable(true);
+//                requestLocationUpdates();
+//                fbDialogue.show();
+
+                LayoutInflater inflater = getLayoutInflater();
+                pop_up_view = inflater.inflate(R.layout.sensors_layout, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                builder.setView(pop_up_view);
+                builder.show();
+
+            }
+        });
 
         setupTabLayout();
         requestLocationUpdates();
@@ -389,22 +420,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //the danger based at this location.
                 if(currentElevation != null && !currentElevation.isEmpty()) {
                     int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
-                    TextView danger = (TextView) findViewById(R.id.Danger_value);
-                    TextView dangerD = (TextView) findViewById(R.id.Danger_explanation);
-                    if (comp == -1) {
-                        danger.setText("N/A");
-                        dangerD.setText(" (Elevation below 5000)");
-                    } else {
-                        int d = dbHandler.getDangerAtLocation(comp);
-                        danger.setText(Integer.toString(d));
-                        dangerD.setText(dangerDesc.get(d));
+                    if(pop_up_view != null) {
+                        TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
+                        TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
+                        if (comp == -1) {
+                            danger.setText("N/A");
+                            dangerD.setText(" (Elevation below 5000)");
+                        } else {
+                            int d = dbHandler.getDangerAtLocation(comp);
+                            danger.setText(Integer.toString(d));
+                            dangerD.setText(dangerDesc.get(d));
+                        }
                     }
+
                 }
 
                 currentDegree = -degree;
                 incline =(float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
-                TextView inclineTxt = (TextView) findViewById(R.id.inclinometer_value);
-                inclineTxt.setText(Float.toString(incline));
+                if(pop_up_view != null) {
+                    TextView inclineTxt = (TextView) pop_up_view.findViewById(R.id.inclinometer_value);
+
+                    inclineTxt.setText(Float.toString(incline));
+                }
+
                 // do something with the rotation in degrees
             }
         }
@@ -476,25 +514,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         ElevationData eleData = new ElevationData();
                         eleData.execute(lat, lon);
-                        TextView elevationText = (TextView) findViewById(R.id.altimeter_value);
-                        currentElevation = eleData.get();
-                        elevationText.setText(currentElevation);
+                        if(pop_up_view != null) {
+                            TextView elevationText = (TextView) pop_up_view.findViewById(R.id.altimeter_value);
+                            currentElevation = eleData.get();
+                            elevationText.setText(currentElevation);
+                        }
 
 
                         //DANGER CODE STARTS HERE
                         //If we have an elevation, get it and the current degrees, and compute
                         //the danger based at this location.
                         if(currentElevation != null && !currentElevation.isEmpty()) {
-                            int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
-                            TextView danger = (TextView) findViewById(R.id.Danger_value);
-                            TextView dangerD = (TextView) findViewById(R.id.Danger_explanation);
-                            if (comp == -1) {
-                                danger.setText("N/A");
-                                dangerD.setText(" (Elevation below 5000)");
-                            } else {
-                                int d = dbHandler.getDangerAtLocation(comp);
-                                danger.setText(Integer.toString(d));
-                                dangerD.setText(dangerDesc.get(d));
+                            if(pop_up_view != null) {
+                                int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                                TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
+                                TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
+
+                                if (comp == -1) {
+                                    danger.setText("N/A");
+                                    dangerD.setText(" (Elevation below 5000)");
+                                } else {
+                                    int d = dbHandler.getDangerAtLocation(comp);
+                                    danger.setText(Integer.toString(d));
+                                    dangerD.setText(dangerDesc.get(d));
+                                }
                             }
                         }
 
