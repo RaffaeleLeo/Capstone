@@ -89,8 +89,6 @@ public class LoginActivity extends AppCompatActivity {
                 String password = createPassword.getText().toString();
 
                 if (first.equals("") || last.equals("") || email.equals("") || password.equals("")) {
-                    Notifications notifier = new Notifications();
-                    notifier.notification("test", "this is a test", 0, LoginActivity.this);
 
                     Toast.makeText(getApplicationContext(), "All fields must be filled out.", Toast.LENGTH_LONG).show();
                 } else if (password.length() < 6) {
