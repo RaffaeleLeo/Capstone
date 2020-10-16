@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,16 +20,21 @@ import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.Write;
+import com.google.firestore.v1.WriteResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -163,7 +169,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
                         View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
                         TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
-                        final TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
+                        TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
                         TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
                         TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
                         final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
@@ -171,26 +177,37 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
 
 
-                        tourText = newTourName.getText().toString();
-                        dateText = newDate.getText().toString();
-                        timeText = newTourTime.getText().toString();
-                        notesText = newTourNotes.getText().toString();
-                        invitedText = newInvitedText.getText().toString();
+                        tourText = newTourName.getText().toString().trim();
+                        dateText = newDate.getText().toString().trim();
+                        timeText = newTourTime.getText().toString().trim();
+                        notesText = newTourNotes.getText().toString().trim();
+                        invitedText = newInvitedText.getText().toString().trim();
 
-                        if (tourText.isEmpty()) tourText = ("No Name");
-                        if (dateText.isEmpty()) tourDate.setText("No Date");
+                        if (tourText.isEmpty()) tourText = "No Name";
+                        if (dateText.isEmpty()) dateText = "No Date";
                         if (timeText.isEmpty()) timeText = "No Time";
                         if (notesText.isEmpty()) notesText = "No Notes";
                         if (invitedText.isEmpty()) invitedText = "No Invites";
+
+                        ViewGroup.LayoutParams params = tourInvites.getLayoutParams();
+                        params.height = 0;
+                        tourInvites.setLayoutParams(params);
 
                         tourName.setText(tourText);
                         tourDate.setText(dateText);
                         tourTime.setText(timeText);
                         tourNotes.setText(notesText);
                         tourInvites.setText(invitedText);
+                        ArrayList<String> tourOwners = new ArrayList<>();
+                        ArrayList<String> acceptedList = new ArrayList<>();
+                        ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                        ArrayList<String> declinedList = new ArrayList<>();
+                        tourOwners.add(mAuth.toString());
+                        acceptedList.add(user.getEmail());
+                        Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, declinedList, "placeholder", "placeholder");
+                        addTourToDB(tour);
                         toursLinearLayout.addView(acceptedTourBox);
                         rootLayout.removeView(newTour);
-
                         setupTourInvitesButton(invitesButton, tourInvites);
                         settingsButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -212,6 +229,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void addTourToDB(Tours.Tour tour){
+       db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+           @Override
+           public void onSuccess(DocumentReference documentReference) {
+               db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(documentReference.getId()));
+           }
+       });
     }
 
     private void setupTourInvitesButton(ImageButton invitesButton, final TextView tourInvites){
