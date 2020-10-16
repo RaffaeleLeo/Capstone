@@ -29,10 +29,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.Write;
 import com.google.firestore.v1.WriteResult;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -202,7 +204,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ArrayList<String> acceptedList = new ArrayList<>();
                         ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
                         ArrayList<String> declinedList = new ArrayList<>();
-                        tourOwners.add(mAuth.toString());
+                        tourOwners.add(mAuth.getUid());
                         acceptedList.add(user.getEmail());
                         Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, declinedList, "placeholder", "placeholder");
                         addTourToDB(tour);
@@ -231,11 +233,35 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void addTourToDB(Tours.Tour tour){
+    private void addTourToDB(final Tours.Tour tour){
        db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
            @Override
            public void onSuccess(DocumentReference documentReference) {
-               db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(documentReference.getId()));
+               final String docId = documentReference.getId();
+               Log.d("docId", docId);
+               db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
+               db.collection("users").whereIn("email", tour.pendingInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                   @Override
+                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                       for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                           final String userId = document.getId();
+                           Log.d("addTour", userId);
+                           db.collection("userTours").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                               @Override
+                               public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                   Tours tours = documentSnapshot.toObject(Tours.class);
+                                   if (tours != null){
+                                   tours.getPendingTourIds().add(docId);
+                                   db.collection("userTours").document(userId).set(tours);
+                                   }else {
+                                       db.collection("userTours").document(userId).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
+                                   }
+                               }
+                           });
+                       }
+
+                   }
+               });
            }
        });
     }
