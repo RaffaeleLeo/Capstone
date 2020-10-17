@@ -14,6 +14,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
@@ -27,12 +28,26 @@ public class LiveUpdates extends Activity {
     private ViewPager viewPager;
     private MyPagerAdapter adapter;
     private List<View> webViewList;
+    Button settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_updates);
         setupTabLayout();
+
+        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
+
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
         adapter = new MyPagerAdapter();
         viewPager = findViewById(R.id.pager);
