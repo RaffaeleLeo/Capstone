@@ -23,6 +23,12 @@ public class SettingsActivity extends AppCompatActivity {
     Button logOutButton;
     private GoogleSignInClient mGoogleSignInClient;
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 0)).select();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +68,8 @@ public class SettingsActivity extends AppCompatActivity {
      * sets up the tab layout at the bottom of the screen
      */
     private void setupTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 0)).select();
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -98,10 +106,10 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         };
-        TabLayout tabLayout = findViewById(R.id.TabLayout);
+
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        //tabLayout.getTabAt(4).select();
+
     }
 }

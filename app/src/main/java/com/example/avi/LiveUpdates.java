@@ -52,6 +52,7 @@ public class LiveUpdates extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LiveUpdates.this, SettingsActivity.class);
+                intent.putExtra("PRIOR", 0);
                 startActivity(intent);
             }
         });

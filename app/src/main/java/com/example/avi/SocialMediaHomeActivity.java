@@ -89,6 +89,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SocialMediaHomeActivity.this, SettingsActivity.class);
+                intent.putExtra("PRIOR", 3);
                 startActivity(intent);
             }
         });

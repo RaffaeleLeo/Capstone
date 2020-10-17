@@ -67,6 +67,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(JournalActivity.this, SettingsActivity.class);
+                intent.putExtra("PRIOR", 2);
                 startActivity(intent);
             }
         });
