@@ -153,6 +153,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         addTourButtion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                behaveNormallyWhenBackIsPressed = false;
                 View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
                 rootLayout.addView(newTour);
 
@@ -160,6 +161,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        behaveNormallyWhenBackIsPressed = true;
                         String tourText;
                         String dateText;
                         String timeText;
@@ -301,6 +303,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 discardButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        behaveNormallyWhenBackIsPressed = true;
                         View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
                         rootLayout.removeView(newTour);
                     }
@@ -579,6 +582,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(listener);
 
         tabLayout.getTabAt(3).select();
+
     }
 
     @Override
@@ -586,7 +590,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         if(behaveNormallyWhenBackIsPressed)
             super.onBackPressed();
         else{
-
+            behaveNormallyWhenBackIsPressed = true;
+            View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+            rootLayout.removeView(newTour);
         }
     }
 
