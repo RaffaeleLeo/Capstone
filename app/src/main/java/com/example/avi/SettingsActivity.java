@@ -30,6 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("969128169123-acm8ho281ikele7r252r4urcspbf0qvs.apps.googleusercontent.com")
                 .requestEmail()
@@ -52,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        setupTabLayout();
     }
 
 
@@ -100,6 +102,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(1).select();
+        //tabLayout.getTabAt(4).select();
     }
 }
