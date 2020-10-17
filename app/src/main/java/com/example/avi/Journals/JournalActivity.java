@@ -38,6 +38,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Journal> Journals;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +120,8 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
     @Override
     protected void onResume() {
         super.onResume();
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(2).select();
 
         Intent intent = getIntent();
 

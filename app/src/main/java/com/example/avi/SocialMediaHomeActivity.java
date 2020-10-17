@@ -58,6 +58,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private ImageButton addTourButtion;
     private ConstraintLayout rootLayout;
 
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(3).select();
+    }
+    
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);

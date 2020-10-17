@@ -32,6 +32,13 @@ public class LiveUpdates extends Activity {
     Button settings;
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(0).select();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_updates);

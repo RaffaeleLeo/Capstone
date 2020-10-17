@@ -112,6 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     View pop_up_view;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Empty right now.
@@ -475,6 +476,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onResume() {
         super.onResume();
+
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(1).select();
+
+
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), sensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensorManager.SENSOR_DELAY_NORMAL);
     }
