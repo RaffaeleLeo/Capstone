@@ -65,6 +65,7 @@ import com.google.common.collect.Maps;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
+    Button settings;
     private GoogleMap mMap;
     private static final int PERMISSIONS_REQUEST = 100;
     private FusedLocationProviderClient mLocationClient;
@@ -234,7 +235,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //compass stuff
 
+        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
+        TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+        title.setText("Maps");
 
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

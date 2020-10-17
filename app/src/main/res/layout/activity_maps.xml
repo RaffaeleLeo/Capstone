@@ -141,6 +141,12 @@
 </LinearLayout>
 
 -->
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/top_bar_layout"
+        tools:layout_editor_absoluteX="41dp"
+        tools:layout_editor_absoluteY="4dp" />
+
     <Button
         android:id="@+id/show_popup"
         android:layout_width="50dp"

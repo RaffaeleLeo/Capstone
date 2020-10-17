@@ -15,6 +15,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
@@ -37,7 +38,8 @@ public class LiveUpdates extends Activity {
         setupTabLayout();
 
         settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
-
+        TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+        title.setText("Home");
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override

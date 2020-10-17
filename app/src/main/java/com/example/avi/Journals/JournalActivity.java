@@ -10,11 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.avi.LoginActivity;
 import com.example.avi.MyDBHandler;
+import com.example.avi.SettingsActivity;
 import com.example.avi.SocialMediaHomeActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.LiveUpdates;
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class JournalActivity extends AppCompatActivity implements JournalAdapter.JournalViewHolder.OnJournalListener{
-
+    Button settings;
     private RecyclerView recyclerView;
     private JournalAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -56,6 +58,17 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
 
 
         setupTabLayout();
+        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
+        TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+        title.setText("Journals");
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(JournalActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         recyclerView = (RecyclerView) findViewById(R.id.journal_recycle);
 

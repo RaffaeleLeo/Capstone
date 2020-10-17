@@ -8,11 +8,18 @@
     android:background="@color/blue"
     tools:context=".Journals.JournalActivity">
 
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/top_bar_layout"
+        tools:layout_editor_absoluteX="41dp"
+        tools:layout_editor_absoluteY="4dp" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         tools:context=".Journals.JournalActivity">
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

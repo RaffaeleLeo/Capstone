@@ -45,6 +45,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     Button settings;
     Button chat;
     Button friends;
+    Boolean behaveNormallyWhenBackIsPressed;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -60,6 +61,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        behaveNormallyWhenBackIsPressed = true;
         setContentView(R.layout.activity_social_media_home);
 
         mAuth = FirebaseAuth.getInstance();
@@ -153,6 +155,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
                 rootLayout.addView(newTour);
+
                 ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -302,6 +305,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         rootLayout.removeView(newTour);
                     }
                 });
+
+
             }
         });
     }
@@ -574,6 +579,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(listener);
 
         tabLayout.getTabAt(3).select();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(behaveNormallyWhenBackIsPressed)
+            super.onBackPressed();
+        else{
+
+        }
     }
 
 }
