@@ -7,62 +7,28 @@
     android:background="#89FFFF">
 
 
-<Button
+    <Button
         android:id="@+id/LogOutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
-        android:layout_marginTop="234dp"
+        android:layout_marginTop="224dp"
         android:layout_marginEnd="159dp"
-        android:layout_marginBottom="393dp"
         android:text="Log Out"
-        app:layout_constraintBottom_toTopOf="@+id/TabLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.981"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <com.google.android.material.tabs.TabLayout
+    <include
         android:id="@+id/TabLayout"
-        android:layout_width="match_parent"
+        layout="@layout/bottom_tab_layout"
+        android:layout_width="0dp"
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:tabBackground="@color/colorPrimaryDark"
-        app:tabTextColor="@color/tabs_default_color">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabUpdate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_live_updates"
-            android:textColor="@color/tabs_default_color" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_map"
-            android:textColor="@color/tabs_default_color" />
+        app:layout_constraintTop_toBottomOf="@+id/pager" />
 
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabExplore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_journal"
-            android:textColor="@color/tabs_default_color" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/TabStats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/nav_chat"
-            android:textColor="@color/tabs_default_color" />
-
-
-    </com.google.android.material.tabs.TabLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

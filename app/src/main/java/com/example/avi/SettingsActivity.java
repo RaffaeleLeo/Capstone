@@ -54,25 +54,34 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+
+
+    /**
+     * sets up the tab layout at the bottom of the screen
+     */
     private void setupTabLayout() {
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                if (tab.getText().equals(getString(R.string.nav_map))) {
-                    Intent intent = new Intent(SettingsActivity.this, MapsActivity.class);
-
-//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
-                    startActivity(intent);
-                } else if (tab.getText().equals(getString(R.string.nav_journal))) {
+                if (tab.getPosition() == 2) {
                     Intent intent = new Intent(SettingsActivity.this, JournalActivity.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                }else if (tab.getText().equals(getString(R.string.nav_live_updates))){
+                } else if (tab.getPosition() == 3) {
+                    Intent intent = new Intent(SettingsActivity.this, SocialMediaHomeActivity.class);
+
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                } else if (tab.getPosition() == 0) {
                     Intent intent = new Intent(SettingsActivity.this, LiveUpdates.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                    startActivity(intent);
+                } else if (tab.getPosition() == 1) {
+                    Intent intent = new Intent(SettingsActivity.this, MapsActivity.class);
+
                     startActivity(intent);
                 }
             }
@@ -87,11 +96,10 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         };
-
         TabLayout tabLayout = findViewById(R.id.TabLayout);
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(3).select();
+        tabLayout.getTabAt(1).select();
     }
 }
