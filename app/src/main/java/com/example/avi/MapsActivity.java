@@ -1,5 +1,6 @@
 package com.example.avi;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,6 +20,7 @@ import android.location.LocationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
@@ -391,6 +393,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabLayout.getTabAt(1).select();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -438,10 +441,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
                         if (comp == -1) {
                             danger.setText("N/A");
+                            danger.setTextColor(getColor(android.R.color.holo_green_dark));
                             dangerD.setText(" (Elevation below 5000)");
                         } else {
                             int d = dbHandler.getDangerAtLocation(comp);
                             danger.setText(Integer.toString(d));
+                            if(d >= 7)
+                                danger.setTextColor(getColor(android.R.color.holo_red_light));
+                            else if (d >= 5)
+                                danger.setTextColor(getColor(android.R.color.holo_orange_dark));
+                            else if (d >= 3)
+                                danger.setTextColor(getColor(android.R.color.holo_orange_light));
+                            else
+                                danger.setTextColor(getColor(android.R.color.holo_green_dark));
                             dangerD.setText(dangerDesc.get(d));
                         }
                     }
@@ -523,6 +535,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //...then request location updates
             client.requestLocationUpdates(request, new LocationCallback() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     Location loc = locationResult.getLastLocation();
@@ -550,9 +563,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 if (comp == -1) {
                                     danger.setText("N/A");
+                                    danger.setTextColor(getColor(android.R.color.holo_green_dark));
+
                                     dangerD.setText(" (Elevation below 5000)");
                                 } else {
                                     int d = dbHandler.getDangerAtLocation(comp);
+                                    if(d >= 7)
+                                        danger.setTextColor(getColor(android.R.color.holo_red_light));
+                                    else if (d >= 5)
+                                        danger.setTextColor(getColor(android.R.color.holo_orange_dark));
+                                    else if (d >= 3)
+                                        danger.setTextColor(getColor(android.R.color.holo_orange_light));
+                                    else
+                                        danger.setTextColor(getColor(android.R.color.holo_green_dark));
                                     danger.setText(Integer.toString(d));
                                     dangerD.setText(dangerDesc.get(d));
                                 }
