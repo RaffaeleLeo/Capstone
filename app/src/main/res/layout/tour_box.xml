@@ -47,8 +47,8 @@
         android:text="Date: 1/10/10"
         android:textAlignment="center"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tour_name"
+        app:layout_constraintStart_toStartOf="@+id/tour_name"
         app:layout_constraintTop_toBottomOf="@+id/tour_name" />
 
     <TextView
@@ -59,6 +59,7 @@
         android:text="Time: 10:00"
         android:textAlignment="center"
         android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/date_text"
         app:layout_constraintStart_toStartOf="@+id/date_text"
         app:layout_constraintTop_toBottomOf="@+id/date_text" />
 
