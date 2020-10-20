@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Timer;
@@ -25,6 +26,24 @@ public class LoadingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+        if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
+            Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
+
+            //CHANGE THIS LINE?
+            Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
+
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
+            startActivity(intent);
+        }
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +63,8 @@ public class LoadingActivity extends AppCompatActivity {
         if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
 
-            //CHANGE THIS LINE
-            Intent intent = new Intent(LoadingActivity.this, SocialMediaHomeActivity.class);
+            //CHANGE THIS LINE?
+            Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
 
             startActivity(intent);
         }
