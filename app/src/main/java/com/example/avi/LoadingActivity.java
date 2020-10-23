@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.facebook.AccessToken;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -34,12 +35,14 @@ public class LoadingActivity extends AppCompatActivity {
         if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
 
-            //CHANGE THIS LINE?
-            Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
 
+            Intent intent = new Intent(LoadingActivity.this, ChatRoomActivity.class);
+            intent.putExtra("IsFirst", true);
             startActivity(intent);
         }
         else{
+
+
             Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
             startActivity(intent);
         }

@@ -26,6 +26,4 @@ public class Message {
          this.sender = sndr;
      }
 
-
-
 }

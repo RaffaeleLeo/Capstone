@@ -1,6 +1,7 @@
 package com.example.avi.ChatRoom;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,9 +12,12 @@ import android.widget.Toast;
 
 import com.example.avi.Journals.JournalActivity;
 import com.example.avi.LiveUpdates;
+import com.example.avi.LoadingActivity;
 import com.example.avi.MapsActivity;
+import com.example.avi.Notifications;
 import com.example.avi.R;
 import com.google.android.material.tabs.TabLayout;
+import com.google.common.collect.Lists;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,10 +59,13 @@ public class ChatRoomActivity extends AppCompatActivity {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference("messages");
         ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mAdapter.clear();
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                List<DataSnapshot> childList = Lists.newArrayList(dataSnapshot.getChildren());
+                for(int i = 0; i<childList.size(); i++) {
+                    DataSnapshot child = childList.get(i);
                     String sender = child.child("sender").getValue(String.class);
                     String message = child.child("message").getValue(String.class);
                     boolean currentUser = false;
@@ -65,6 +73,11 @@ public class ChatRoomActivity extends AppCompatActivity {
                         currentUser = true;
                     }
                     final Message msg = new Message(message, sender, currentUser);
+
+                    if(i == childList.size() - 1 && !currentUser) {
+                        Notifications notifier = new Notifications();
+                        notifier.notification("New Message from " + sender, message, 0, getApplicationContext());
+                    }
 
                     runOnUiThread(new Runnable() {
                     @Override
@@ -110,6 +123,15 @@ public class ChatRoomActivity extends AppCompatActivity {
 //                editText.setText("");
             }
         });
+
+        //The first time this method is called is when the app is starting up. The app will go here first and then to the proper starting point.
+        //That way, the notifications for chat messages will begin.
+        if(getIntent().getBooleanExtra("IsFirst", false))
+        {
+            Intent intent = new Intent(ChatRoomActivity.this, LiveUpdates.class);
+
+            startActivity(intent);
+        }
     }
 
     /**

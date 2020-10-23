@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -186,7 +187,8 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
+                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
+                            intent.putExtra("IsFirst", true);
                             startActivity(intent);
                         }
                         else {
@@ -235,7 +237,8 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            db.collection("users").document(usr.getId()).set(usr);
 
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
+                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
+                            intent.putExtra("IsFirst", true);
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.

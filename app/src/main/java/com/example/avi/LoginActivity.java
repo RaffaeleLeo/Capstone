@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -203,7 +204,8 @@ public class LoginActivity extends AppCompatActivity {
 //                                                User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
 //                                                db.collection("users").document(usr.getId()).set(usr);
                                                 Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                                                Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+                                                intent.putExtra("IsFirst", true);
                                                 startActivity(intent);
                                             }
                                         }
@@ -228,7 +230,9 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+
+                            intent.putExtra("IsFirst", true);
                             startActivity(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "Email already associated with account, please log in.", Toast.LENGTH_LONG).show();
@@ -251,7 +255,8 @@ public class LoginActivity extends AppCompatActivity {
                             catch (Exception e){
                             }
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+                            intent.putExtra("IsFirst", true);
                             startActivity(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "User / password combination not found, please try again", Toast.LENGTH_LONG).show();
