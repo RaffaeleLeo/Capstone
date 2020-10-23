@@ -40,13 +40,27 @@ public class ChatRoomActivity extends AppCompatActivity {
     MessageAdapter mAdapter;
     ListView messageView;
     EditText editText;
+    Boolean isVisible;
 
     private DatabaseReference mFirebaseDatabaseReference;
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        isVisible = true;
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        isVisible = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        isVisible = true;
         setContentView(R.layout.activity_chat_room);
         setupTabLayout();
 
@@ -74,7 +88,7 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
                     final Message msg = new Message(message, sender, currentUser);
 
-                    if(i == childList.size() - 1 && !currentUser) {
+                    if(i == childList.size() - 1 && !currentUser && !isVisible && !getIntent().getBooleanExtra("IsFirst", false)) {
                         Notifications notifier = new Notifications();
                         notifier.notification("New Message from " + sender, message, 0, getApplicationContext());
                     }
