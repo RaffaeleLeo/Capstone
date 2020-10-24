@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
@@ -44,7 +45,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +70,10 @@ import com.google.common.collect.Maps;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
+    private boolean inclineLocked = false;
+    float incline = 0.0f;
     Button settings;
+    Switch lockIncline;
     private GoogleMap mMap;
     private static final int PERMISSIONS_REQUEST = 100;
     private FusedLocationProviderClient mLocationClient;
@@ -226,9 +232,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LayoutInflater inflater = getLayoutInflater();
                 pop_up_view = inflater.inflate(R.layout.sensors_layout, null);
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 builder.setView(pop_up_view);
+                AlertDialog alertDialog = builder.create();
                 builder.show();
+
 
             }
         });
@@ -413,7 +422,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (hasGravityData && hasGeomagneticData) {
             float identityMatrix[] = new float[9];
             float rotationMatrix[] = new float[9];
-            float incline;
+
             boolean success = SensorManager.getRotationMatrix(rotationMatrix, identityMatrix,
                     gravityData, geomagneticData);
 
@@ -461,11 +470,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 currentDegree = -degree;
-                incline =(float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
+                if(!inclineLocked)
+                    incline = (float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
                 if(pop_up_view != null) {
                     TextView inclineTxt = (TextView) pop_up_view.findViewById(R.id.inclinometer_value);
 
                     inclineTxt.setText(Float.toString(incline));
+
+                    lockIncline = (Switch) pop_up_view.findViewById(R.id.inclineSwitch);
+
+                    lockIncline.setChecked(inclineLocked);
+
+
+                    lockIncline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            inclineLocked = isChecked;
+                        }
+                    });
+                    
+
+
+
                 }
 
                 // do something with the rotation in degrees

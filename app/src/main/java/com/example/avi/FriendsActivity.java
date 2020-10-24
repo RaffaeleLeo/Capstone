@@ -219,6 +219,8 @@ public class FriendsActivity extends AppCompatActivity {
      * sets up the tab layout at the bottom of the screen
      */
     private void setupTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(3).select();
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -255,10 +257,9 @@ public class FriendsActivity extends AppCompatActivity {
 
             }
         };
-        TabLayout tabLayout = findViewById(R.id.TabLayout);
 
         tabLayout.addOnTabSelectedListener(listener);
 
-        //tabLayout.getTabAt(4).select();
+
     }
 }
