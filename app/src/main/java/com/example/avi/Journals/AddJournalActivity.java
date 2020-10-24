@@ -91,11 +91,8 @@ public class AddJournalActivity extends AppCompatActivity {
         }
 
         Journal.description = sp.getString("Journal_Description", "Not Set");
-        if(Journal.description.equals("Not Set") || Journal.description.equals("")){
-            Snackbar.make(view, "Journalnts of interest must have a location_name", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
-            return;
+        if(Journal.description.equals("Not Set")){
+            Journal.description = "";
         }
 
         Journal.start_recording = sp.getBoolean("is_tracking", false);

@@ -80,15 +80,19 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
-                for (Map.Entry<String, String> entry : user.getRequests().entrySet()) {
-                    requestsList.add(entry.getValue());
-                    requestsTracker.add(entry.getKey());
-                    requests_adapter.notifyDataSetChanged();
-                }
-                for (Map.Entry<String, String> entry : user.getFriends().entrySet()) {
-                    friendsList.add(entry.getValue());
-                    friendsTracker.add(entry.getKey());
-                    friends_adapter.notifyDataSetChanged();
+                if(user != null)
+                {
+                    for (Map.Entry<String, String> entry : user.getRequests().entrySet()) {
+                        requestsList.add(entry.getValue());
+                        requestsTracker.add(entry.getKey());
+                        requests_adapter.notifyDataSetChanged();
+                    }
+
+                    for (Map.Entry<String, String> entry : user.getFriends().entrySet()) {
+                        friendsList.add(entry.getValue());
+                        friendsTracker.add(entry.getKey());
+                        friends_adapter.notifyDataSetChanged();
+                    }
                 }
             }
         });
