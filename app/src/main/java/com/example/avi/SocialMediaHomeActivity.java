@@ -241,188 +241,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 });
                             }
                         });
-                        editButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                behaveNormallyWhenBackIsPressed = false;
-                                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
-
-                                final View tourBox = (View) view.getTag();
-                                final String tourId = (String) tourBox.getTag();
-
-                                ImageButton saveButton = newTour.findViewById(R.id.saveButton);
-                                TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                                TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                                TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                                TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-                                TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-
-                                final TextView tourName = tourBox.findViewById(R.id.tour_name);
-                                final TextView tourDate = tourBox.findViewById(R.id.date_text);
-                                final TextView tourTime = tourBox.findViewById(R.id.time_text);
-                                final TextView tourNotes = tourBox.findViewById(R.id.notes_text);
-                                final TextView tourInvites = tourBox.findViewById(R.id.invites_text);
-                                newTourName.setText(tourName.getText());
-                                newDate.setText(tourDate.getText());
-                                newTourTime.setText(tourTime.getText());
-                                newTourNotes.setText(tourNotes.getText());
-                                newInvitedText.setText(tourInvites.getText());
-                                rootLayout.addView(newTour);
-                                saveButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        behaveNormallyWhenBackIsPressed = true;
-                                        String tourText;
-                                        String dateText;
-                                        String timeText;
-                                        String notesText;
-                                        String invitedText;
-
-                                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
-                                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-                                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-
-
-                                        tourText = newTourName.getText().toString().trim();
-                                        dateText = newDate.getText().toString().trim();
-                                        timeText = newTourTime.getText().toString().trim();
-                                        notesText = newTourNotes.getText().toString().trim();
-                                        invitedText = newInvitedText.getText().toString().trim();
-
-
-                                        tourInvites.setVisibility(View.GONE);
-
-                                        tourName.setText(tourText);
-                                        tourDate.setText(dateText);
-                                        tourTime.setText(timeText);
-                                        tourNotes.setText(notesText);
-                                        tourInvites.setText(invitedText);
-
-
-                                        //Data base changes
-                                        final String finalTourText = tourText;
-                                        final ArrayList<String> invitees = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
-                                        final String finalDateText = dateText;
-                                        final String finalTimeText = timeText;
-                                        final String finalNotesText = notesText;
-                                        db.collection("tours").document(tourId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                Tours.Tour tourEdit = documentSnapshot.toObject(Tours.Tour.class);
-                                                ArrayList<String> removeInvitees = new ArrayList<>();
-                                                ArrayList<String> removeAccepted = new ArrayList<>();
-                                                ArrayList<String> removePending = new ArrayList<>();
-                                                ArrayList<String> addPending = new ArrayList<>();
-                                                addPending.addAll(invitees);
-                                                for(String person : tourEdit.acceptedInvitees){
-                                                    if (!invitees.contains(person) && !person.equals(user.getEmail())){
-                                                       removeInvitees.add(person);
-                                                       removeAccepted.add(person);
-                                                    }else {
-                                                        addPending.remove(person);
-                                                    }
-                                                }
-                                                tourEdit.acceptedInvitees.removeAll(removeAccepted);
-                                                for (String person : tourEdit.pendingInvitees){
-                                                    if (!invitees.contains(person)){
-                                                        removeInvitees.add(person);
-                                                        removePending.add(person);
-                                                    } else {
-                                                        addPending.remove(person);
-                                                    }
-                                                }
-                                                tourEdit.pendingInvitees.removeAll(removePending);
-                                                tourEdit.pendingInvitees.addAll(addPending);
-                                                tourEdit.tourName = finalTourText;
-                                                tourEdit.date = finalDateText;
-                                                tourEdit.time = finalTimeText;
-                                                tourEdit.notes = finalNotesText;
-
-                                                db.collection("tours").document(tourId).set(tourEdit).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-
-                                                    }
-                                                }).addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Log.d("TourFailure", "Edit Tour Failed in database");
-                                                    }
-                                                });
-                                                if (removeInvitees.size() > 0) {
-                                                    db.collection("users").whereIn("email", removeInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                                                final String userId = document.getId();
-                                                                Log.d("addTour", userId);
-                                                                Log.d("userId", document.getId());
-                                                                db.collection("userTours").document(userId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                                if(addPending.size() > 0){
-                                                    db.collection("users").whereIn("email", addPending).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                        @Override
-                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                                                final String userId = document.getId();
-                                                                Log.d("addTour", userId);
-                                                                Log.d("userId", document.getId());
-                                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayUnion(tourId));
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        });
-
-                                        rootLayout.removeView(newTour);
-                                    }
-
-                                });
-                                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
-                                discardButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        behaveNormallyWhenBackIsPressed = true;
-                                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
-                                        rootLayout.removeView(newTour);
-                                    }
-                                });
-                                /*
-                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            String docId = documentSnapshot.getId();
-
-                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                        }
-                                    }
-                                });
-                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("dbDelete", "Deletion successful " + tourId);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
-
-                                    }
-                                });
-                        */
-                            }
-                        });
-
+                        //Set up edit button on tours
+                        setUpEditTourInfoButton(editButton);
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
                         timeText = newTourTime.getText().toString().trim();
@@ -496,6 +316,191 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void setUpEditTourInfoButton(ImageButton editButton){
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                behaveNormallyWhenBackIsPressed = false;
+                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
+
+                final View tourBox = (View) view.getTag();
+                final String tourId = (String) tourBox.getTag();
+
+                ImageButton saveButton = newTour.findViewById(R.id.saveButton);
+                TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+                final TextView tourName = tourBox.findViewById(R.id.tour_name);
+                final TextView tourDate = tourBox.findViewById(R.id.date_text);
+                final TextView tourTime = tourBox.findViewById(R.id.time_text);
+                final TextView tourNotes = tourBox.findViewById(R.id.notes_text);
+                final TextView tourInvites = tourBox.findViewById(R.id.invites_text);
+                newTourName.setText(tourName.getText());
+                newDate.setText(tourDate.getText());
+                newTourTime.setText(tourTime.getText());
+                newTourNotes.setText(tourNotes.getText());
+                newInvitedText.setText(tourInvites.getText());
+                rootLayout.addView(newTour);
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        behaveNormallyWhenBackIsPressed = true;
+                        String tourText;
+                        String dateText;
+                        String timeText;
+                        String notesText;
+                        String invitedText;
+
+                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
+                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+
+                        tourText = newTourName.getText().toString().trim();
+                        dateText = newDate.getText().toString().trim();
+                        timeText = newTourTime.getText().toString().trim();
+                        notesText = newTourNotes.getText().toString().trim();
+                        invitedText = newInvitedText.getText().toString().trim();
+
+
+                        tourInvites.setVisibility(View.GONE);
+
+                        tourName.setText(tourText);
+                        tourDate.setText(dateText);
+                        tourTime.setText(timeText);
+                        tourNotes.setText(notesText);
+                        tourInvites.setText(invitedText);
+
+
+                        //Data base changes
+                        final String finalTourText = tourText;
+                        final ArrayList<String> invitees = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                        final String finalDateText = dateText;
+                        final String finalTimeText = timeText;
+                        final String finalNotesText = notesText;
+                        db.collection("tours").document(tourId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Tours.Tour tourEdit = documentSnapshot.toObject(Tours.Tour.class);
+                                ArrayList<String> removeInvitees = new ArrayList<>();
+                                ArrayList<String> removeAccepted = new ArrayList<>();
+                                ArrayList<String> removePending = new ArrayList<>();
+                                ArrayList<String> addPending = new ArrayList<>();
+                                addPending.addAll(invitees);
+                                for(String person : tourEdit.acceptedInvitees){
+                                    if (!invitees.contains(person) && !person.equals(user.getEmail())){
+                                        removeInvitees.add(person);
+                                        removeAccepted.add(person);
+                                    }else {
+                                        addPending.remove(person);
+                                    }
+                                }
+                                tourEdit.acceptedInvitees.removeAll(removeAccepted);
+                                for (String person : tourEdit.pendingInvitees){
+                                    if (!invitees.contains(person)){
+                                        removeInvitees.add(person);
+                                        removePending.add(person);
+                                    } else {
+                                        addPending.remove(person);
+                                    }
+                                }
+                                tourEdit.pendingInvitees.removeAll(removePending);
+                                tourEdit.pendingInvitees.addAll(addPending);
+                                tourEdit.tourName = finalTourText;
+                                tourEdit.date = finalDateText;
+                                tourEdit.time = finalTimeText;
+                                tourEdit.notes = finalNotesText;
+
+                                db.collection("tours").document(tourId).set(tourEdit).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("TourFailure", "Edit Tour Failed in database");
+                                    }
+                                });
+                                if (removeInvitees.size() > 0) {
+                                    db.collection("users").whereIn("email", removeInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                                final String userId = document.getId();
+                                                Log.d("addTour", userId);
+                                                Log.d("userId", document.getId());
+                                                db.collection("userTours").document(userId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                                            }
+                                        }
+                                    });
+                                }
+                                if(addPending.size() > 0){
+                                    db.collection("users").whereIn("email", addPending).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                                                final String userId = document.getId();
+                                                Log.d("addTour", userId);
+                                                Log.d("userId", document.getId());
+                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayUnion(tourId));
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        rootLayout.removeView(newTour);
+                    }
+
+                });
+                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
+                discardButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        behaveNormallyWhenBackIsPressed = true;
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
+                        rootLayout.removeView(newTour);
+                    }
+                });
+                                /*
+                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                            String docId = documentSnapshot.getId();
+
+                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                                        }
+                                    }
+                                });
+                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("dbDelete", "Deletion successful " + tourId);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
+
+                                    }
+                                });
+                        */
+            }
+        });
+
     }
 
 
@@ -595,12 +600,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourNotes.setText(tour.notes);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
+                            sb.append(person + "\n");
+                    }
+                    for (String person : tour.pendingInvitees) {
                         if (!person.equals(user.getEmail())) {
                             sb.append(person + "\n");
                         }
-                    }
-                    for (String person : tour.pendingInvitees) {
-                        sb.append(person + "\n");
                     }
                     tourInvites.setText(sb.toString());
                     toursLinearLayout.addView(pendingTourBox);
@@ -618,6 +623,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     deleteButton.setTag(acceptedTourBox);
                     editTourButton.setTag(acceptedTourBox);
                     final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
+                    editButton.setTag(acceptedTourBox);
                     if (owners.contains(user.getId())) {
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -662,6 +668,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 }
                             }
                         });
+
+                        setUpEditTourInfoButton(editButton);
                     } else {
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
