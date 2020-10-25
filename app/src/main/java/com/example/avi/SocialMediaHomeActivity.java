@@ -595,7 +595,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourNotes.setText(tour.notes);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
-                        sb.append(person + "\n");
+                        if (!person.equals(user.getEmail())) {
+                            sb.append(person + "\n");
+                        }
                     }
                     for (String person : tour.pendingInvitees) {
                         sb.append(person + "\n");
@@ -702,7 +704,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourNotes.setText(tour.notes);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
+                        if (!person.equals(user.getEmail())) {
                             sb.append(person + "\n");
+                        }
                     }
                     for (String person : tour.pendingInvitees) {
                         sb.append(person + "\n");
