@@ -60,12 +60,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         TabLayout tabLayout = findViewById(R.id.TabLayout);
         tabLayout.getTabAt(3).select();
     }
-    
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -151,14 +151,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 }
                         );
                     }
-                }else {
+                } else {
                     db.collection("userTours").document(mAuth.getUid()).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
                 }
             }
         });
     }
 
-    private void setupAddTour(){
+    private void setupAddTour() {
         addTourButtion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +177,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String notesText;
                         String invitedText;
 
-                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
                         TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
                         TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
                         TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
@@ -197,13 +197,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
                         deleteButton.setTag(acceptedTourBox);
                         editTourButton.setTag(acceptedTourBox);
+                        editButton.setTag(acceptedTourBox);
                         editTourButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (deleteButton.getVisibility() == View.GONE){
+                                if (deleteButton.getVisibility() == View.GONE) {
                                     deleteButton.setVisibility(View.VISIBLE);
                                     editButton.setVisibility(View.VISIBLE);
-                                }else {
+                                } else {
                                     deleteButton.setVisibility(View.GONE);
                                     editButton.setVisibility(View.GONE);
                                 }
@@ -219,7 +220,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                             String docId = documentSnapshot.getId();
 
                                             db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
@@ -230,7 +231,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d("dbDelete", "Deletion successful "+ tourId);
+                                        Log.d("dbDelete", "Deletion successful " + tourId);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -238,6 +239,119 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                         Log.d("dbDelete", "Deletion unsuccessful " + tourId);
                                     }
                                 });
+                            }
+                        });
+                        editButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                behaveNormallyWhenBackIsPressed = false;
+                                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
+
+                                final View tourBox = (View) view.getTag();
+                                final String tourId = (String) tourBox.getTag();
+
+                                ImageButton saveButton = newTour.findViewById(R.id.saveButton);
+                                TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                                TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                                TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                                TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                                TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+                                final TextView tourName = tourBox.findViewById(R.id.tour_name);
+                                final TextView tourDate = tourBox.findViewById(R.id.date_text);
+                                final TextView tourTime = tourBox.findViewById(R.id.time_text);
+                                final TextView tourNotes = tourBox.findViewById(R.id.notes_text);
+                                final TextView tourInvites = tourBox.findViewById(R.id.invites_text);
+                                newTourName.setText(tourName.getText());
+                                newDate.setText(tourDate.getText());
+                                newTourTime.setText(tourTime.getText());
+                                newTourNotes.setText(tourNotes.getText());
+                                newInvitedText.setText(tourInvites.getText());
+                                rootLayout.addView(newTour);
+                                saveButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        behaveNormallyWhenBackIsPressed = true;
+                                        String tourText;
+                                        String dateText;
+                                        String timeText;
+                                        String notesText;
+                                        String invitedText;
+
+                                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
+                                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+
+                                        tourText = newTourName.getText().toString().trim();
+                                        dateText = newDate.getText().toString().trim();
+                                        timeText = newTourTime.getText().toString().trim();
+                                        notesText = newTourNotes.getText().toString().trim();
+                                        invitedText = newInvitedText.getText().toString().trim();
+
+                                        if (tourText.isEmpty()) tourText = "No Name";
+                                        if (dateText.isEmpty()) dateText = "No Date";
+                                        if (timeText.isEmpty()) timeText = "No Time";
+                                        if (notesText.isEmpty()) notesText = "No Notes";
+                                        if (invitedText.isEmpty()) invitedText = "No Invites";
+
+                                        tourInvites.setVisibility(View.GONE);
+
+                                        tourName.setText(tourText);
+                                        tourDate.setText(dateText);
+                                        tourTime.setText(timeText);
+                                        tourNotes.setText(notesText);
+                                        tourInvites.setText(invitedText);
+                                        ArrayList<String> tourOwners = new ArrayList<>();
+                                        ArrayList<String> acceptedList = new ArrayList<>();
+                                        ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                                        ArrayList<String> declinedList = new ArrayList<>();
+
+
+                                        //Data base changes
+
+
+                                        rootLayout.removeView(newTour);
+                                    }
+
+                                });
+                                ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
+                                discardButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        behaveNormallyWhenBackIsPressed = true;
+                                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
+                                        rootLayout.removeView(newTour);
+                                    }
+                                });
+                                /*
+                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                            String docId = documentSnapshot.getId();
+
+                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                                        }
+                                    }
+                                });
+                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("dbDelete", "Deletion successful " + tourId);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
+
+                                    }
+                                });
+                        */
                             }
                         });
 
@@ -284,11 +398,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                     Tours tours = documentSnapshot.toObject(Tours.class);
-                                                    if (tours != null){
+                                                    if (tours != null) {
                                                         tours.getPendingTourIds().add(docId);
                                                         db.collection("userTours").document(userId).set(tours);
                                                         Log.d("addTour", userId);
-                                                    }else {
+                                                    } else {
                                                         ArrayList<String> pending = new ArrayList<>();
                                                         pending.add(docId);
                                                         Tours newTours = new Tours(new ArrayList<String>(), pending);
@@ -313,7 +427,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         behaveNormallyWhenBackIsPressed = true;
-                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+                        View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
                         rootLayout.removeView(newTour);
                     }
                 });
@@ -324,24 +438,25 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     }
 
 
-    private void setupTourInvitesButton(ImageButton invitesButton, final TextView tourInvites){
+    private void setupTourInvitesButton(ImageButton invitesButton, final TextView tourInvites) {
         invitesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tourInvites.getVisibility() == View.GONE){
+                if (tourInvites.getVisibility() == View.GONE) {
                     tourInvites.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     tourInvites.setVisibility(View.GONE);
                 }
             }
         });
     }
-    private void setupToursView(String type, ArrayList<Tours.Tour> tours){
-        switch(type) {
+
+    private void setupToursView(String type, ArrayList<Tours.Tour> tours) {
+        switch (type) {
             case "Pending":
                 ArrayList<String> pendingTourIds = new ArrayList<>();
                 pendingTourIds.addAll(this.tours.getPendingTourIds());
-                for (int i = 0; i < tours.size(); i++){
+                for (int i = 0; i < tours.size(); i++) {
                     final View pendingTourBox = getLayoutInflater().inflate(R.layout.pending_tour_box, toursLinearLayout, false);
                     TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
@@ -383,7 +498,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             ImageButton acceptedInvitesButton = acceptedTourBox.findViewById(R.id.invites_button);
 
 
-
                             setupTourInvitesButton(acceptedInvitesButton, acceptedTourInvites);
                             acceptedTourBox.setTag(view.getTag());
                             acceptedTourName.setText(pendingTourName.getText().toString());
@@ -420,15 +534,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourNotes.setText(tour.notes);
                     StringBuilder sb = new StringBuilder();
                     sb.append("Accepted:\n");
-                    for (String person : tour.acceptedInvitees){
+                    for (String person : tour.acceptedInvitees) {
                         sb.append(person + "\n");
                     }
                     sb.append("\nPending:\n");
-                    for (String person: tour.pendingInvitees){
+                    for (String person : tour.pendingInvitees) {
                         sb.append(person + "\n");
                     }
                     sb.append("\nDeclined:\n");
-                    for (String person : tour.declinedInvitees){
+                    for (String person : tour.declinedInvitees) {
                         sb.append(person + "\n");
                     }
                     tourInvites.setText(sb.toString());
@@ -438,7 +552,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             case "Accepted":
                 ArrayList<String> acceptedTourIds = new ArrayList<>();
                 acceptedTourIds.addAll(this.tours.getAcceptedTourIds());
-                for (int i = 0; i < tours.size(); i++){
+                for (int i = 0; i < tours.size(); i++) {
                     final ArrayList<String> owners = new ArrayList<>(tours.get(i).tourOwners);
                     View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
                     acceptedTourBox.setTag(acceptedTourIds.get(i));
@@ -447,7 +561,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     deleteButton.setTag(acceptedTourBox);
                     editTourButton.setTag(acceptedTourBox);
                     final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
-                    if (owners.contains(user.getId())){
+                    if (owners.contains(user.getId())) {
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -458,7 +572,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                             String docId = documentSnapshot.getId();
 
                                             db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
@@ -469,7 +583,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d("dbDelete", "Deletion successful "+ tourId);
+                                        Log.d("dbDelete", "Deletion successful " + tourId);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -482,10 +596,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         editTourButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (deleteButton.getVisibility() == View.GONE){
+                                if (deleteButton.getVisibility() == View.GONE) {
                                     deleteButton.setVisibility(View.VISIBLE);
                                     editButton.setVisibility(View.VISIBLE);
-                                }else {
+                                } else {
                                     deleteButton.setVisibility(View.GONE);
                                     editButton.setVisibility(View.GONE);
                                 }
@@ -506,9 +620,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         editTourButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (deleteButton.getVisibility() == View.GONE){
+                                if (deleteButton.getVisibility() == View.GONE) {
                                     deleteButton.setVisibility(View.VISIBLE);
-                                }else {
+                                } else {
                                     deleteButton.setVisibility(View.GONE);
                                 }
                             }
@@ -533,15 +647,15 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourNotes.setText(tour.notes);
                     StringBuilder sb = new StringBuilder();
                     sb.append("Accepted:\n");
-                    for (String person : tour.acceptedInvitees){
+                    for (String person : tour.acceptedInvitees) {
                         sb.append(person + "\n");
                     }
                     sb.append("\nPending:\n");
-                    for (String person: tour.pendingInvitees){
+                    for (String person : tour.pendingInvitees) {
                         sb.append(person + "\n");
                     }
                     sb.append("\nDeclined:\n");
-                    for (String person : tour.declinedInvitees){
+                    for (String person : tour.declinedInvitees) {
                         sb.append(person + "\n");
                     }
                     tourInvites.setText(sb.toString());
@@ -567,7 +681,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                }else if (tab.getPosition() == 0){
+                } else if (tab.getPosition() == 0) {
                     Intent intent = new Intent(SocialMediaHomeActivity.this, LiveUpdates.class);
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
@@ -596,11 +710,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(behaveNormallyWhenBackIsPressed)
+        if (behaveNormallyWhenBackIsPressed)
             super.onBackPressed();
-        else{
+        else {
             behaveNormallyWhenBackIsPressed = true;
-            View newTour = rootLayout.getChildAt(rootLayout.getChildCount()-1);
+            View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
             rootLayout.removeView(newTour);
         }
     }
