@@ -44,14 +44,13 @@ public class Tours {
         public String notes;
         public List<String> acceptedInvitees;
         public List<String> pendingInvitees;
-        public List<String> declinedInvitees;
         public String latitude;
         public String longitude;
 
         public Tour() {
         }
 
-        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, List<String> declinedInvitees, String latitude, String longitude) {
+        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, String latitude, String longitude) {
             this.tourName = tourName;
             this.tourOwners = tourOwners;
             this.date = date;
@@ -59,7 +58,6 @@ public class Tours {
             this.notes = notes;
             this.acceptedInvitees = acceptedInvitees;
             this.pendingInvitees = pendingInvitees;
-            this.declinedInvitees = declinedInvitees;
             this.latitude = latitude;
             this.longitude = longitude;
         }
@@ -120,14 +118,6 @@ public class Tours {
             this.pendingInvitees = pendingInvitees;
         }
 
-        public List<String> getDeclinedInvitees() {
-            return declinedInvitees;
-        }
-
-        public void setDeclinedInvitees(ArrayList<String> declinedInvitees) {
-            this.declinedInvitees = declinedInvitees;
-        }
-
         public String getLatitude() {
             return latitude;
         }
@@ -154,7 +144,6 @@ public class Tours {
                     ", notes='" + notes + '\'' +
                     ", acceptedInvitees=" + acceptedInvitees +
                     ", pendingInvitees=" + pendingInvitees +
-                    ", declinedInvitees=" + declinedInvitees +
                     ", latitude='" + latitude + '\'' +
                     ", longitude='" + longitude + '\'' +
                     '}';
