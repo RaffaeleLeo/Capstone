@@ -1,16 +1,14 @@
 package com.example.avi;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +20,6 @@ import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,14 +28,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.Write;
-import com.google.firestore.v1.WriteResult;
 
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
 
@@ -163,10 +159,17 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 behaveNormallyWhenBackIsPressed = false;
-                View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
+                final View newTour = getLayoutInflater().inflate(R.layout.new_tour_box, rootLayout, false);
                 rootLayout.addView(newTour);
 
                 ImageButton saveButton = rootLayout.findViewById(R.id.saveButton);
+                final TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                final TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+                setUpDateListeners(newDate);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -177,12 +180,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String notesText;
                         String invitedText;
 
-                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
-                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
 
 
                         final View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
@@ -314,6 +311,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 });
 
 
+
             }
         });
     }
@@ -323,17 +321,19 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 behaveNormallyWhenBackIsPressed = false;
-                View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
+                final View newTour = getLayoutInflater().inflate(R.layout.edit_tour_box, rootLayout, false);
 
                 final View tourBox = (View) view.getTag();
                 final String tourId = (String) tourBox.getTag();
 
                 ImageButton saveButton = newTour.findViewById(R.id.saveButton);
-                TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-                TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+                final TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
+                final TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
+                final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
+                final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
+                final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+
+                setUpDateListeners(newDate);
 
                 final TextView tourName = tourBox.findViewById(R.id.tour_name);
                 final TextView tourDate = tourBox.findViewById(R.id.date_text);
@@ -355,14 +355,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String timeText;
                         String notesText;
                         String invitedText;
-
-                        final View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
-                        TextInputEditText newTourName = newTour.findViewById(R.id.tour_edit_text);
-                        TextInputEditText newDate = newTour.findViewById(R.id.date_edit_text);
-                        TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
-                        TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
-                        TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-
 
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
@@ -778,6 +770,37 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             View newTour = rootLayout.getChildAt(rootLayout.getChildCount() - 1);
             rootLayout.removeView(newTour);
         }
+    }
+
+    public void setUpDateListeners(final TextInputEditText editText) {
+        final Calendar myCalendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "MM/dd/yy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                editText.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        editText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(SocialMediaHomeActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
     }
 
 }
