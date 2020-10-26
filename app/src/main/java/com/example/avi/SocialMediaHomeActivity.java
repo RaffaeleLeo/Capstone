@@ -1,6 +1,7 @@
 package com.example.avi;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,8 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -170,6 +174,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
 
                 setUpDateListeners(newDate);
+                setUpTimeListeners(newTourTime);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -334,6 +339,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
 
                 setUpDateListeners(newDate);
+                setUpTimeListeners(newTourTime);
 
                 final TextView tourName = tourBox.findViewById(R.id.tour_name);
                 final TextView tourDate = tourBox.findViewById(R.id.date_text);
@@ -772,7 +778,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         }
     }
 
-    public void setUpDateListeners(final TextInputEditText editText) {
+    public void setUpDateListeners(final TextInputEditText editDate) {
         final Calendar myCalendar = Calendar.getInstance();
 
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -787,18 +793,41 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 String myFormat = "MM/dd/yy";
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-                editText.setText(sdf.format(myCalendar.getTime()));
+                editDate.setText(sdf.format(myCalendar.getTime()));
             }
 
         };
 
-        editText.setOnClickListener(new View.OnClickListener() {
+        editDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 new DatePickerDialog(SocialMediaHomeActivity.this, date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    public void setUpTimeListeners(final TextInputEditText editTime){
+        editTime.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Calendar mcurrentTime = Calendar.getInstance();
+                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(SocialMediaHomeActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        editTime.setText( selectedHour + ":" + selectedMinute);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
             }
         });
     }
