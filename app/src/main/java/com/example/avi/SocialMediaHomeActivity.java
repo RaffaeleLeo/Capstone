@@ -195,78 +195,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String notesText;
                         String invitedText;
 
-
-                        final View acceptedTourBox = getLayoutInflater().inflate(R.layout.tour_box, toursLinearLayout, false);
-                        TextView tourName = acceptedTourBox.findViewById(R.id.tour_name);
-                        TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
-                        TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
-                        TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
-                        final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
-                        ImageButton editTourButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
-                        ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
-                        final ImageButton deleteButton = acceptedTourBox.findViewById(R.id.delete_button);
-                        final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
-                        deleteButton.setTag(acceptedTourBox);
-                        editTourButton.setTag(acceptedTourBox);
-                        editButton.setTag(acceptedTourBox);
-                        editTourButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (deleteButton.getVisibility() == View.GONE) {
-                                    deleteButton.setVisibility(View.VISIBLE);
-                                    editButton.setVisibility(View.VISIBLE);
-                                } else {
-                                    deleteButton.setVisibility(View.GONE);
-                                    editButton.setVisibility(View.GONE);
-                                }
-                            }
-                        });
-                        deleteButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                View tourBox = (View) view.getTag();
-                                final String tourId = (String) tourBox.getTag();
-                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
-                                toursLinearLayout.removeViewAt(boxIndex);
-                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            String docId = documentSnapshot.getId();
-
-                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                        }
-                                    }
-                                });
-                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("dbDelete", "Deletion successful " + tourId);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
-                                    }
-                                });
-                            }
-                        });
-                        //Set up edit button on tours
-                        setUpEditTourInfoButton(editButton);
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
                         timeText = newTourTime.getText().toString().trim();
                         notesText = newTourNotes.getText().toString().trim();
                         invitedText = newInvitedText.getText().toString().trim();
 
-                        tourInvites.setVisibility(View.GONE);
-
-                        tourName.setText(tourText);
-                        tourDate.setText(dateText);
-                        tourTime.setText(timeText);
-                        tourNotes.setText(notesText);
-                        tourInvites.setText(invitedText);
                         ArrayList<String> tourOwners = new ArrayList<>();
                         ArrayList<String> acceptedList = new ArrayList<>();
                         ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
@@ -305,13 +239,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                         }
                                     }
                                 });
-                                acceptedTourBox.setTag(docId);
-                                toursLinearLayout.addView(acceptedTourBox);
                             }
 
                         });
                         rootLayout.removeView(newTour);
-                        setupTourInvitesButton(invitesButton, tourInvites);
                     }
                 });
                 ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
@@ -323,8 +254,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         rootLayout.removeView(newTour);
                     }
                 });
-
-
             }
         });
     }
