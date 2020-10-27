@@ -105,7 +105,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
 
 
-    public void editJournal(String name, String description, boolean is_tracking)
+    public void editJournal(String original_name, String name, String description, boolean is_tracking)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -122,7 +122,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
             cv.put("is_tracking", 0);
         }
 
-        db.update("journals", cv, "name= '"+name + "'", null);
+        db.update("journals", cv, "name= '"+original_name + "'", null);
 
         db.close();
     }
