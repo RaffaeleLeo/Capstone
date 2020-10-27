@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -27,9 +28,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
@@ -126,6 +129,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 tours = documentSnapshot.toObject(Tours.class);
                 if (tours != null) {
+
                     if (tours.getAcceptedTourIds().size() > 0) {
                         Log.d("user", tours.toString());
                         db.collection("tours").whereIn(FieldPath.documentId(), tours.getAcceptedTourIds()).get().addOnSuccessListener(
@@ -151,8 +155,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 }
                         );
                     }
+                    setUpDocListeners();
                 } else {
                     db.collection("userTours").document(mAuth.getUid()).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
+                    setUpDocListeners();
                 }
             }
         });
@@ -557,13 +563,37 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             TextView acceptedTourDate = acceptedTourBox.findViewById(R.id.date_text);
                             TextView acceptedTourTime = acceptedTourBox.findViewById(R.id.time_text);
                             TextView accepetedTourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+                            final ImageButton editTourButton = acceptedTourBox.findViewById(R.id.edit_tour_button);
+                            final ImageButton deleteButton = acceptedTourBox.findViewById(R.id.delete_button);
+                            acceptedTourBox.setTag(pendingTourBox.getTag());
+                            deleteButton.setTag(acceptedTourBox);
+                            editTourButton.setTag(acceptedTourBox);
 
                             final TextView acceptedTourInvites = acceptedTourBox.findViewById(R.id.invites_text);
                             ImageButton acceptedInvitesButton = acceptedTourBox.findViewById(R.id.invites_button);
-
+                            deleteButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    View tourBox = (View) view.getTag();
+                                    String tourId = (String) tourBox.getTag();
+                                    int boxIndex = toursLinearLayout.indexOfChild(tourBox);
+                                    toursLinearLayout.removeViewAt(boxIndex);
+                                    db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
+                                    db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayRemove(user.getEmail()));
+                                }
+                            });
+                            editTourButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (deleteButton.getVisibility() == View.GONE) {
+                                        deleteButton.setVisibility(View.VISIBLE);
+                                    } else {
+                                        deleteButton.setVisibility(View.GONE);
+                                    }
+                                }
+                            });
 
                             setupTourInvitesButton(acceptedInvitesButton, acceptedTourInvites);
-                            acceptedTourBox.setTag(view.getTag());
                             acceptedTourName.setText(pendingTourName.getText().toString());
                             acceptedTourDate.setText(pendingTourDate.getText().toString());
                             acceptedTourTime.setText(pendingTourTime.getText().toString());
@@ -828,6 +858,49 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 mTimePicker.setTitle("Select Time");
                 mTimePicker.show();
 
+            }
+        });
+    }
+
+    public void setUpDocListeners () {
+        final DocumentReference docRef = db.collection("userTours").document(mAuth.getUid());
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TourDocListener", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                   Tours newToursData = snapshot.toObject(Tours.class);
+                   ArrayList<String> currentPending = new ArrayList<>(tours.getPendingTourIds());
+                   ArrayList<String> pendingToursToAdd = new ArrayList<>();
+                   ArrayList<String> acceptedTours = new ArrayList<>(tours.getAcceptedTourIds());
+                   for (String pendingTour : newToursData.getPendingTourIds()){
+                       if (!currentPending.contains(pendingTour) && !acceptedTours.contains(pendingTour)){
+                           pendingToursToAdd.add(pendingTour);
+                           currentPending.add(pendingTour);
+                       }
+                   }
+                    tours.setPendingTourIds(currentPending);
+                    if (pendingToursToAdd.size() > 0) {
+                        db.collection("tours").whereIn(FieldPath.documentId(), pendingToursToAdd).get().addOnSuccessListener(
+                                new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        pendingUserTours.addAll(queryDocumentSnapshots.toObjects(Tours.Tour.class));
+                                        Log.d("user", pendingUserTours.get(0).toString());
+                                        setupToursView("Pending", pendingUserTours);
+                                    }
+                                }
+                        );
+                    }
+
+                } else {
+                    Log.d("TourDocListener", "Current data: null");
+                }
             }
         });
     }
