@@ -52,7 +52,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    public  User user;
+    public User user;
 
     private LinearLayout toursLinearLayout;
     private ImageButton addTourButton;
@@ -114,58 +114,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 user = documentSnapshot.toObject(User.class);
-                Log.d("user", mAuth.getUid());
+                Log.d("user", user.getId());
                 setUpModifiedTourListeners();
 
             }
         });
-        final DocumentReference userToursDocRef = db.collection("userTours").document(mAuth.getUid());
-        userToursDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-               Tours userTours = documentSnapshot.toObject(Tours.class);
-                if (userTours != null) {
-                    if (userTours.acceptedTourIds.size() > 0) {
-                        Log.d("user", userTours.toString());
-                        final Tours finalUserTours1 = userTours;
-                        db.collection("tours").whereIn(FieldPath.documentId(), userTours.getAcceptedTourIds()).get().addOnSuccessListener(
-                                new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        ArrayList<Tours.Tour> acceptedUserTours = new ArrayList<>(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                        ArrayList<String> tourIds = new ArrayList<>();
-                                        tourIds.addAll(finalUserTours1.acceptedTourIds);
-                                        Log.d("user", acceptedUserTours.get(0).toString());
-                                        setupToursView("Accepted", acceptedUserTours, tourIds);
-
-                                    }
-                                }
-                        );
-                    }
-                    if (userTours.pendingTourIds.size() > 0) {
-                        final Tours finalUserTours = userTours;
-                        db.collection("tours").whereIn(FieldPath.documentId(), userTours.getPendingTourIds()).get().addOnSuccessListener(
-                                new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        ArrayList pendingUserTours = new ArrayList<>(queryDocumentSnapshots.toObjects(Tours.Tour.class));
-                                        Log.d("user", pendingUserTours.get(0).toString());
-                                        ArrayList<String> tourIds = new ArrayList<>();
-                                        tourIds.addAll(finalUserTours.pendingTourIds);
-                                        setupToursView("Pending", pendingUserTours, tourIds);
-
-                                    }
-                                }
-                        );
-                    }
-
-                } else {
-                    db.collection("userTours").document(mAuth.getUid()).set(new Tours(new ArrayList<String>(), new ArrayList<String>()));
-                    userTours = new Tours(new ArrayList<String>(), new ArrayList<String>());
-                }
-            }
-        });
-
     }
 
     private void setupAddTour() {
@@ -204,7 +157,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ArrayList<String> tourOwners = new ArrayList<>();
                         ArrayList<String> acceptedList = new ArrayList<>();
                         ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
-                        tourOwners.add(mAuth.getUid());
+                        tourOwners.add(user.getId());
                         acceptedList.add(user.getEmail());
                         final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, "placeholder", "placeholder");
                         db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -212,7 +165,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             public void onSuccess(DocumentReference documentReference) {
                                 final String docId = documentReference.getId();
                                 Log.d("docId", docId);
-                                db.collection("userTours").document(mAuth.getUid()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
+                                db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
                                 db.collection("users").whereIn("email", tour.pendingInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -491,7 +444,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             View pendingTourBox = (View) view.getTag();
                             String tourId = (String) pendingTourBox.getTag();
-                            db.collection("userTours").document(mAuth.getUid()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
+                            db.collection("userTours").document(user.getId()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
                             db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
                         }
                     });
@@ -734,13 +687,13 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
-    public void editTour(View tourView, Tours.Tour tour){
+    public void editTour(View tourView, Tours.Tour tour) {
 
-            TextView tourName = tourView.findViewById(R.id.tour_name);
-            TextView tourDate = tourView.findViewById(R.id.date_text);
-            TextView tourTime = tourView.findViewById(R.id.time_text);
-            TextView tourNotes = tourView.findViewById(R.id.notes_text);
-            TextView tourInvites = tourView.findViewById(R.id.invites_text);
+        TextView tourName = tourView.findViewById(R.id.tour_name);
+        TextView tourDate = tourView.findViewById(R.id.date_text);
+        TextView tourTime = tourView.findViewById(R.id.time_text);
+        TextView tourNotes = tourView.findViewById(R.id.notes_text);
+        TextView tourInvites = tourView.findViewById(R.id.invites_text);
 
         tourName.setText(tour.tourName);
         tourDate.setText(tour.date);
