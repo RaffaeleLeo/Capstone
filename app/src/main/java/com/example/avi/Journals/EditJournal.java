@@ -16,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -144,15 +145,23 @@ public class EditJournal extends AppCompatActivity {
 
                     HashMap<String, Object> changes = new HashMap<String, Object>();
 
-                    Intent intent = new Intent(EditJournal.this, JournalActivity.class);
+
                     ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
 
+                    EditText jName = (EditText)findViewById(R.id.journalName);
+                    String journal_name = jName.getText().toString();
+
+                    EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
+                    String journal_description = jDesk.getText().toString();
+
                     changes.put("reminders", remindersToggle.isChecked());
+                    changes.put("name", journal_name);
+                    changes.put("description", journal_description);
 
                     ref.updateChildren(changes);
 
-                    dbHandler.editJournal(getIntent().getStringExtra("Name"), getIntent().getStringExtra("Description"), remindersToggle.isChecked());
-
+                    dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked());
+                    Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 //                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
 //                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
 //                    intent.putExtra("Tracking", getIntent().getBooleanExtra("Tracking", false));

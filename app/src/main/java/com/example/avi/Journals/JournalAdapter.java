@@ -76,7 +76,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         Journal Journal = mDataset.get(position);
         holder.nameView.setText(Journal.name);
 
-        String location_text = "Description: " + Journal.description;
+        String location_text = Journal.description;
         String span_text = "";
 
         holder.locationView.setText(location_text);
