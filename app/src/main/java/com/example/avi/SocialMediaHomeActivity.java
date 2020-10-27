@@ -157,41 +157,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ArrayList<String> tourOwners = new ArrayList<>();
                         ArrayList<String> acceptedList = new ArrayList<>();
                         ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
-                        tourOwners.add(user.getId());
+                        tourOwners.add(user.getEmail());
                         acceptedList.add(user.getEmail());
                         final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, "placeholder", "placeholder");
                         db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
-                                final String docId = documentReference.getId();
-                                Log.d("docId", docId);
-                                db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayUnion(docId));
-                                db.collection("users").whereIn("email", tour.pendingInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                            final String userId = document.getId();
-                                            Log.d("addTour", userId);
-                                            Log.d("userId", document.getId());
-                                            db.collection("userTours").document(userId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                    Tours tours = documentSnapshot.toObject(Tours.class);
-                                                    if (tours != null) {
-                                                        tours.getPendingTourIds().add(docId);
-                                                        db.collection("userTours").document(userId).set(tours);
-                                                        Log.d("addTour", userId);
-                                                    } else {
-                                                        ArrayList<String> pending = new ArrayList<>();
-                                                        pending.add(docId);
-                                                        Tours newTours = new Tours(new ArrayList<String>(), pending);
-                                                        db.collection("userTours").document(userId).set(newTours);
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
+                                Log.d("newTour", "Successfully added new Tour");
+
                             }
 
                         });
@@ -318,36 +291,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                         Log.d("TourFailure", "Edit Tour Failed in database");
                                     }
                                 });
-                                if (removeInvitees.size() > 0) {
-                                    db.collection("users").whereIn("email", removeInvitees).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                                final String userId = document.getId();
-                                                Log.d("addTour", userId);
-                                                Log.d("userId", document.getId());
-                                                db.collection("userTours").document(userId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                            }
-                                        }
-                                    });
-                                }
-                                if (addPending.size() > 0) {
-                                    db.collection("users").whereIn("email", addPending).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                                                final String userId = document.getId();
-                                                Log.d("addTour", userId);
-                                                Log.d("userId", document.getId());
-                                                db.collection("userTours").document(userId).update("pendingTourIds", FieldValue.arrayUnion(tourId));
-                                            }
-                                        }
-                                    });
-                                }
                             }
                         });
-
                         rootLayout.removeView(newTour);
                     }
 
@@ -361,31 +306,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         rootLayout.removeView(newTour);
                     }
                 });
-                                /*
-                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            String docId = documentSnapshot.getId();
-
-                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                        }
-                                    }
-                                });
-                                db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("dbDelete", "Deletion successful " + tourId);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("dbDelete", "Deletion unsuccessful " + tourId);
-
-                                    }
-                                });
-                        */
             }
         });
 
@@ -432,8 +352,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             View pendingTourBox = (View) view.getTag();
                             String tourId = (String) pendingTourBox.getTag();
-                            db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayUnion(tourId));
-                            db.collection("userTours").document(user.getId()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
                             db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayUnion(user.getEmail()));
                             db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
                         }
@@ -444,7 +362,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             View pendingTourBox = (View) view.getTag();
                             String tourId = (String) pendingTourBox.getTag();
-                            db.collection("userTours").document(user.getId()).update("pendingTourIds", FieldValue.arrayRemove(tourId));
                             db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
                         }
                     });
@@ -477,25 +394,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     editTourButton.setTag(acceptedTourBox);
                     final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
                     editButton.setTag(acceptedTourBox);
-                    if (owners.contains(user.getId())) {
+                    if (owners.contains(user.getEmail())) {
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 View tourBox = (View) view.getTag();
                                 final String tourId = (String) tourBox.getTag();
-                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
-                                toursLinearLayout.removeViewAt(boxIndex);
-                                db.collection("userTours").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            String docId = documentSnapshot.getId();
-
-                                            db.collection("userTours").document(docId).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
-                                            db.collection("userTours").document(docId).update("pendingTourIds", FieldValue.arrayRemove(tourId));
-                                        }
-                                    }
-                                });
                                 db.collection("tours").document(tourId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -529,9 +433,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             public void onClick(View view) {
                                 View tourBox = (View) view.getTag();
                                 String tourId = (String) tourBox.getTag();
-                                int boxIndex = toursLinearLayout.indexOfChild(tourBox);
-                                toursLinearLayout.removeViewAt(boxIndex);
-                                db.collection("userTours").document(user.getId()).update("acceptedTourIds", FieldValue.arrayRemove(tourId));
                                 db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayRemove(user.getEmail()));
                             }
                         });
