@@ -43,6 +43,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
+            android:name=".Snapshot.SnapshotActivity"
+            android:label="SnapShotActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+        <activity
             android:name=".FriendsActivity"
             android:label="FriendsActivity"
             android:theme="@style/AppTheme.NoActionBar" />

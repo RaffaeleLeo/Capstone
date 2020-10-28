@@ -27,6 +27,7 @@ import android.os.Bundle;
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
+import com.example.avi.Snapshot.SnapshotActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -256,6 +257,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
                 intent.putExtra("PRIOR", 1);
+                startActivity(intent);
+            }
+        });
+
+        final Button snapshot = findViewById(R.id.snapshot_button);
+        snapshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                 startActivity(intent);
             }
         });
