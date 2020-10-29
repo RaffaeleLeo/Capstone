@@ -89,6 +89,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,11 +113,21 @@
 
         <Button
             android:id="@+id/SendMessage"
-            android:layout_width="120dp"
+            android:layout_width="50dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="30dp"
+            android:text="Send"
+            android:textSize="9dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/SelectMessage"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/jumpToChat"
+            android:layout_width="50dp"
             android:layout_height="60dp"
             android:layout_marginEnd="30dp"
-            android:text="Send Message"
-            android:textSize="13dp"
+            android:text="Go to chat"
+            android:textSize="9dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

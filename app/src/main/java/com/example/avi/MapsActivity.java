@@ -274,6 +274,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 catch(NullPointerException e){
                 }
+                catch(NumberFormatException e){
+                }
             }
         });
     }
