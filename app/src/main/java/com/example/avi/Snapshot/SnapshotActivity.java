@@ -2,6 +2,8 @@ package com.example.avi.Snapshot;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.avi.Journals.JournalActivity;
@@ -13,6 +15,11 @@ import com.google.android.material.tabs.TabLayout;
 
 public class SnapshotActivity extends AppCompatActivity {
 
+    private float elevation;
+    private float aspect;
+
+    TextView elevText;
+    TextView aspectText;
 
     @Override
     protected void onResume(){
@@ -27,6 +34,16 @@ public class SnapshotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_snapshot);
         setupTabLayout();
+
+        elevation = getIntent().getFloatExtra("elevation", 0f);
+        aspect = getIntent().getFloatExtra("aspect", 0f);
+
+        elevText = findViewById(R.id.Altitude);
+        aspectText =  findViewById(R.id.Heading);
+
+        elevText.setText(Float.toString(elevation) + " FT");
+        aspectText.setText(Float.toString(aspect) + "°");
+
     }
 
 

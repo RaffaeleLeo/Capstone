@@ -181,6 +181,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
 
+        setupTabLayout();
+        requestLocationUpdates();
+
         if(intent.hasExtra("journal_name"))
         {
             this.journal_name = intent.getStringExtra("journal_name");
@@ -243,8 +246,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        setupTabLayout();
-        requestLocationUpdates();
 
         //compass stuff
 
@@ -265,8 +266,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         snapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
-                startActivity(intent);
+                try {
+                    Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
+                    intent.putExtra("elevation", Float.parseFloat(currentElevation));
+                    intent.putExtra("aspect", currentDegree);
+                    startActivity(intent);
+                }
+                catch(NullPointerException e){
+                }
             }
         });
     }
@@ -581,9 +588,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         ElevationData eleData = new ElevationData();
                         eleData.execute(lat, lon);
+                        currentElevation = eleData.get();
                         if(pop_up_view != null) {
                             TextView elevationText = (TextView) pop_up_view.findViewById(R.id.altimeter_value);
-                            currentElevation = eleData.get();
                             elevationText.setText(currentElevation);
                         }
 
