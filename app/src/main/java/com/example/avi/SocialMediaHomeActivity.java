@@ -1,7 +1,9 @@
 package com.example.avi;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,11 +34,9 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -59,6 +59,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private LinearLayout toursLinearLayout;
     private ImageButton addTourButton;
     private ConstraintLayout rootLayout;
+    private ArrayList<String> userFriendsEmails;
 
 
     @Override
@@ -83,6 +84,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         friends = (Button) findViewById(R.id.gotoFriends);
         toursLinearLayout = findViewById(R.id.tour_linear_layout);
         addTourButton = findViewById(R.id.add_tour);
+        userFriendsEmails = new ArrayList<>();
         setupAddTour();
 
         settings.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +120,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 user = documentSnapshot.toObject(User.class);
                 Log.d("user", user.getId());
                 setUpModifiedTourListeners();
+                getFriendsEmails();
 
             }
         });
@@ -137,9 +140,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+                Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
                 setUpTimeListeners(newTourTime);
+                setUpFriendsButtonDialogue(friendsButton, newInvitedText);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -159,6 +164,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         ArrayList<String> tourOwners = new ArrayList<>();
                         ArrayList<String> acceptedList = new ArrayList<>();
                         ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                        removeSpaceFromStringArray(pendingList);
                         tourOwners.add(user.getEmail());
                         acceptedList.add(user.getEmail());
                         final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, "placeholder", "placeholder");
@@ -186,6 +192,16 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
+    private void removeSpaceFromStringArray(ArrayList<String> list){
+        for (int i = 0; i < list.size();i++){
+            list.set(i, list.get(i).trim());
+            if (list.get(i).length() == 0){
+                list.remove(i);
+            }
+        }
+
+    }
+
     private void setUpEditTourInfoButton(ImageButton editButton) {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,9 +218,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+                Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
                 setUpTimeListeners(newTourTime);
+                setUpFriendsButtonDialogue(friendsButton, newInvitedText);
 
                 final TextView tourName = tourBox.findViewById(R.id.tour_name);
                 final TextView tourDate = tourBox.findViewById(R.id.date_text);
@@ -246,6 +264,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         //Data base changes
                         final String finalTourText = tourText;
                         final ArrayList<String> invitees = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                        removeSpaceFromStringArray(invitees);
                         final String finalDateText = dateText;
                         final String finalTimeText = timeText;
                         final String finalNotesText = notesText;
@@ -380,7 +399,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             sb.append(person + "\n");
                         }
                     }
-                    tourInvites.setText(sb.toString());
+                    tourInvites.setText(sb.toString().trim());
                     toursLinearLayout.addView(pendingTourBox);
                 }
                 break;
@@ -475,7 +494,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     for (String person : tour.pendingInvitees) {
                         sb.append(person + "\n");
                     }
-                    tourInvites.setText(sb.toString());
+                    tourInvites.setText(sb.toString().trim());
                     toursLinearLayout.addView(acceptedTourBox);
                 }
                 break;
@@ -611,7 +630,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 sb.append(person + "\n");
             }
         }
-        tourInvites.setText(sb.toString());
+        tourInvites.setText(sb.toString().trim());
     }
 
     public void setUpModifiedTourListeners() {
@@ -687,6 +706,83 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void getFriendsEmails() {
+        ArrayList<String> userFriends = new ArrayList<>(user.getFriends().keySet());
+        if (userFriends.size() > 0) {
+            db.collection("users").whereIn("id", userFriends).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    for (DocumentSnapshot docRef : queryDocumentSnapshots.getDocuments()) {
+                        userFriendsEmails.add(docRef.get("email").toString());
+                        Log.d("friendsList", docRef.get("email").toString());
+                    }
+                }
+            });
+        }
+    }
+    private void setUpFriendsButtonDialogue(Button friendsButton, final TextInputEditText invitees){
+        final boolean[] checkedFriends = new boolean[userFriendsEmails.size()];
+        String[] friends =  new String[userFriendsEmails.size()];
+        friends = userFriendsEmails.toArray(friends);
+        final String[] finalFriends = friends;
+        final ArrayList<Integer> userFriends = new ArrayList<>();
+        friendsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ArrayList<String> invites = new ArrayList<>(Arrays.asList(invitees.getText().toString().split("\n")));
+                removeSpaceFromStringArray(invites);
+                final ArrayList<String> originInvites = new ArrayList<>(invites);
+                Log.d("friendsList", "Friends Button Clicked");
+                Log.d("friendsList", invites.toString());
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(SocialMediaHomeActivity.this);
+                mBuilder.setTitle("Select Friends to Invite");
+                for(int i =0; i <checkedFriends.length;i++){
+                    if (invites.contains(finalFriends[i])){
+                        checkedFriends[i] = true;
+                    }
+                }
+                mBuilder.setMultiChoiceItems(finalFriends, checkedFriends, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+                    }
+                });
+                mBuilder.setCancelable(false);
+                mBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StringBuilder sb = new StringBuilder();
+                        for(int i = 0; i < checkedFriends.length; i++){
+                            if (checkedFriends[i]){
+                                if (!invites.contains(finalFriends[i])){
+                                    invites.add(finalFriends[i]);
+                                }
+                            } else {
+                                if (invites.contains(finalFriends[i])){
+                                    invites.remove(finalFriends[i]);
+                                }
+                            }
+                        }
+                        for (String friend : invites){
+                            sb.append(friend + "\n");
+                        }
+                        invitees.setText(sb.toString().trim());
+                    }
+                });
+                mBuilder.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String friend : originInvites){
+                            sb.append(friend + "\n");
+                        }
+                        invitees.setText(sb.toString().trim());
+                    }
+                });
+                mBuilder.show();
+            }
+        });
     }
 
 }
