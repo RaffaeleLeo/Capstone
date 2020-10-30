@@ -276,4 +276,10 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "delete from danger";
         db.execSQL(query);
     }
+
+    public void clearSnapshotTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "delete from snapshot";
+        db.execSQL(query);
+    }
 }

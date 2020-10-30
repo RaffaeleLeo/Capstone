@@ -15,26 +15,38 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.Message;
+import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.JournalActivity;
 import com.example.avi.LiveUpdates;
 import com.example.avi.MapsActivity;
 import com.example.avi.MyDBHandler;
 import com.example.avi.R;
 import com.example.avi.SocialMediaHomeActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SnapshotActivity extends AppCompatActivity{
 
@@ -53,6 +65,7 @@ public class SnapshotActivity extends AppCompatActivity{
 
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     private MyDBHandler dbHandler;
 
@@ -112,15 +125,51 @@ public class SnapshotActivity extends AppCompatActivity{
         mspinner.setAdapter(dataAdapter);
 
         //Populate list with all current snapshots
-        ListView slist = (ListView) findViewById(R.id.snapshot_list);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        final ListView slist = (ListView) findViewById(R.id.snapshot_list);
         final listviewAdapter adapter = new listviewAdapter(this, snapshotList);
         slist.setAdapter(adapter);
         dbHandler = new MyDBHandler(getApplicationContext(), "snapshot.db", null, 1);
         ArrayList<Snapshot> tempList = dbHandler.getAllSnapshots();
         snapshotList.clear();
         snapshotList.addAll(tempList);
+
+        if(snapshotList.size() == 0){
+            Query q = db.collection("userSnapshots").document(mAuth.getUid()).collection("snapshots");
+            q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Snapshot stemp = document.toObject(Snapshot.class);
+                            snapshotList.add(stemp);
+                            for(int i = 0; i < snapshotList.size(); i++){
+                                Snapshot s = snapshotList.get(i);
+                                String trimmed_aspect = s.getAspect().replace("°", "");
+                                int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+                                int danger = dbHandler.getDangerAtLocation(loc);
+                                snapshotList.get(i).setRating(danger + ": " + dangerDesc.get(danger));
+                            }
+                            slist.setSelection(slist.getCount() - 1);
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                    }
+                }
+            });
+        }
+
+        for(int i = 0; i < snapshotList.size(); i++){
+            Snapshot s = snapshotList.get(i);
+            String trimmed_aspect = s.getAspect().replace("°", "");
+            int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+            int danger = dbHandler.getDangerAtLocation(loc);
+            snapshotList.get(i).setRating(danger + ": " + dangerDesc.get(danger));
+        }
         slist.setSelection(slist.getCount() - 1);
         adapter.notifyDataSetChanged();
+
 
 
         mspinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -204,6 +253,7 @@ public class SnapshotActivity extends AppCompatActivity{
                     snapshotList.add(s);
                     adapter.notifyDataSetChanged();
                     snapshotName.setText("");
+                    db.collection("userSnapshots").document(mAuth.getUid()).collection("snapshots").add(s);
                 }
             }
         });
@@ -228,6 +278,18 @@ public class SnapshotActivity extends AppCompatActivity{
                         dbHandler.deleteFromSnapshot(date);
                         snapshotList.remove(position);
                         adapter.notifyDataSetChanged();
+                        Query q = db.collection("userSnapshots").document(mAuth.getUid()).collection("snapshots").whereEqualTo("date", date);
+                        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        db.collection("userSnapshots").document(mAuth.getUid()).collection("snapshots").document(document.getId()).delete();
+                                    }
+                                } else {
+                                }
+                            }
+                        });
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -36,8 +36,9 @@ public class LoadingActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
 
 
-            Intent intent = new Intent(LoadingActivity.this, ChatRoomActivity.class);
-            intent.putExtra("IsFirst", true);
+            //Intent intent = new Intent(LoadingActivity.this, ChatRoomActivity.class);
+            //intent.putExtra("IsFirst", true);
+            Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
             startActivity(intent);
         }
         else{

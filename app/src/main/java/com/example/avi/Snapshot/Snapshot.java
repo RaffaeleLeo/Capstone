@@ -15,6 +15,9 @@ public class Snapshot {
         this.date = date;
     }
 
+    public Snapshot() {
+    }
+
     public String getName() {
         return name;
     }
@@ -34,5 +37,10 @@ public class Snapshot {
     public String getDate() {
         return date;
     }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
 
 }
