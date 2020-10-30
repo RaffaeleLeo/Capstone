@@ -36,7 +36,7 @@ public class SnapshotActivity extends AppCompatActivity {
      */
     private void setupTabLayout() {
         TabLayout tabLayout = findViewById(R.id.TabLayout);
-        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 0)).select();
+        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 1)).select();
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

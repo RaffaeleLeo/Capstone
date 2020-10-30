@@ -104,21 +104,13 @@ public class LiveUpdates extends Activity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDomStorageEnabled(true);
 
-        //Here is where caching of the webpage should happen.
-        /*
-        URL youAreEl = new URL(url);
-        HttpURLConnection http =  (HttpURLConnection) youAreEl.openConnection();
-        String webpage = "";
-        try {
-            InputStream in = new BufferedInputStream(http.getInputStream());
-            webpage = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
-        } finally {
-            http.disconnect();
-        }
 
-         */
-        webView.loadUrl(url);
-        //webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
+        String webpage = "";
+        WeatherData dataGetter = new WeatherData();
+        webpage = dataGetter.doInBackground(url);
+
+        //webView.loadUrl(url);
+        webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
         viewList.add(webView);
     }
 
