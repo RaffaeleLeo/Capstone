@@ -2,11 +2,13 @@ package com.example.avi;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +23,19 @@ import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LiveUpdates extends Activity {
 
@@ -38,6 +51,7 @@ public class LiveUpdates extends Activity {
         tabLayout.getTabAt(0).select();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,21 +77,48 @@ public class LiveUpdates extends Activity {
         viewPager = findViewById(R.id.pager);
 
         webViewList = new ArrayList<View>();
-        addWebView(webViewList, "https://utahavalanchecenter.org/forecast/salt-lake");
-        addWebView(webViewList, "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
-        addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
+        try {
+            addWebView(webViewList, "https://utahavalanchecenter.org/forecast/salt-lake");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            addWebView(webViewList, "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            addWebView(webViewList, "https://utahavalanchecenter.org/avalanches");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         viewPager.setAdapter(adapter);
     }
 
-    private void addWebView(List<View> viewList, String url)
-    {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addWebView(List<View> viewList, String url) throws IOException {
         WebView webView=new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDomStorageEnabled(true);
+
+        //Here is where caching of the webpage should happen.
+        /*
+        URL youAreEl = new URL(url);
+        HttpURLConnection http =  (HttpURLConnection) youAreEl.openConnection();
+        String webpage = "";
+        try {
+            InputStream in = new BufferedInputStream(http.getInputStream());
+            webpage = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
+        } finally {
+            http.disconnect();
+        }
+
+         */
         webView.loadUrl(url);
+        //webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
         viewList.add(webView);
     }
 
