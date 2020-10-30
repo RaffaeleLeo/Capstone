@@ -270,6 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                     intent.putExtra("elevation", Float.parseFloat(currentElevation));
                     intent.putExtra("aspect", currentDegree);
+                    intent.putExtra("PRIOR", 1);
                     startActivity(intent);
                 }
                 catch(NullPointerException e){

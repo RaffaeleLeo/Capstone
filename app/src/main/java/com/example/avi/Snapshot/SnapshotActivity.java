@@ -91,7 +91,7 @@ public class SnapshotActivity extends AppCompatActivity{
     protected void onResume(){
         super.onResume();
         TabLayout tabLayout = findViewById(R.id.TabLayout);
-        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 0)).select();
+        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 1)).select();
     }
 
     @Override
