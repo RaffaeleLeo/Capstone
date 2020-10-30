@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.example.avi.ChatRoom.Message;
 import com.example.avi.Journals.JournalActivity;
 import com.example.avi.LiveUpdates;
 import com.example.avi.MapsActivity;
+import com.example.avi.MyDBHandler;
 import com.example.avi.R;
 import com.example.avi.SocialMediaHomeActivity;
 import com.google.android.material.tabs.TabLayout;
@@ -27,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class SnapshotActivity extends AppCompatActivity{
 
@@ -37,12 +41,33 @@ public class SnapshotActivity extends AppCompatActivity{
     TextView aspectText;
     Button sendButton;
     Button gotoChatButton;
+    Button saveSnapshot;
+    EditText snapshotName;
 
     private String currSelection;
     private String currFinalMessage;
 
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAuth mAuth;
+
+    private MyDBHandler dbHandler;
+
+    private ArrayList<Snapshot> snapshotList = new ArrayList<Snapshot>();
+
+    private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
+        put(0, " (No rating)");
+        put(1, " (Pockets of low danger)");
+        put(2, " (Low danger)");
+        put(3, " (Pockets of moderate danger)");
+        put(4, " (Moderate danger)");
+        put(5, " (Pockets of considerable danger)");
+        put(6, " (Considerable danger)");
+        put(7, " (Pockets of high danger)");
+        put(8, " (High danger)");
+        put(9, " (Pockets of extreme danger)");
+        put(10, " (Extreme danger)");
+
+    }};
 
 
     @Override
@@ -66,8 +91,8 @@ public class SnapshotActivity extends AppCompatActivity{
         //Set them in the header textview
         elevText = findViewById(R.id.Altitude);
         aspectText =  findViewById(R.id.Heading);
-        elevText.setText(Float.toString(elevation) + " FT");
-        aspectText.setText(Float.toString(aspect) + "°");
+        elevText.setText(elevation + " FT");
+        aspectText.setText(aspect + "°");
 
         //Set content of message spinner
         Spinner mspinner = findViewById(R.id.SelectMessage);
@@ -81,6 +106,18 @@ public class SnapshotActivity extends AppCompatActivity{
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, messageStrings);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mspinner.setAdapter(dataAdapter);
+
+        //Populate list with all current snapshots
+        ListView slist = (ListView) findViewById(R.id.snapshot_list);
+        final listviewAdapter adapter = new listviewAdapter(this, snapshotList);
+        slist.setAdapter(adapter);
+        dbHandler = new MyDBHandler(getApplicationContext(), "snapshot.db", null, 1);
+        ArrayList<Snapshot> tempList = dbHandler.getAllSnapshots();
+        snapshotList.clear();
+        snapshotList.addAll(tempList);
+        slist.setSelection(slist.getCount() - 1);
+        adapter.notifyDataSetChanged();
+
 
         mspinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -132,6 +169,53 @@ public class SnapshotActivity extends AppCompatActivity{
             }
         });
 
+        //Set up and populate snapshot list
+        saveSnapshot = findViewById(R.id.SaveSnapshot);
+        snapshotName = findViewById(R.id.NameSnapshot);
+        snapshotName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(snapshotName.getText().toString().equals("Enter name")) {
+                    snapshotName.setText("");
+                }
+            }
+        });
+
+        //Button to save snapshot in database
+        saveSnapshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(snapshotName.getText().toString().equals("")){
+                    Toast.makeText(getApplicationContext(),"Please give snapshot a name", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    String name = snapshotName.getText().toString();
+                    Date currentTime = Calendar.getInstance().getTime();
+                    String date = currentTime.toString();
+                    int loc = getCompassLocation(elevation, aspect);
+                    int danger = dbHandler.getDangerAtLocation(loc);
+                    String dangerString = danger + ": " + dangerDesc.get(danger);
+                    Snapshot s = new Snapshot(name, elevation + "", aspect + "°", dangerString, date);
+                    dbHandler.addToSnapshot(s.getName(), s.getElevation(), s.getAspect(), s.getRating(), s.getDate());
+                    snapshotList.add(s);
+                    adapter.notifyDataSetChanged();
+                    snapshotName.setText("");
+                }
+            }
+        });
+
+        slist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                Snapshot s = (Snapshot) parent.getItemAtPosition(position);
+                String date = s.getDate();
+                dbHandler.deleteFromSnapshot(date);
+                snapshotList.remove(position);
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(),"Item removed!", Toast.LENGTH_LONG).show();
+            }
+        });
 
 
     }
@@ -185,6 +269,56 @@ public class SnapshotActivity extends AppCompatActivity{
         tabLayout.addOnTabSelectedListener(listener);
 
 
+    }
+
+    private int getCompassLocation(float elevation, float degrees){
+        int res = 0;
+        if(elevation < 5000){
+            return -1;
+        }
+        else if(elevation <= 7000){
+            res = 16;
+        }
+        else if(elevation <= 8500){
+            res = 8;
+        }
+        else{
+            res = 0;
+        }
+
+        if(degrees >= 22.5 && degrees < 67.5){
+            res = res + 1;
+        }
+
+        else if(degrees >= 67.5 && degrees < 112.5){
+            res = res + 2;
+        }
+
+        else if(degrees >= 112.5 && degrees < 157.5){
+            res = res + 3;
+        }
+
+        else if(degrees >= 157.5 && degrees < 202.5){
+            res = res + 4;
+        }
+
+        else if(degrees >= 202.5 && degrees < 247.5){
+            res = res + 5;
+        }
+
+        else if(degrees >= 247.5 && degrees < 292.5){
+            res = res + 6;
+        }
+
+        else if(degrees >= 292.5 && degrees < 337.5){
+            res = res + 7;
+        }
+        else{
+            res = res + 0;
+        }
+
+
+        return res;
     }
 
 }

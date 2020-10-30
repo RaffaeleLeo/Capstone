@@ -5,12 +5,14 @@ public class Snapshot {
     private String elevation;
     private String aspect;
     private String rating;
+    private String date;
 
-    public Snapshot(String name, String elevation, String aspect, String rating) {
+    public Snapshot(String name, String elevation, String aspect, String rating, String date) {
         this.name = name;
         this.elevation = elevation;
         this.aspect = aspect;
         this.rating = rating;
+        this.date = date;
     }
 
     public String getName() {
@@ -28,4 +30,9 @@ public class Snapshot {
     public String getRating() {
         return rating;
     }
+
+    public String getDate() {
+        return date;
+    }
+
 }
