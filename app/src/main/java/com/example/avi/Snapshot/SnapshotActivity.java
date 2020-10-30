@@ -1,5 +1,8 @@
 package com.example.avi.Snapshot;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.Message;
@@ -206,15 +210,35 @@ public class SnapshotActivity extends AppCompatActivity{
 
         slist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                Snapshot s = (Snapshot) parent.getItemAtPosition(position);
-                String date = s.getDate();
-                dbHandler.deleteFromSnapshot(date);
-                snapshotList.remove(position);
-                adapter.notifyDataSetChanged();
-                Toast.makeText(getApplicationContext(),"Item removed!", Toast.LENGTH_LONG).show();
+            public void onItemClick(final AdapterView<?> parent, View view, final int position,
+                                    long id)
+            {
+//                Snapshot s = (Snapshot) parent.getItemAtPosition(position);
+//                String date = s.getDate();
+//                dbHandler.deleteFromSnapshot(date);
+//                snapshotList.remove(position);
+//                adapter.notifyDataSetChanged();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(SnapshotActivity.this);
+                builder.setMessage("Delete Snapshot?");
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Snapshot s = (Snapshot) parent.getItemAtPosition(position);
+                        String date = s.getDate();
+                        dbHandler.deleteFromSnapshot(date);
+                        snapshotList.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
+
         });
 
 
@@ -322,4 +346,24 @@ public class SnapshotActivity extends AppCompatActivity{
     }
 
 }
+
+//public class DeleteSnapshotDialogFragment extends DialogFragment {
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        // Use the Builder class for convenient dialog construction
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage("Delete Snapshot?")
+//                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//                    }
+//                })
+//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        // User cancelled the dialog
+//                    }
+//                });
+//        return builder.create();
+//    }
+//}
 
