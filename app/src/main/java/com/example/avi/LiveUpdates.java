@@ -35,6 +35,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class LiveUpdates extends Activity {
@@ -138,10 +139,17 @@ public class LiveUpdates extends Activity {
 
         String webpage = "";
         WeatherData dataGetter = new WeatherData();
-        webpage = dataGetter.doInBackground(url);
+        try {
+            webpage = dataGetter.execute(url).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //webView.loadUrl(url);
         webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
+
         viewList.add(webView);
     }
 
