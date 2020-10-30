@@ -13,12 +13,18 @@ import com.google.android.material.tabs.TabLayout;
 
 public class SnapshotActivity extends AppCompatActivity {
 
+    public float compassDegree = 0f;
+    public float incline = 0f;
+    public int dangerLevel = 0;
 
     @Override
     protected void onResume(){
         super.onResume();
         TabLayout tabLayout = findViewById(R.id.TabLayout);
-        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 0)).select();
+        tabLayout.getTabAt(getIntent().getIntExtra("PRIOR", 1)).select();
+        compassDegree = getIntent().getFloatExtra("CompassHeading", 0f);
+        incline = getIntent().getFloatExtra("Incline", 0f);
+        dangerLevel = getIntent().getIntExtra("DangerLevel", 0);
     }
 
     @Override
@@ -27,6 +33,9 @@ public class SnapshotActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_snapshot);
         setupTabLayout();
+        compassDegree = getIntent().getFloatExtra("CompassHeading", 0f);
+        incline = getIntent().getFloatExtra("Incline", 0f);
+        dangerLevel = getIntent().getIntExtra("DangerLevel", 0);
     }
 
 

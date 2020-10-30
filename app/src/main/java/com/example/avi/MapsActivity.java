@@ -94,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean hasGeomagneticData = false;
     private float rotationInDegrees;
     private String currentElevation;
+    private int currentDangerLevel;
 
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
@@ -267,6 +268,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                 intent.putExtra("PRIOR", 1);
+                intent.putExtra("CompassHeading", currentDegree);
+                intent.putExtra("Incline", incline);
+                intent.putExtra("DangerLevel", currentDangerLevel);
                 startActivity(intent);
             }
         });
@@ -456,6 +460,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //the danger based at this location.
                 if(currentElevation != null && !currentElevation.isEmpty()) {
                     int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                    this.currentDangerLevel = dbHandler.getDangerAtLocation(comp);;
                     if(pop_up_view != null) {
                         TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
