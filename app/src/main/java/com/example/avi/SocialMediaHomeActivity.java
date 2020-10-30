@@ -874,10 +874,16 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                   Tours newToursData = snapshot.toObject(Tours.class);
-                   ArrayList<String> currentPending = new ArrayList<>(tours.getPendingTourIds());
+                    Tours newToursData = snapshot.toObject(Tours.class);
+                    ArrayList<String> currentPending = new ArrayList<>();
+                    ArrayList<String> acceptedTours = new ArrayList<>();
+                    if (tours != null) {
+                        currentPending = new ArrayList<>(tours.getPendingTourIds());
+                        acceptedTours = new ArrayList<>(tours.getAcceptedTourIds());
+                    }
+
                    ArrayList<String> pendingToursToAdd = new ArrayList<>();
-                   ArrayList<String> acceptedTours = new ArrayList<>(tours.getAcceptedTourIds());
+
                    for (String pendingTour : newToursData.getPendingTourIds()){
                        if (!currentPending.contains(pendingTour) && !acceptedTours.contains(pendingTour)){
                            pendingToursToAdd.add(pendingTour);
