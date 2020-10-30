@@ -50,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
 
    private FirebaseFirestore db;
 
+    private MyDBHandler dbHandler;
+
 
 
     @Override
@@ -67,7 +69,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = (Button)findViewById(R.id.LoginButton);
         createButton = (Button)findViewById(R.id.CreateButton);
 
-        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
+        //final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "users.db", null, 1);
+        dbHandler = new MyDBHandler(getApplicationContext(), "snapshot.db", null, 1);
         mAuth = FirebaseAuth.getInstance();
 
         db = FirebaseFirestore.getInstance();
@@ -203,6 +206,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                                //requests.put("4444", "Stevie");
 //                                                User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
 //                                                db.collection("users").document(usr.getId()).set(usr);
+                                                dbHandler.clearSnapshotTable();
                                                 Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
                                                 Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
                                                 intent.putExtra("IsFirst", true);
@@ -229,10 +233,12 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
                             });
+                            dbHandler.clearSnapshotTable();
                             Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+                            //Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
 
-                            intent.putExtra("IsFirst", true);
+                            //intent.putExtra("IsFirst", true);
+                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "Email already associated with account, please log in.", Toast.LENGTH_LONG).show();
@@ -254,9 +260,11 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             catch (Exception e){
                             }
+                            dbHandler.clearSnapshotTable();
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
-                            intent.putExtra("IsFirst", true);
+//                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+//                            intent.putExtra("IsFirst", true);
+                            Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
                             Toast.makeText(getApplicationContext(), "User / password combination not found, please try again", Toast.LENGTH_LONG).show();

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import androidx.annotation.Nullable;
 
 import com.example.avi.Journals.Journal;
+import com.example.avi.Snapshot.Snapshot;
 
 import java.util.ArrayList;
 
@@ -43,6 +44,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 "overall_danger VARCHAR(20), region VARCHAR(20), date VARCHAR(20))";
 
         db.execSQL(danger);
+
+
+        String snapshot = "Create Table snapshot (name VARCHAR(100), elevation VARCHAR(20), aspect VARCHAR(10), " +
+                "danger VARCHAR(50), date VARCHAR(50))";
+
+        db.execSQL(snapshot);
     }
 
     @Override
@@ -95,10 +102,31 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void addToSnapshot(String name, String elevation, String aspect, String danger, String date){
+        ContentValues vals = new ContentValues();
+        vals.put("name", name);
+        vals.put("elevation", elevation);
+        vals.put("aspect", aspect);
+        vals.put("danger", danger);
+        vals.put("date", date);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.insertOrThrow("snapshot", null, vals);
+        db.close();
+    }
+
     public void deleteFromJournals(String name){
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete("journals", "name = '" + name + "'", null);
+
+        db.close();
+    }
+
+    public void deleteFromSnapshot(String date){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete("snapshot", "date = '" + date + "'", null);
 
         db.close();
     }
@@ -153,6 +181,30 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
 
         return Journals;
+    }
+
+    public ArrayList<Snapshot> getAllSnapshots(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("select * from snapshot",null);
+
+        ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String name = c.getString(c.getColumnIndex("name"));
+                String elevation = c.getString(c.getColumnIndex("elevation"));
+                String aspect = c.getString(c.getColumnIndex("aspect"));
+                String danger = c.getString(c.getColumnIndex("danger"));
+                String date = c.getString(c.getColumnIndex("date"));
+                Snapshot s = new Snapshot(name, elevation, aspect, danger, date);
+
+                snapshots.add(s);
+                c.moveToNext();
+
+            }
+        }
+
+        return snapshots;
     }
 
     public void add_to_data_points(String name, Double lat, Double longitude)
@@ -222,6 +274,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void clearDangerTable(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "delete from danger";
+        db.execSQL(query);
+    }
+
+    public void clearSnapshotTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "delete from snapshot";
         db.execSQL(query);
     }
 }
