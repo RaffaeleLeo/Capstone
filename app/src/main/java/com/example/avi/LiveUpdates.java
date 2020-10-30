@@ -60,7 +60,7 @@ public class LiveUpdates extends Activity {
 
         settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
         TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-        title.setText("Home");
+        title.setText("Home\nWeather Info");
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +95,37 @@ public class LiveUpdates extends Activity {
 
 
         viewPager.setAdapter(adapter);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+            @Override
+            public void onPageScrolled ( int position, float positionOffset,
+            int positionOffsetPixels){
+
+            }
+
+            @Override
+            public void onPageSelected ( int position){
+                if(position == 0)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nWeather Info");
+                }
+                if(position == 1)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nTraffic Info");
+                }
+                if(position == 2)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nAvalanche Info");
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged ( int state){
+
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
