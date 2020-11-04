@@ -5,12 +5,14 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -143,6 +145,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+                final EditText lonLatText = findViewById(R.id.coordinates_text);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
@@ -157,12 +160,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String timeText;
                         String notesText;
                         String invitedText;
+                        String coordinates;
 
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
                         timeText = newTourTime.getText().toString().trim();
                         notesText = newTourNotes.getText().toString().trim();
                         invitedText = newInvitedText.getText().toString().trim();
+                        coordinates = lonLatText.getText().toString().trim();
 
                         ArrayList<String> tourOwners = new ArrayList<>();
                         ArrayList<String> acceptedList = new ArrayList<>();
@@ -170,7 +175,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         removeSpaceFromStringArray(pendingList);
                         tourOwners.add(user.getEmail());
                         acceptedList.add(user.getEmail());
-                        final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, "placeholder", "placeholder");
+                        final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, coordinates);
                         db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
@@ -221,6 +226,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
+                final EditText newTourCoord = newTour.findViewById(R.id.coordinates_text);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
@@ -232,11 +238,13 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextView tourTime = tourBox.findViewById(R.id.time_text);
                 final TextView tourNotes = tourBox.findViewById(R.id.notes_text);
                 final TextView tourInvites = tourBox.findViewById(R.id.invites_text);
+                final TextView tourCoord = tourBox.findViewById(R.id.coordinates_text);
                 newTourName.setText(tourName.getText());
                 newDate.setText(tourDate.getText());
                 newTourTime.setText(tourTime.getText());
                 newTourNotes.setText(tourNotes.getText());
                 newInvitedText.setText(tourInvites.getText());
+                newTourCoord.setText(tourCoord.getText());
                 rootLayout.addView(newTour);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -247,12 +255,14 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String timeText;
                         String notesText;
                         String invitedText;
+                        final String coordinates;
 
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
                         timeText = newTourTime.getText().toString().trim();
                         notesText = newTourNotes.getText().toString().trim();
                         invitedText = newInvitedText.getText().toString().trim();
+                        coordinates = newTourCoord.getText().toString().trim();
 
 
                         tourInvites.setVisibility(View.GONE);
@@ -262,6 +272,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         tourTime.setText(timeText);
                         tourNotes.setText(notesText);
                         tourInvites.setText(invitedText);
+                        tourCoord.setText(coordinates);
 
 
                         //Data base changes
@@ -303,6 +314,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 tourEdit.date = finalDateText;
                                 tourEdit.time = finalTimeText;
                                 tourEdit.notes = finalNotesText;
+                                tourEdit.lonLat = coordinates;
 
                                 db.collection("tours").document(tourId).set(tourEdit).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -358,6 +370,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
                     TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
+                    TextView tourCoordinates = pendingTourBox.findViewById(R.id.coordinates_text);
                     final TextView tourInvites = pendingTourBox.findViewById(R.id.invites_text);
                     ImageButton invitesButton = pendingTourBox.findViewById(R.id.invites_button);
                     ImageButton acceptButton = pendingTourBox.findViewById(R.id.acceptButton);
@@ -367,6 +380,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourInvites.setVisibility(View.GONE);
 
                     setupTourInvitesButton(invitesButton, tourInvites);
+                    setUpCoordinatesClickListener(tourCoordinates);
                     Tours.Tour tour = tours.get(i);
                     pendingTourBox.setTag(tourIds.get(i));
                     acceptButton.setTag(pendingTourBox);
@@ -393,6 +407,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
+                    tourCoordinates.setText(tour.lonLat);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
                         sb.append(person + "\n");
@@ -476,6 +491,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     TextView tourDate = acceptedTourBox.findViewById(R.id.date_text);
                     TextView tourTime = acceptedTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = acceptedTourBox.findViewById(R.id.notes_text);
+                    TextView tourCoordinates = acceptedTourBox.findViewById(R.id.coordinates_text);
 
                     final TextView tourInvites = acceptedTourBox.findViewById(R.id.invites_text);
                     ImageButton invitesButton = acceptedTourBox.findViewById(R.id.invites_button);
@@ -483,11 +499,13 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourInvites.setVisibility(View.GONE);
 
                     setupTourInvitesButton(invitesButton, tourInvites);
+                    setUpCoordinatesClickListener(tourCoordinates);
                     Tours.Tour tour = tours.get(i);
                     tourName.setText(tour.tourName);
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
+                    tourCoordinates.setText(tour.lonLat);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
                         if (!person.equals(user.getEmail())) {
@@ -503,6 +521,18 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 break;
         }
 
+    }
+
+    private void setUpCoordinatesClickListener(final TextView coordinatesText){
+        coordinatesText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "http://maps.google.com/maps?saddr="+"&daddr="+ coordinatesText.getText().toString();
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupTabLayout() {

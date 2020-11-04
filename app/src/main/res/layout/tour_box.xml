@@ -124,13 +124,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/coordinates_text_label"
         app:layout_constraintTop_toBottomOf="@+id/invites_text"
+        android:clickable="true"
         />
     <TextView
         android:id="@+id/coordinates_text_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="17dp"
-        android:text="starting\n  point "
+        android:text="Meeting\n Coords "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/coordinates_text"
         app:layout_constraintTop_toTopOf="@+id/coordinates_text"/>

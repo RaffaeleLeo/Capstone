@@ -44,13 +44,12 @@ public class Tours {
         public String notes;
         public List<String> acceptedInvitees;
         public List<String> pendingInvitees;
-        public String latitude;
-        public String longitude;
+        public String lonLat;
 
         public Tour() {
         }
 
-        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, String latitude, String longitude) {
+        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, String lonLat) {
             this.tourName = tourName;
             this.tourOwners = tourOwners;
             this.date = date;
@@ -58,8 +57,7 @@ public class Tours {
             this.notes = notes;
             this.acceptedInvitees = acceptedInvitees;
             this.pendingInvitees = pendingInvitees;
-            this.latitude = latitude;
-            this.longitude = longitude;
+            this.lonLat = lonLat;
         }
 
         public String getTourName() {
@@ -118,20 +116,12 @@ public class Tours {
             this.pendingInvitees = pendingInvitees;
         }
 
-        public String getLatitude() {
-            return latitude;
+        public String getLonLat() {
+            return lonLat;
         }
 
-        public void setLatitude(String latitude) {
-            this.latitude = latitude;
-        }
-
-        public String getLongitude() {
-            return longitude;
-        }
-
-        public void setLongitude(String longitude) {
-            this.longitude = longitude;
+        public void setLonLat(String lonLat) {
+            this.lonLat = lonLat;
         }
 
         @Override
@@ -144,8 +134,7 @@ public class Tours {
                     ", notes='" + notes + '\'' +
                     ", acceptedInvitees=" + acceptedInvitees +
                     ", pendingInvitees=" + pendingInvitees +
-                    ", latitude='" + latitude + '\'' +
-                    ", longitude='" + longitude + '\'' +
+                    ", coordinates='" + lonLat + '\'' +
                     '}';
         }
     }
