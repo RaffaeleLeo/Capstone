@@ -27,5 +27,7 @@
     <string name="title_activity_add_journal">AddJournalActivity</string>
     <string name="title_activity_edit_journal">EditJournal</string>
 
+    <string name="friends_title"><u>Friends</u></string>
+    <string name="requests_title"><u>Requests</u></string>
 
 </resources>

@@ -13,32 +13,30 @@
         android:background="#FFFFFF"
         android:paddingTop="10dp" >
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/sendRequestInput2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-            <EditText
-                android:id="@+id/sendRequestInput2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="76dp"
-                android:ems="10"
-                android:inputType="textEmailAddress"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="400dp"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
 
-            <Button
-                android:id="@+id/sendRequestButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="36dp"
-                android:layout_marginBottom="76dp"
-                android:text="Send Request"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+            />
 
-        </LinearLayout>
+        <Button
+            android:id="@+id/sendRequestButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="0dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="20dp"
+            android:text="Send Request"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </LinearLayout>
 
