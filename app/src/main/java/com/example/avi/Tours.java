@@ -6,9 +6,9 @@ import java.util.List;
 public class Tours {
 
     //List of tourIds that a user has created or accepted
-    private List<String> acceptedTourIds;
+    public List<String> acceptedTourIds;
     //List of tourIds that a user has been invited to
-    private List<String> pendingTourIds;
+    public List<String> pendingTourIds;
 
     public Tours() {
     }

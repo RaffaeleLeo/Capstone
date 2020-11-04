@@ -1,31 +1,61 @@
 package com.example.avi;
 
 import android.os.AsyncTask;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class WeatherData extends AsyncTask<String, Integer, List> {
+public class WeatherData extends AsyncTask<String, Integer, String> {
 
     public WeatherData() {
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    protected List doInBackground(String... strings) {
-        return getWeatherData();
+    protected String doInBackground(String... url) {
+        String webpage = "";
+        try {
+            URL youAreEl = new URL(url[0]);
+            HttpURLConnection http = null;
+            http = (HttpURLConnection) youAreEl.openConnection();
+            webpage = "";
+            try {
+                InputStream in = new BufferedInputStream(http.getInputStream());
+                webpage = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
+            } finally {
+                http.disconnect();
+            }
+
+            return webpage;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        return webpage;
     }
 
 
     @Override
-    protected void onPostExecute(List result) {
+    protected void onPostExecute(String result) {
         super.onPostExecute(result);
     }
 
     //Gets the current alta guard forecast
+   /*
     public List getWeatherData() {
         int temp = 0;
         int dewPoint = 0;
@@ -181,4 +211,6 @@ public class WeatherData extends AsyncTask<String, Integer, List> {
         }
 
     }
+
+    */
 }

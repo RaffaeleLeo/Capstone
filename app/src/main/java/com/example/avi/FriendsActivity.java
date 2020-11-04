@@ -2,6 +2,7 @@ package com.example.avi;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.avi.ChatRoom.User;
@@ -46,6 +48,7 @@ public class FriendsActivity extends AppCompatActivity {
 
     String lastClicked;
 
+    View pop_up_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +58,63 @@ public class FriendsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        final Button pop_up = findViewById(R.id.show_popup);
+
+        pop_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater inflater = getLayoutInflater();
+                pop_up_view = inflater.inflate(R.layout.add_frineds_popup, null);
+
+                sendRequest = pop_up_view.findViewById(R.id.sendRequestButton2);
+                emailField = pop_up_view.findViewById(R.id.sendRequestInput2);
+
+                sendRequest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String email = emailField.getText().toString().toLowerCase().trim();
+                        db.collection("users").whereEqualTo("email", email).get()
+                                .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                document.getId();
+                                                String id = mAuth.getUid();
+                                                String dest = "requests." + id;
+                                                db.collection("users").document(document.getId())
+                                                        .update(
+                                                                dest, mAuth.getCurrentUser().getDisplayName()
+                                                        );
+                                                emailField.setText("");
+                                                Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+                                            }
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+                                            emailField.setText("");
+                                        }
+                                    }
+                                }));
+                    }
+                });
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
+                builder.setView(pop_up_view);
+                AlertDialog alertDialog = builder.create();
+                builder.show();
+
+
+            }
+        });
+
         friends = findViewById(R.id.friends_list);
         requests = findViewById(R.id.request_list);
         accept = findViewById(R.id.AcceptButton);
         ignore = findViewById(R.id.IgnoreButton);
-        sendRequest = findViewById(R.id.sendRequestButton);
-        emailField = findViewById(R.id.sendRequestInput);
+        //sendRequest = findViewById(R.id.sendRequestButton);
+        //emailField = findViewById(R.id.sendRequestInput);
 
         final ArrayList<String> friendsList = new ArrayList<>();
         friendsTracker = new ArrayList<>();
@@ -185,34 +239,36 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
 
-        sendRequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String email = emailField.getText().toString().toLowerCase().trim();
-                db.collection("users").whereEqualTo("email", email).get()
-                        .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        document.getId();
-                                        String id = mAuth.getUid();
-                                        String dest = "requests." + id;
-                                        db.collection("users").document(document.getId())
-                                                .update(
-                                                        dest, mAuth.getCurrentUser().getDisplayName()
-                                                );
-                                        emailField.setText("");
-                                        Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
-                                    }
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                    emailField.setText("");
-                                }
-                            }
-                        }));
-            }
-        });
+//        sendRequest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final String email = emailField.getText().toString().toLowerCase().trim();
+//                db.collection("users").whereEqualTo("email", email).get()
+//                        .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                if (task.isSuccessful()) {
+//                                    for (QueryDocumentSnapshot document : task.getResult()) {
+//                                        document.getId();
+//                                        String id = mAuth.getUid();
+//                                        String dest = "requests." + id;
+//                                        db.collection("users").document(document.getId())
+//                                                .update(
+//                                                        dest, mAuth.getCurrentUser().getDisplayName()
+//                                                );
+//                                        emailField.setText("");
+//                                        Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+//                                    }
+//                                } else {
+//                                    Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+//                                    emailField.setText("");
+//                                }
+//                            }
+//                        }));
+//            }
+//        });
+
+
 
 
 

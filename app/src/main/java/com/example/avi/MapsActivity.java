@@ -27,6 +27,7 @@ import android.os.Bundle;
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
+import com.example.avi.Snapshot.SnapshotActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -93,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean hasGeomagneticData = false;
     private float rotationInDegrees;
     private String currentElevation;
+    private int currentDangerLevel;
 
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
@@ -223,12 +225,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                final Dialog fbDialogue = new Dialog(MapsActivity.this, android.R.style.Theme_Black_NoTitleBar);
-//                fbDialogue.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(100, 0, 0, 0)));
-//                fbDialogue.setContentView(R.layout.sensors_layout);
-//                fbDialogue.setCancelable(true);
-//                requestLocationUpdates();
-//                fbDialogue.show();
 
                 LayoutInflater inflater = getLayoutInflater();
                 pop_up_view = inflater.inflate(R.layout.sensors_layout, null);
@@ -256,6 +252,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
                 intent.putExtra("PRIOR", 1);
+                startActivity(intent);
+            }
+        });
+
+        final Button snapshot = findViewById(R.id.snapshot_button);
+        snapshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
+                intent.putExtra("PRIOR", 1);
+                intent.putExtra("CompassHeading", currentDegree);
+                intent.putExtra("Incline", incline);
+                intent.putExtra("DangerLevel", currentDangerLevel);
                 startActivity(intent);
             }
         });
@@ -445,6 +454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //the danger based at this location.
                 if(currentElevation != null && !currentElevation.isEmpty()) {
                     int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                    this.currentDangerLevel = dbHandler.getDangerAtLocation(comp);;
                     if(pop_up_view != null) {
                         TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
