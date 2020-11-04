@@ -43,6 +43,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     Boolean isVisible;
 
     private DatabaseReference mFirebaseDatabaseReference;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onStart(){
@@ -65,12 +66,11 @@ public class ChatRoomActivity extends AppCompatActivity {
         setupTabLayout();
 
         mAdapter = new MessageAdapter(this);
-        sendButton = (ImageButton) findViewById(R.id.sendButton);
         messageView = (ListView) findViewById(R.id.messages_view);
         messageView.setAdapter(mAdapter);
-        editText = (EditText) findViewById(R.id.editText);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         final DatabaseReference ref = database.getReference("messages");
         ref.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -80,17 +80,19 @@ public class ChatRoomActivity extends AppCompatActivity {
                 List<DataSnapshot> childList = Lists.newArrayList(dataSnapshot.getChildren());
                 for(int i = 0; i<childList.size(); i++) {
                     DataSnapshot child = childList.get(i);
-                    String sender = child.child("sender").getValue(String.class);
+                    String id = child.child("id").getValue(String.class);
                     String message = child.child("message").getValue(String.class);
+                    String userName = "Anonymous";
                     boolean currentUser = false;
-                    if(sender.equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())){
+                    if(id.equals(mAuth.getUid())){
                         currentUser = true;
+                        userName = "Me";
                     }
-                    final Message msg = new Message(message, sender, currentUser);
+                    final Message msg = new Message(message, id, userName, currentUser);
 
                     if(i == childList.size() - 1 && !currentUser && !isVisible && !getIntent().getBooleanExtra("IsFirst", false)) {
                         Notifications notifier = new Notifications();
-                        notifier.notification("New Message from " + sender, message, 0, getApplicationContext());
+                        notifier.notification("New Message from Anonymous", message, 0, getApplicationContext());
                     }
 
                     runOnUiThread(new Runnable() {
@@ -110,33 +112,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         });
 
 
-
-
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                User usr1 = new User("User1");
-//                User usr2 = new User("Me");
-//
-//                final Message msg1 = new Message("Hello", usr1, false);
-//                final Message msg2 = new Message("Hi", usr2, true);
-
-                final Message msg = new Message(editText.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), true);
-                ref.push().setValue(msg);
-                editText.setText("");
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-////                        mAdapter.add(msg1);
-////                        messageView.setSelection(messageView.getCount() - 1);
-////                        mAdapter.add(msg2);
-////                        messageView.setSelection(messageView.getCount() - 1);
-//                    }
-//                });
-//
-//                editText.setText("");
-            }
-        });
 
         //The first time this method is called is when the app is starting up. The app will go here first and then to the proper starting point.
         //That way, the notifications for chat messages will begin.

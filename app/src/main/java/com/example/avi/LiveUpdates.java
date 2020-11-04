@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -34,7 +35,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class LiveUpdates extends Activity {
@@ -60,7 +64,7 @@ public class LiveUpdates extends Activity {
 
         settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
         TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-        title.setText("Home");
+        title.setText("Home\nWeather Info");
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +99,37 @@ public class LiveUpdates extends Activity {
 
 
         viewPager.setAdapter(adapter);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+            @Override
+            public void onPageScrolled ( int position, float positionOffset,
+            int positionOffsetPixels){
+
+            }
+
+            @Override
+            public void onPageSelected ( int position){
+                if(position == 0)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nWeather Info");
+                }
+                if(position == 1)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nTraffic Info");
+                }
+                if(position == 2)
+                {
+                    TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+                    title.setText("Home\nAvalanche Info");
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged ( int state){
+
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -106,12 +141,36 @@ public class LiveUpdates extends Activity {
 
 
         String webpage = "";
-        WeatherData dataGetter = new WeatherData();
-        webpage = dataGetter.doInBackground(url);
 
-        //webView.loadUrl(url);
-        webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
-        viewList.add(webView);
+        if ( (url == "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/") || ( (System.currentTimeMillis() -
+                this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0)) > 86400000)
+                || (this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) <
+                new Date( Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), 8, 0).getSeconds() * 1000 )) {
+            WeatherData dataGetter = new WeatherData();
+            try {
+                webpage = dataGetter.execute(url).get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //webView.loadUrl(url);
+            webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
+
+            viewList.add(webView);
+
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(url, webpage);
+            editor.putLong(url + "when?", System.currentTimeMillis());
+            editor.commit();
+        }
+        else
+        {
+            webView.loadData(this.getApplicationContext().getSharedPreferences("Prefs", 0).getString(url, ""), "text/html; charset=utf-8", "UTF-8");
+            viewList.add(webView);
+        }
     }
 
     /* preserving for future

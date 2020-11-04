@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/snapshot_constraint"
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:alwaysDrawnWithCache="false"
-    android:animateLayoutChanges="false"
-    android:background="@drawable/avi_logo">
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
-        android:id="@+id/avi_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/avi_logo" />
+        android:layout_width="wrap_content"
+        android:layout_height="709dp"
+        android:layout_gravity="top"
+        android:background="#87FFFF"
+        android:src="@drawable/avi_logo" />
 
-    <include
-        android:id="@+id/TabLayout"
-        layout="@layout/bottom_tab_layout"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:clipToPadding="false"
+    android:focusableInTouchMode="true"
+    >
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/location_layout"
@@ -36,9 +34,9 @@
 
         <TextView
             android:id="@+id/Altitude"
-            android:layout_width="120dp"
+            android:layout_width="180dp"
             android:layout_height="60dp"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="20dp"
             android:text="8000 ft"
             android:textSize="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +47,7 @@
             android:id="@+id/Heading"
             android:layout_width="120dp"
             android:layout_height="60dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="15dp"
             android:text="50°"
             android:textSize="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -89,6 +87,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,11 +111,21 @@
 
         <Button
             android:id="@+id/SendMessage"
-            android:layout_width="120dp"
+            android:layout_width="50dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="30dp"
+            android:text="Send"
+            android:textSize="9dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/SelectMessage"
+            app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/jumpToChat"
+            android:layout_width="50dp"
             android:layout_height="60dp"
             android:layout_marginEnd="30dp"
-            android:text="Send Message"
-            android:textSize="13dp"
+            android:text="Go to chat"
+            android:textSize="9dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -128,7 +137,7 @@
     <LinearLayout
         android:id="@+id/viewSnapshots"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="10dp"
@@ -146,7 +155,7 @@
         <TextView
             android:layout_width = "0dp"
             android:layout_height = "wrap_content"
-            android:layout_weight = "1"
+            android:layout_weight = "1.2"
             android:gravity = "center"
             android:padding = "5dp"
             android:text = "Elevation"
@@ -155,7 +164,7 @@
         <TextView
             android:layout_width = "0dp"
             android:layout_height = "wrap_content"
-            android:layout_weight = "1"
+            android:layout_weight = "1.0"
             android:gravity = "center"
             android:padding = "5dp"
             android:text = "Aspect"
@@ -164,7 +173,7 @@
         <TextView
             android:layout_width = "0dp"
             android:layout_height = "wrap_content"
-            android:layout_weight = "1.5"
+            android:layout_weight = "2.0"
             android:gravity = "center"
             android:padding = "5dp"
             android:text = "Danger"
@@ -174,11 +183,16 @@
     <ListView
         android:id = "@+id/snapshot_list"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:layout_constraintTop_toBottomOf="@id/send_message_layout"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="40dp"
         android:divider = "@null"/>
 
+    <include layout = "@layout/bottom_tab_layout"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>
+
+</FrameLayout>

@@ -74,28 +74,34 @@ public class FriendsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         final String email = emailField.getText().toString().toLowerCase().trim();
-                        db.collection("users").whereEqualTo("email", email).get()
-                                .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                document.getId();
-                                                String id = mAuth.getUid();
-                                                String dest = "requests." + id;
-                                                db.collection("users").document(document.getId())
-                                                        .update(
-                                                                dest, mAuth.getCurrentUser().getDisplayName()
-                                                        );
+                        if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
+                            db.collection("users").whereEqualTo("email", email).get()
+                                    .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    document.getId();
+                                                    String id = mAuth.getUid();
+                                                    String dest = "requests." + id;
+                                                    db.collection("users").document(document.getId())
+                                                            .update(
+                                                                    dest, mAuth.getCurrentUser().getDisplayName()
+                                                            );
+                                                    emailField.setText("");
+                                                    Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
                                                 emailField.setText("");
-                                                Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
                                             }
-                                        } else {
-                                            Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                            emailField.setText("");
                                         }
-                                    }
-                                }));
+                                    }));
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
+                            emailField.setText("");
+                        }
                     }
                 });
 
@@ -238,39 +244,40 @@ public class FriendsActivity extends AppCompatActivity {
                 }
             }
         });
-
 //        sendRequest.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                final String email = emailField.getText().toString().toLowerCase().trim();
-//                db.collection("users").whereEqualTo("email", email).get()
-//                        .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                if (task.isSuccessful()) {
-//                                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                                        document.getId();
-//                                        String id = mAuth.getUid();
-//                                        String dest = "requests." + id;
-//                                        db.collection("users").document(document.getId())
-//                                                .update(
-//                                                        dest, mAuth.getCurrentUser().getDisplayName()
-//                                                );
+//                if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
+//                    db.collection("users").whereEqualTo("email", email).get()
+//                            .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                    if (task.isSuccessful()) {
+//                                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                                            document.getId();
+//                                            String id = mAuth.getUid();
+//                                            String dest = "requests." + id;
+//                                            db.collection("users").document(document.getId())
+//                                                    .update(
+//                                                            dest, mAuth.getCurrentUser().getDisplayName()
+//                                                    );
+//                                            emailField.setText("");
+//                                            Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+//                                        }
+//                                    } else {
+//                                        Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
 //                                        emailField.setText("");
-//                                        Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
 //                                    }
-//                                } else {
-//                                    Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-//                                    emailField.setText("");
 //                                }
-//                            }
-//                        }));
+//                            }));
+//                }
+//                else {
+//                    Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
+//                    emailField.setText("");
+//                }
 //            }
 //        });
-
-
-
-
 
         setupTabLayout();
     }

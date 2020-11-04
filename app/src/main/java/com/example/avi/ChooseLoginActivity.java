@@ -53,6 +53,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 
     private CallbackManager mCallbackManager;
 
+    private MyDBHandler dbHandler;
 
     Button pseudoFacebook;
 
@@ -61,6 +62,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_login_method);
 
+        dbHandler = new MyDBHandler(getApplicationContext(), "snapshot.db", null, 1);
 
         //facebookButton = (ImageButton) findViewById(R.id.facebookButton);
         Button googleButton = findViewById(R.id.googleButton);
@@ -185,10 +187,12 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            //requests.put("1234", "Bill");
 //                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
 //                            db.collection("users").document(usr.getId()).set(usr);
-
+                            dbHandler.clearSnapshotTable();
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
-                            intent.putExtra("IsFirst", true);
+//                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
+//                            intent.putExtra("IsFirst", true);
+                            Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
+                            startActivity(intent);
                             startActivity(intent);
                         }
                         else {
@@ -235,10 +239,11 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            //requests.put("2345", "Ted");
 //                            User usr = new User(user.getUid(), user.getDisplayName(), user.getEmail(), friends, requests);
 //                            db.collection("users").document(usr.getId()).set(usr);
-
+                            dbHandler.clearSnapshotTable();
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
-                            intent.putExtra("IsFirst", true);
+//                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
+//                            intent.putExtra("IsFirst", true);
+                            Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
