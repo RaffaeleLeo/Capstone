@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class EditJournal extends AppCompatActivity {
 
@@ -75,6 +76,44 @@ public class EditJournal extends AppCompatActivity {
             }
         });
 
+        Button upload = findViewById(R.id.upload_journal);
+
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                upload_joural(intent);
+
+            }
+        });
+
+    }
+
+    private void upload_joural(Intent Intent)
+    {
+        String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Journal Journal = (Journal) Intent.getSerializableExtra("journal");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
+
+        EditText jName = (EditText)findViewById(R.id.journalName);
+        Journal.name = jName.getText().toString();
+
+        EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
+        Journal.description = jDesk.getText().toString();
+
+        if (Journal != null) {
+            //Save the journal data to the database//
+            ref.child(Journal.name).setValue(Journal);
+        }
+
+        final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
+                "data_points.db", null, 1);
+        List<Double> coords = dbHandler_location.getAllData(Intent.getStringExtra("Name"));
+
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference(
+                currentUser + "/journals/" + Journal.name + "/coordinates");
+        ref2.setValue(coords);
+
+        Toast.makeText(EditJournal.this, "Successfully uploaded to cloud", Toast.LENGTH_LONG).show();
     }
 
     private void showPathOnMap(Intent intent)
@@ -137,15 +176,12 @@ public class EditJournal extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
 //                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes save changes to the Journal");
-
                     //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
-                    String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                            currentUser + "/journals").child(journal_name);
-
-                    HashMap<String, Object> changes = new HashMap<String, Object>();
-
-
+//                    String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
+//                            currentUser + "/journals").child(journal_name);
+//
+//                    HashMap<String, Object> changes = new HashMap<String, Object>();
                     ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
 
                     EditText jName = (EditText)findViewById(R.id.journalName);
@@ -153,19 +189,16 @@ public class EditJournal extends AppCompatActivity {
 
                     EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
                     String journal_description = jDesk.getText().toString();
-
-                    changes.put("reminders", remindersToggle.isChecked());
-                    changes.put("name", journal_name);
-                    changes.put("description", journal_description);
-
-                    ref.updateChildren(changes);
-
+//                    changes.put("reminders", remindersToggle.isChecked());
+//                    changes.put("name", journal_name);
+//                    changes.put("description", journal_description);
+//
+//                    ref.updateChildren(changes);
                     dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked());
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 //                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
 //                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
 //                    intent.putExtra("Tracking", getIntent().getBooleanExtra("Tracking", false));
-
                     startActivity(intent);
                 }
             });

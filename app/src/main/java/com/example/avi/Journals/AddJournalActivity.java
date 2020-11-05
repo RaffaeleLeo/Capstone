@@ -110,12 +110,12 @@ public class AddJournalActivity extends AppCompatActivity {
 
         String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
-
-        if (Journal != null) {
-            //Save the journal data to the database//
-            ref.child(Journal.name).setValue(Journal);
-        }
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
+//
+//        if (Journal != null) {
+//            //Save the journal data to the database//
+//            ref.child(Journal.name).setValue(Journal);
+//        }
 
         //add journal to database
         if(Journal.start_recording)

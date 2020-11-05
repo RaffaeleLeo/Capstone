@@ -120,11 +120,11 @@ public class TrackingService extends Service {
 
                             //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
                             String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-                                    currentUser + "/journals/" + j.name + "/latlong");
+//                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
+//                                    currentUser + "/journals/" + j.name + "/latlong");
                             Date timeStamp = new Date();
                             String s = timeStamp.toString();
-                            ref.child(s).setValue(lat + lon);
+//                            ref.child(s).setValue(lat + lon);
                         }
                     }
 

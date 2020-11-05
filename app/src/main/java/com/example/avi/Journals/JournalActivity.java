@@ -83,33 +83,6 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         recyclerView.setLayoutManager(layoutManager);
 
         Journals = new ArrayList<Journal>();
-
-        //IF WE ARE USING FIREBASE THIS WILL BE USEFUL
-        /**
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(LoginActivity.USER_EMAIL + "/Journals");
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap<String, HashMap<String, Object>> journal_data =  (HashMap<String, HashMap<String, Object>>) dataSnapshot.getValue();
-
-                if(journal_data == null)
-                {
-                    return;
-                }
-
-                for(String POI_name : journal_data.keySet()){
-                    mAdapter.addJournal(journal_data.get(Journal_name));
-                }
-                mAdapter.notifyDataSetChanged();
-//                System.out.println(Jornals.keySet());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        **/
         Journals = dbHandler.getAllJournals();
         mAdapter = new JournalAdapter(Journals, this);
 
@@ -125,19 +98,6 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         tabLayout.getTabAt(2).select();
 
         Intent intent = getIntent();
-
-//        Journal j = new Journal();
-//        j.description = intent.getStringExtra("Name");
-//        j.name = intent.getStringExtra("Description");
-//        j.start_recording = intent.getBooleanExtra("Tracking", false);
-//        j.data_points = null;
-
-//        if(j.description != null)
-//        {
-//            Journals.add(j);
-//        }
-
-
         for(int i = 0; i < Journals.size(); i++){
 
             JournalAdapter.JournalViewHolder holder = (JournalAdapter.JournalViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
@@ -164,6 +124,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         intent.putExtra("Name", Journal.name);
         intent.putExtra("Description", Journal.description);
         intent.putExtra("Tracking", Journal.start_recording);
+        intent.putExtra("journal", Journal);
 
 
         startActivity(intent);
