@@ -32,8 +32,8 @@ public class NotificationChecker extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
-        System.exit(0);
-        //System.out.println("Created Service");
+        //System.exit(0);
+        /*System.out.println("Created Service");
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         final DatabaseReference ref = database.getReference("messages");
@@ -62,16 +62,16 @@ public class NotificationChecker extends Service {
                     }
 
                     /*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.add(msg);
-                            messageView.setSelection(messageView.getCount() - 1);
-                        }
-                    });
+                    //runOnUiThread(new Runnable() {
+                    //    @Override
+                    //    public void run() {
+                    //        mAdapter.add(msg);
+                    //        messageView.setSelection(messageView.getCount() - 1);
+                    //    }
+                    //});
 
-                     */
-                }
+
+         //       }
             }
 
             @Override
@@ -79,6 +79,7 @@ public class NotificationChecker extends Service {
 
             }
         });
+        */
         return super.onStartCommand(intent, flags, startID);
     }
 

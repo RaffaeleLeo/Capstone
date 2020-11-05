@@ -21,7 +21,6 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".NotificationChecker"
-            android:enabled="true"
             android:exported="true"></service>
 
         <activity
