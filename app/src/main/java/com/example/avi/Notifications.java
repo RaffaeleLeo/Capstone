@@ -14,7 +14,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class Notifications {
     
-    //Sends a notificaiton.
+    //Sends a notification.
    @RequiresApi(api = Build.VERSION_CODES.O)
    public void notification(String title, String text, int notificationId, Context context){
 
