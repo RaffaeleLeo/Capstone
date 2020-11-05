@@ -208,10 +208,16 @@ public class LoginActivity extends AppCompatActivity {
 //                                                db.collection("users").document(usr.getId()).set(usr);
                                                 dbHandler.clearSnapshotTable();
                                                 Toast.makeText(getApplicationContext(), "Welcome!", Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
+                                                /*Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
                                                 intent.putExtra("IsFirst", true);
                                                 startActivity(intent);
+                                                */
+                                                startService(new Intent(LoginActivity.this, NotificationChecker.class));
+
+                                                Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
+                                                startActivity(intent);
                                             }
+
                                         }
                                     });
                             DocumentReference docRef = db.collection("users").document(user.getUid());
@@ -238,6 +244,8 @@ public class LoginActivity extends AppCompatActivity {
                             //Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
 
                             //intent.putExtra("IsFirst", true);
+                            startService(new Intent(LoginActivity.this, NotificationChecker.class));
+
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {
@@ -264,6 +272,8 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
 //                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
+                            startService(new Intent(LoginActivity.this, NotificationChecker.class));
+
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {

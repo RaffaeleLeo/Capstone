@@ -191,6 +191,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
+                            startService(new Intent(ChooseLoginActivity.this, NotificationChecker.class));
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                             startActivity(intent);
@@ -243,6 +244,8 @@ public class ChooseLoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
+                            startService(new Intent(ChooseLoginActivity.this, NotificationChecker.class));
+
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
                             startActivity(intent);
                         } else {

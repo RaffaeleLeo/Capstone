@@ -90,10 +90,13 @@ public class ChatRoomActivity extends AppCompatActivity {
                     }
                     final Message msg = new Message(message, id, userName, currentUser);
 
+                    /*
                     if(i == childList.size() - 1 && !currentUser && !isVisible && !getIntent().getBooleanExtra("IsFirst", false)) {
                         Notifications notifier = new Notifications();
                         notifier.notification("New Message from Anonymous", message, 0, getApplicationContext());
                     }
+
+                     */
 
                     runOnUiThread(new Runnable() {
                     @Override
