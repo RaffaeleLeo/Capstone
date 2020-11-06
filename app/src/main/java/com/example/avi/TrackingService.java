@@ -13,9 +13,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import android.content.SharedPreferences;
@@ -37,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class TrackingService extends Service {
+public class TrackingService extends IntentService {
 
     private static final String TAG = TrackingService.class.getSimpleName();
 
@@ -45,9 +47,28 @@ public class TrackingService extends Service {
 
     FusedLocationProviderClient client;
 
+    /**
+     * Creates an IntentService.  Invoked by your subclass's constructor.
+     *
+     * @param name Used to name the worker thread, important only for debugging.
+     */
+    public TrackingService(String name) {
+        super(name);
+    }
+
+    public TrackingService() {
+        super("");
+    }
+
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+
     }
 
     @Override
