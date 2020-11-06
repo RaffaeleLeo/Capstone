@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
+import android.location.LocationManager;
 import android.os.IBinder;
 import android.content.Intent;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class TrackingService extends Service {
 
     public static SharedPreferences sp;
 
+    FusedLocationProviderClient client;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -52,6 +54,7 @@ public class TrackingService extends Service {
     public void onCreate() {
         super.onCreate();
         sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         //buildNotification();
         loginToDatabase();
         requestLocationUpdates();
@@ -84,12 +87,12 @@ public class TrackingService extends Service {
         LocationRequest request = new LocationRequest();
 
         //How often the app will track the users location
-        request.setInterval(100000);
+        request.setInterval(10000);
 
 
         //Try to get as accurate of an approximation as we can
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        final FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+        client = LocationServices.getFusedLocationProviderClient(this);
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -111,13 +114,13 @@ public class TrackingService extends Service {
                             "data_points.db", null, 1);
                     ArrayList<Journal> Journals = new ArrayList<Journal>();
                     Journals = dbHandler.getAllJournals();
-
+                    Log.d("Tracking", "In location result callback");
                     for(Journal j : Journals)
                     {
                         if(j.start_recording)
                         {
                             dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
-
+                            Log.d("Tracking", "Storing coords in journals");
                             //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
                             String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference(

@@ -1,14 +1,17 @@
 package com.example.avi;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.facebook.AccessToken;
@@ -28,20 +31,16 @@ public class LoadingActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
-
-        if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
+        if (mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null) {
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
-
-
             //Intent intent = new Intent(LoadingActivity.this, ChatRoomActivity.class);
             //intent.putExtra("IsFirst", true);
             Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
             startActivity(intent);
-        }
-        else{
+        } else {
 
 
             Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
@@ -55,7 +54,6 @@ public class LoadingActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         AccessToken.getCurrentAccessToken();
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("969128169123-acm8ho281ikele7r252r4urcspbf0qvs.apps.googleusercontent.com")
                 .requestEmail()
@@ -64,29 +62,27 @@ public class LoadingActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
+        if (mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null) {
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+                Intent intent = new Intent(this, TrackingService.class);
+                startService(intent);
+            }
 
             //CHANGE THIS LINE?
             Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
 
             startActivity(intent);
-        }
-        else{
+        } else {
             Intent intent = new Intent(LoadingActivity.this, ChooseLoginActivity.class);
             startActivity(intent);
         }
 
 
-
-
-
-
-
     }
-
-
-
 
 
 }
