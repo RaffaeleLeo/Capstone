@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 intent.putExtra("IsFirst", true);
                                                 startActivity(intent);
                                                 */
-                                                //Intent sIntent = new Intent(LoginActivity.this, TrackingService.class);
+                                                //Intent sIntent = new Intent(LoginActivity.this, NotificationChecker.class);
                                                 //startService(sIntent);
 
                                                 Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
@@ -245,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
                             //Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
 
                             //intent.putExtra("IsFirst", true);
-                            //Intent sIntent = new Intent(LoginActivity.this, TrackingService.class);
+                            //Intent sIntent = new Intent(LoginActivity.this, NotificationChecker.class);
                             //startService(sIntent);
 
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);
@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
 //                            Intent intent = new Intent(LoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
-                            //Intent sIntent = new Intent(LoginActivity.this, TrackingService.class);
+                            //Intent sIntent = new Intent(LoginActivity.this, NotificationChecker.class);
                             //startService(sIntent);
 
                             Intent intent = new Intent(LoginActivity.this, LiveUpdates.class);

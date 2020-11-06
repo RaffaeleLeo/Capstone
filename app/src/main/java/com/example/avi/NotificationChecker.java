@@ -26,26 +26,25 @@ import java.util.List;
 
 public class NotificationChecker extends Service {
 
-    //private DatabaseReference mFirebaseDatabaseReference;
-    //private FirebaseAuth mAuth;
-    //private Context context;
+    private DatabaseReference mFirebaseDatabaseReference;
+    private FirebaseAuth mAuth;
+    private Context context;
 
     public NotificationChecker() {
     }
 
-    /*
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
-        //context = this;
-        //Intent intention = new Intent(this, SnapshotActivity.class);
-        //startActivity(intention);
-        //controlNotifications();
+        context = this;
+        //System.exit(0);
+        controlNotifications();
 
         return super.onStartCommand(intent, flags, startID);
     }
-    */
 
-    /*
+
+
     public void controlNotifications()
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -90,14 +89,16 @@ public class NotificationChecker extends Service {
 
     }
 
-     */
+    @Override
+    public boolean stopService (Intent service){
+        return true;
+        //Does nothing.
+    }
 
     @Override
     public void onCreate(){
         super.onCreate();
-        //context = this;
-        //Intent intention = new Intent(this, SnapshotActivity.class);
-        //startActivity(intention);
+
     }
 
     @Override
