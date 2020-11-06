@@ -37,6 +37,7 @@ public class NotificationChecker extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
         context = this;
+        //System.out.println("Starting service");
         //System.exit(0);
         controlNotifications();
 
@@ -59,7 +60,7 @@ public class NotificationChecker extends Service {
                 List<DataSnapshot> childList = Lists.newArrayList(dataSnapshot.getChildren());
                 for (int i = 0; i < childList.size(); i++) {
 
-                    //if (i == childList.size() - 1)
+                    if (i == childList.size() - 1)
                     {
                         DataSnapshot child = childList.get(i);
                         String id = child.child("id").getValue(String.class);
@@ -97,7 +98,9 @@ public class NotificationChecker extends Service {
 
     @Override
     public void onCreate(){
+        //System.out.println("Starting service");
         super.onCreate();
+        //System.exit(0);
 
     }
 
