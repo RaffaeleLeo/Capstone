@@ -75,6 +75,7 @@ public class FriendsActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         final String email = emailField.getText().toString().toLowerCase().trim();
                         if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
+                            final Boolean[] userIsFound = {false};
                             db.collection("users").whereEqualTo("email", email).get()
                                     .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -90,6 +91,7 @@ public class FriendsActivity extends AppCompatActivity {
                                                             );
                                                     emailField.setText("");
                                                     Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+                                                    userIsFound[0] = true;
                                                 }
                                             } else {
                                                 Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
@@ -97,6 +99,11 @@ public class FriendsActivity extends AppCompatActivity {
                                             }
                                         }
                                     }));
+                            if(!userIsFound[0])
+                            {
+                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+                                emailField.setText("");
+                            }
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
