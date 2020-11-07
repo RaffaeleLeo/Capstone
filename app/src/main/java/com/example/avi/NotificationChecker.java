@@ -72,8 +72,11 @@ public class NotificationChecker extends Service {
                             userName = "Me";
                         }
                         final Message msg = new Message(message, id, userName, currentUser);
-                        Notifications notifier = new Notifications();
-                        notifier.notification("New Message from Anonymous", message, 0, context);
+                        if(!currentUser)
+                        {
+                            Notifications notifier = new Notifications();
+                            notifier.notification("New Message from Anonymous", message, 0, context);
+                        }
                     }
 
                 }
