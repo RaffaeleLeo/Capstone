@@ -112,7 +112,7 @@ public class EditJournal extends AppCompatActivity {
             }
         }
         
-         */
+        */
 
         EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
         Journal.description = jDesk.getText().toString();
@@ -211,6 +211,18 @@ public class EditJournal extends AppCompatActivity {
 //                    changes.put("description", journal_description);
 //
 //                    ref.updateChildren(changes);
+
+                    ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
+                    for(int i = 0; i < currentJournals.size(); i++){
+                        Journal oneJournal = currentJournals.get(i);
+                        if(oneJournal.name.equals(journal_name)){
+                            //Snackbar.make(view, "Journal cannot have the same name as another journal", Snackbar.LENGTH_LONG)
+                            //        .setAction("Action", null).show();
+                            Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
+
                     dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked());
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
 //                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
