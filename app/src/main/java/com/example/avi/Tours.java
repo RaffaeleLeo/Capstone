@@ -1,9 +1,12 @@
 package com.example.avi;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class Tours {
+public class Tours{
 
     //List of tourIds that a user has created or accepted
     public List<String> acceptedTourIds;
@@ -34,7 +37,13 @@ public class Tours {
         this.pendingTourIds = pendingTourIds;
     }
 
-    static class Tour {
+    public void sortTours(){
+
+    }
+
+
+    static class Tour //implements Comparable<Tour>
+    {
         //Tour name, date, and owner are the only required for creation
         public String tourName;
         //One who created the tour and any with owner permissions
@@ -59,6 +68,10 @@ public class Tours {
             this.pendingInvitees = pendingInvitees;
             this.lonLat = lonLat;
         }
+
+
+
+
 
         public String getTourName() {
             return tourName;
@@ -137,6 +150,24 @@ public class Tours {
                     ", coordinates='" + lonLat + '\'' +
                     '}';
         }
+
+        /*
+@       Override
+        public int compareTo(Tour tour){
+            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+            try {
+                Date thisDate = df.parse(this.date + " " + this.time);
+                Date otherDate = df.parse(tour.date + " " + tour.time);
+                return (int)(thisDate.getTime() - otherDate.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return 0;
+        }
+
+         */
+
     }
 
     @Override
