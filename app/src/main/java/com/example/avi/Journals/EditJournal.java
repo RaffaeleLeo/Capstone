@@ -97,6 +97,23 @@ public class EditJournal extends AppCompatActivity {
         EditText jName = (EditText)findViewById(R.id.journalName);
         Journal.name = jName.getText().toString();
 
+        /*
+        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                "data_points.db", null, 1);
+
+        ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
+        for(int i = 0; i < currentJournals.size(); i++){
+            Journal oneJournal = currentJournals.get(i);
+            if(oneJournal.name.equals(Journal.name)){
+                //Snackbar.make(view, "Journal cannot have the same name as another journal", Snackbar.LENGTH_LONG)
+                //        .setAction("Action", null).show();
+                Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        
+         */
+
         EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
         Journal.description = jDesk.getText().toString();
 

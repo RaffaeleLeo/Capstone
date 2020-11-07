@@ -2,6 +2,7 @@ package com.example.avi.Journals;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.View;
 
@@ -18,6 +19,7 @@ import androidx.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AddJournalActivity extends AppCompatActivity {
 
@@ -83,12 +86,27 @@ public class AddJournalActivity extends AppCompatActivity {
         Journal Journal = new Journal();
 
         Journal.name = sp.getString("Journal_Name", "NA");
-        if(Journal.name.equals("NA") || Journal.name.equals("")){
+        if (Journal.name.equals("NA") || Journal.name.equals("")) {
             Snackbar.make(view, "Journals of interest must have a name", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
             return;
         }
+
+        ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
+        for(int i = 0; i < currentJournals.size(); i++){
+            Journal oneJournal = currentJournals.get(i);
+            if(oneJournal.name.equals(Journal.name)){
+                Snackbar.make(view, "Journal cannot have the same name as another journal", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
+                return;
+            }
+        }
+
+
+
+
 
         Journal.description = sp.getString("Journal_Description", "Not Set");
         if(Journal.description.equals("Not Set")){
@@ -118,8 +136,7 @@ public class AddJournalActivity extends AppCompatActivity {
 //        }
 
         //add journal to database
-        if(Journal.start_recording)
-        {
+        if(Journal.start_recording) {
             dbHandler.addToJournals(Journal.name, Journal.description, 1);
         }
         else
