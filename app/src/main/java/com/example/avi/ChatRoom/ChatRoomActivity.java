@@ -1,6 +1,7 @@
 package com.example.avi.ChatRoom;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -49,12 +50,20 @@ public class ChatRoomActivity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
         isVisible = true;
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInChatRoom", true);
+        editor.commit();
     }
 
     @Override
     protected void onStop(){
         super.onStop();
         isVisible = false;
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInChatRoom",  false);
+        editor.commit();
     }
 
     @Override

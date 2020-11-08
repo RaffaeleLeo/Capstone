@@ -72,7 +72,7 @@ public class NotificationChecker extends Service {
                             userName = "Me";
                         }
                         final Message msg = new Message(message, id, userName, currentUser);
-                        if(!currentUser)
+                        if(!currentUser && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInChatRoom", false))
                         {
                             Notifications notifier = new Notifications();
                             notifier.notification("New Message from Anonymous", message, 0, context);
