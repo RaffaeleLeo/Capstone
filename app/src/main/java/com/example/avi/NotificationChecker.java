@@ -90,13 +90,54 @@ public class NotificationChecker extends Service {
             }
         });
 
+        /*
+        final DatabaseReference ref2 = database.getReference("users").child(mAuth.getUid());
+
+        ref2.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                List<DataSnapshot> childList = Lists.newArrayList(dataSnapshot.getChildren());
+                for (int i = 0; i < childList.size(); i++) {
+
+                    if (i == childList.size() - 1)
+                    {
+                        DataSnapshot child = childList.get(i);
+                        String id = child.child("id").getValue(String.class);
+                        String message = child.child("message").getValue(String.class);
+                        String userName = "Anonymous";
+                        boolean currentUser = false;
+                        if (id.equals(mAuth.getUid())) {
+                            currentUser = true;
+                            userName = "Me";
+                        }
+                        final Message msg = new Message(message, id, userName, currentUser);
+                        if(!currentUser)
+                        {
+                            Notifications notifier = new Notifications();
+                            notifier.notification("New Message from Anonymous", message, 0, context);
+                        }
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        */
 
     }
 
     @Override
     public boolean stopService (Intent service){
         return true;
-        //Does nothing.
+        //Does nothing - service will never stop ever. Hehehehehehe!
     }
 
     @Override
