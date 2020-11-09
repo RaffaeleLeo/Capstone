@@ -33,7 +33,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.execSQL(query);
 
         String create_journals = "Create Table journals (journalID Integer IDENTITY(1,1) PRIMARY KEY, name VARCHAR(100) UNIQUE, " +
-                "description VARCHAR(200), is_tracking Integer)";
+                "description VARCHAR(200), is_tracking Integer, type VARCHAR(100))";
         db.execSQL(create_journals);
 
         String data_points= "Create Table data_points (DataID Integer PRIMARY KEY, journal_name VARCHAR(100), " +
@@ -78,11 +78,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addToJournals(String name, String description, int is_tracking){
+    public void addToJournals(String name, String description, int is_tracking, String type){
         ContentValues vals = new ContentValues();
         vals.put("name", name);
         vals.put("description", description);
         vals.put("is_tracking", is_tracking);
+        vals.put("type", type);
         SQLiteDatabase db = this.getWritableDatabase();
         db.insertOrThrow("journals", null, vals);
         db.close();
@@ -133,7 +134,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
 
 
-    public void editJournal(String original_name, String name, String description, boolean is_tracking)
+    public void editJournal(String original_name, String name, String description, boolean is_tracking, String type)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -149,6 +150,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
         {
             cv.put("is_tracking", 0);
         }
+
+        cv.put("type", type);
 
         db.update("journals", cv, "name= '"+original_name + "'", null);
 
@@ -175,6 +178,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 {
                     j.start_recording = false;
                 }
+                j.type = c.getString(c.getColumnIndex("type"));
                 Journals.add(j);
                 c.moveToNext();
             }

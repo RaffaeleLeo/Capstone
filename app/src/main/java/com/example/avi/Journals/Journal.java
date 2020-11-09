@@ -10,6 +10,7 @@ public class Journal implements Serializable {
     public ArrayList<LatLng> data_points;
     public String description;
     public boolean start_recording;
+    public String type;
     public boolean show_line;
 
     public Journal() {

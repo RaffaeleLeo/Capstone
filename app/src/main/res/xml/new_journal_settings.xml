@@ -15,6 +15,14 @@
             app:title="Description:"
             app:useSimpleSummaryProvider="true"
             />
+        <ListPreference
+            android:id="@+id/add_journal_type"
+            app:entries="@array/journal_type"
+            app:entryValues="@array/journal_type"
+            app:key="type"
+            app:title="Journal Type"
+            app:useSimpleSummaryProvider="true" />
+
 
     </PreferenceCategory>
 

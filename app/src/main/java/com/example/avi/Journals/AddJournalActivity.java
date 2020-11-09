@@ -104,7 +104,14 @@ public class AddJournalActivity extends AppCompatActivity {
             }
         }
 
+        Journal.type = sp.getString("type", "NA");
+        if(Journal.type.equals("NA") || Journal.type.equals("")){
+            Snackbar.make(view, "Please Choose a Type for your Goal", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
 
+            return;
+
+        }
 
 
 
@@ -123,25 +130,14 @@ public class AddJournalActivity extends AppCompatActivity {
 
         editor.apply();
 
-        //add goal to firebase
-        //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
-
-        String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
-//
-//        if (Journal != null) {
-//            //Save the journal data to the database//
-//            ref.child(Journal.name).setValue(Journal);
-//        }
 
         //add journal to database
         if(Journal.start_recording) {
-            dbHandler.addToJournals(Journal.name, Journal.description, 1);
+            dbHandler.addToJournals(Journal.name, Journal.description, 1, Journal.type);
         }
         else
         {
-            dbHandler.addToJournals(Journal.name, Journal.description, 0);
+            dbHandler.addToJournals(Journal.name, Journal.description, 0, Journal.type);
         }
 
         // Go back to the journals tab

@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -43,6 +45,13 @@ public class EditJournal extends AppCompatActivity {
 
 
         setupUI(intent);
+
+        //get the spinner from the xml.
+        Spinner dropdown = findViewById(R.id.journal_type);
+        String[] items = new String[]{"Skiing", "Snowboarding", "Hiking", "Peak"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        //set the spinners adapter to the previously created one.
+        dropdown.setAdapter(adapter);
 
         Button save_button = findViewById(R.id.saveButton);
 
@@ -191,14 +200,8 @@ public class EditJournal extends AppCompatActivity {
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-//                Log.d(TAG, "onClick: Yes delete the Goal");
                     System.out.println("onClick: Yes save changes to the Journal");
-                    //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
-//                    String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
-//                            currentUser + "/journals").child(journal_name);
-//
-//                    HashMap<String, Object> changes = new HashMap<String, Object>();
+
                     ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
 
                     EditText jName = (EditText)findViewById(R.id.journalName);
@@ -206,28 +209,20 @@ public class EditJournal extends AppCompatActivity {
 
                     EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
                     String journal_description = jDesk.getText().toString();
-//                    changes.put("reminders", remindersToggle.isChecked());
-//                    changes.put("name", journal_name);
-//                    changes.put("description", journal_description);
-//
-//                    ref.updateChildren(changes);
 
-                    ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
-                    for(int i = 0; i < currentJournals.size(); i++){
-                        Journal oneJournal = currentJournals.get(i);
-                        if(oneJournal.name.equals(journal_name)){
-                            //Snackbar.make(view, "Journal cannot have the same name as another journal", Snackbar.LENGTH_LONG)
-                            //        .setAction("Action", null).show();
-                            Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    }
+//                    ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
+//                    for(int i = 0; i < currentJournals.size(); i++){
+//                        Journal oneJournal = currentJournals.get(i);
+//                        if(oneJournal.name.equals(journal_name)){
+//                            Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
+//                            return;
+//                        }
+//                    }
+                    Spinner jType = findViewById(R.id.journal_type);
+                    String journal_type = jType.getSelectedItem().toString();
 
-                    dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked());
+                    dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked(), journal_type);
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
-//                    intent.putExtra("Name", getIntent().getStringExtra("Name"));
-//                    intent.putExtra("Description", getIntent().getStringExtra("Description"));
-//                    intent.putExtra("Tracking", getIntent().getBooleanExtra("Tracking", false));
                     startActivity(intent);
                 }
             });

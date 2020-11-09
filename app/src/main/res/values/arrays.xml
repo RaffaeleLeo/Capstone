@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="journal_type">
+        <item>Skiing</item>
+        <item>Snowboarding</item>
+        <item>Hiking</item>
+        <item>Peak</item>
+    </string-array>
+</resources>

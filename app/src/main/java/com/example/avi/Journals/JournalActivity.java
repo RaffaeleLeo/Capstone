@@ -125,6 +125,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         intent.putExtra("Description", Journal.description);
         intent.putExtra("Tracking", Journal.start_recording);
         intent.putExtra("journal", Journal);
+        intent.putExtra("Type", Journal.type);
 
 
         startActivity(intent);
