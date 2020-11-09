@@ -94,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean hasGeomagneticData = false;
     private float rotationInDegrees;
     private String currentElevation;
+    private float convertedDegrees = 0f;
 
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
@@ -263,7 +264,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                     intent.putExtra("elevation", Float.parseFloat(currentElevation));
-                    intent.putExtra("aspect", currentDegree);
+                    intent.putExtra("aspect", convertedDegrees);
                     intent.putExtra("PRIOR", 1);
                     startActivity(intent);
                 }
@@ -453,12 +454,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ra.setDuration(100);
                 ra.setFillAfter(true);
                 compassButton.startAnimation(ra);
-
                 //DANGER CODE STARTS HERE
                 //If we have an elevation, get it and the current degrees, and compute
                 //the danger based at this location.
+                //Converts degrees to 0-360 where 0 and 360 are N
+                if (degree < 0){
+                    convertedDegrees = -degree;
+                } else {
+                    convertedDegrees = (float) (360.0 - degree);
+                }
                 if(currentElevation != null && !currentElevation.isEmpty()) {
-                    int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                    int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
                     if(pop_up_view != null) {
                         TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
@@ -597,7 +603,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         //the danger based at this location.
                         if(currentElevation != null && !currentElevation.isEmpty()) {
                             if(pop_up_view != null) {
-                                int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
+                                int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
                                 TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                                 TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
 
