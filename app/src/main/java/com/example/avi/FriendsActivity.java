@@ -31,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -61,67 +62,7 @@ public class FriendsActivity extends AppCompatActivity {
 
         final Button pop_up = findViewById(R.id.show_popup);
 
-        pop_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                LayoutInflater inflater = getLayoutInflater();
-                pop_up_view = inflater.inflate(R.layout.add_frineds_popup, null);
-
-                sendRequest = pop_up_view.findViewById(R.id.sendRequestButton2);
-                emailField = pop_up_view.findViewById(R.id.sendRequestInput2);
-
-                sendRequest.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String email = emailField.getText().toString().toLowerCase().trim();
-                        if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
-                            final Boolean[] userIsFound = {false};
-                            db.collection("users").whereEqualTo("email", email).get()
-                                    .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    document.getId();
-                                                    String id = mAuth.getUid();
-                                                    String dest = "requests." + id;
-                                                    db.collection("users").document(document.getId())
-                                                            .update(
-                                                                    dest, mAuth.getCurrentUser().getDisplayName()
-                                                            );
-                                                    emailField.setText("");
-                                                    Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
-                                                    userIsFound[0] = true;
-                                                }
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                                emailField.setText("");
-                                            }
-                                        }
-                                    }));
-                            if(!userIsFound[0])
-                            {
-                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                emailField.setText("");
-                            }
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
-                            emailField.setText("");
-                        }
-                    }
-                });
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
-                builder.setView(pop_up_view);
-                AlertDialog alertDialog = builder.create();
-                builder.show();
-
-
-            }
-        });
 
         friends = findViewById(R.id.friends_list);
         requests = findViewById(R.id.request_list);
@@ -164,6 +105,81 @@ public class FriendsActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
+        pop_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater inflater = getLayoutInflater();
+                pop_up_view = inflater.inflate(R.layout.add_frineds_popup, null);
+
+                sendRequest = pop_up_view.findViewById(R.id.sendRequestButton2);
+                emailField = pop_up_view.findViewById(R.id.sendRequestInput2);
+
+                sendRequest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String email = emailField.getText().toString().toLowerCase().trim();
+                        if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
+                            final Boolean[] userIsFound = {false};
+
+                            db.collection("users").whereEqualTo("email", email).get()
+                                    .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    String newID = document.getId();
+
+                                                    if(friendsTracker.contains(newID)){
+                                                        Toast.makeText(getApplicationContext(), "User is already added as friend.", Toast.LENGTH_LONG).show();
+                                                        emailField.setText("");
+                                                    }
+                                                    else {
+
+                                                        String id = mAuth.getUid();
+                                                        String dest = "requests." + id;
+                                                        db.collection("users").document(newID)
+                                                                .update(
+                                                                        dest, mAuth.getCurrentUser().getDisplayName()
+                                                                );
+                                                        emailField.setText("");
+                                                        Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+                                                        userIsFound[0] = true;
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+                                                emailField.setText("");
+                                            }
+                                        }
+                                    }));
+//                            if(!userIsFound[0])
+//                            {
+//                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+//                                emailField.setText("");
+//                            }
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
+                            emailField.setText("");
+                        }
+                    }
+                });
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
+                builder.setView(pop_up_view);
+                AlertDialog alertDialog = builder.create();
+                builder.show();
+
+
+            }
+        });
+
 
         requests.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
