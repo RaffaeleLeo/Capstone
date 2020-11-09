@@ -42,10 +42,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Text;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
@@ -121,8 +125,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 user = documentSnapshot.toObject(User.class);
-                if(user != null)
-                {
+                if (user != null) {
                     Log.d("user", user.getId());
                 }
                 setUpModifiedTourListeners();
@@ -146,7 +149,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-                final TextView lonLatText = findViewById(R.id.coordinates_text);
+                final TextView lonLatText = newTour.findViewById(R.id.coordinates_text);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
@@ -201,10 +204,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void removeSpaceFromStringArray(ArrayList<String> list){
-        for (int i = 0; i < list.size();i++){
+    private void removeSpaceFromStringArray(ArrayList<String> list) {
+        for (int i = 0; i < list.size(); i++) {
             list.set(i, list.get(i).trim());
-            if (list.get(i).length() == 0){
+            if (list.get(i).length() == 0) {
                 list.remove(i);
             }
         }
@@ -362,7 +365,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setupToursView(String type, ArrayList<Tours.Tour> tours, ArrayList<String> tourIds) {
+    private void setupToursView(String type, ArrayList<Tours.Tour> tours, ArrayList<String> tourIds) throws ParseException {
         switch (type) {
             case "Pending":
                 for (int i = 0; i < tours.size(); i++) {
@@ -386,6 +389,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     pendingTourBox.setTag(tourIds.get(i));
                     acceptButton.setTag(pendingTourBox);
                     declineButton.setTag(pendingTourBox);
+                    tourName.setTag("Pending");
                     acceptButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -419,7 +423,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         }
                     }
                     tourInvites.setText(sb.toString().trim());
-                    toursLinearLayout.addView(pendingTourBox);
+                    toursLinearLayout.addView(pendingTourBox, getTourInsertPosition(pendingTourBox));
                 }
                 break;
             case "Accepted":
@@ -506,6 +510,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
+                    tourName.setTag("Accepted");
                     tourCoordinates.setText(tour.lonLat);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
@@ -517,18 +522,18 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         sb.append(person + "\n");
                     }
                     tourInvites.setText(sb.toString().trim());
-                    toursLinearLayout.addView(acceptedTourBox);
+                    toursLinearLayout.addView(acceptedTourBox, getTourInsertPosition(acceptedTourBox));
                 }
                 break;
         }
 
     }
 
-    private void setUpCoordinatesClickListener(final TextView coordinatesText){
+    private void setUpCoordinatesClickListener(final TextView coordinatesText) {
         coordinatesText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = "http://maps.google.com/maps?saddr="+"&daddr="+ coordinatesText.getText().toString();
+                String url = "http://maps.google.com/maps?saddr=" + "&daddr=" + coordinatesText.getText().toString();
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
                 intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
                 startActivity(intent);
@@ -577,6 +582,37 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(3).select();
 
     }
+
+
+    public int getTourInsertPosition(View newView) throws ParseException {
+        int numChildren = toursLinearLayout.getChildCount();
+        if (numChildren == 1) {
+            return 1;
+        }
+
+        String tourStatus = (String) newView.findViewById(R.id.tour_name).getTag();
+        TextView dateText = newView.findViewById(R.id.date_text);
+        TextView timeText = newView.findViewById(R.id.time_text);
+        Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(dateText.getText().toString() + " " + timeText.getText().toString());
+        for (int i = 1; i < numChildren; i++) {
+            View child = toursLinearLayout.getChildAt(i);
+            String childTourStatus = (String) child.findViewById(R.id.tour_name).getTag();
+            TextView childDateText = child.findViewById(R.id.date_text);
+            TextView childTimeText = child.findViewById(R.id.time_text);
+            Date childDate = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(childDateText.getText().toString() + " " + childTimeText.getText().toString());
+
+            if (!tourStatus.equals(childTourStatus) && childTourStatus.equals("Accepted")) {
+                return i;
+            } else if (tourStatus.equals(childTourStatus)) {
+                if (childDate.after(date)) {
+                    return i;
+                }
+            }
+        }
+        return numChildren;
+
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -631,9 +667,18 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 int minute = mcurrentTime.get(Calendar.MINUTE);
                 TimePickerDialog mTimePicker;
                 mTimePicker = new TimePickerDialog(SocialMediaHomeActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        editTime.setText(selectedHour + ":" + selectedMinute);
+                        String hour = String.valueOf(selectedHour);
+                        String min = String.valueOf(selectedMinute);
+                        if (hour.length() < 2) {
+                            hour = "0" + hour;
+                        }
+                        if (min.length() < 2) {
+                            min = "0" + min;
+                        }
+                        editTime.setText(hour + ":" + min);
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -641,30 +686,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    public void editTour(View tourView, Tours.Tour tour) {
-
-        TextView tourName = tourView.findViewById(R.id.tour_name);
-        TextView tourDate = tourView.findViewById(R.id.date_text);
-        TextView tourTime = tourView.findViewById(R.id.time_text);
-        TextView tourNotes = tourView.findViewById(R.id.notes_text);
-        TextView tourInvites = tourView.findViewById(R.id.invites_text);
-
-        tourName.setText(tour.tourName);
-        tourDate.setText(tour.date);
-        tourTime.setText(tour.time);
-        tourNotes.setText(tour.notes);
-        StringBuilder sb = new StringBuilder();
-        for (String person : tour.acceptedInvitees) {
-            sb.append(person + "\n");
-        }
-        for (String person : tour.pendingInvitees) {
-            if (!person.equals(user.getEmail())) {
-                sb.append(person + "\n");
-            }
-        }
-        tourInvites.setText(sb.toString().trim());
     }
 
     public void setUpModifiedTourListeners() {
@@ -687,16 +708,29 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                     ArrayList<String> tourIds = new ArrayList<>();
                                     tourIds.add(dc.getDocument().getId());
                                     Log.d("user", acceptedUserTour.get(0).toString());
-                                    setupToursView("Accepted", acceptedUserTour, tourIds);
+                                    try {
+                                        setupToursView("Accepted", acceptedUserTour, tourIds);
+                                    } catch (ParseException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     break;
                                 case MODIFIED:
-                                    Log.d("tourMod", "Modified city: " + dc.getDocument().getData());
+                                    Log.d("tourMod", "Modified tour: " + dc.getDocument().getData());
                                     Tours.Tour modTour = dc.getDocument().toObject(Tours.Tour.class);
-                                    editTour(toursLinearLayout.findViewWithTag(dc.getDocument().getId()), modTour);
+                                    toursLinearLayout.removeView(toursLinearLayout.findViewWithTag(dc.getDocument().getId()));
+                                    ArrayList<Tours.Tour> modUserTours = new ArrayList<>();
+                                    modUserTours.add(modTour);
+                                    ArrayList<String> modTourIds = new ArrayList<>();
+                                    modTourIds.add(dc.getDocument().getId());
+                                    try {
+                                        setupToursView("Accepted", modUserTours, modTourIds);
+                                    } catch (ParseException ex) {
+                                        ex.printStackTrace();
+                                    }
 
                                     break;
                                 case REMOVED:
-                                    Log.d("tourDelete", "Removed city: " + dc.getDocument().getData());
+                                    Log.d("tourDelete", "Removed tour: " + dc.getDocument().getData());
                                     toursLinearLayout.removeView(toursLinearLayout.findViewWithTag(dc.getDocument().getId()));
                                     break;
                             }
@@ -723,12 +757,25 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                     ArrayList<String> tourIds = new ArrayList<>();
                                     tourIds.add(dc.getDocument().getId());
                                     Log.d("user", pendingUserTours.get(0).toString());
-                                    setupToursView("Pending", pendingUserTours, tourIds);
+                                    try {
+                                        setupToursView("Pending", pendingUserTours, tourIds);
+                                    } catch (ParseException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     break;
                                 case MODIFIED:
                                     Log.d("tourMod", "Modified Tour: " + dc.getDocument().getData());
                                     Tours.Tour modTour = dc.getDocument().toObject(Tours.Tour.class);
-                                    editTour(toursLinearLayout.findViewWithTag(dc.getDocument().getId()), modTour);
+                                    toursLinearLayout.removeView(toursLinearLayout.findViewWithTag(dc.getDocument().getId()));
+                                    ArrayList<Tours.Tour> modUserTours = new ArrayList<>();
+                                    modUserTours.add(modTour);
+                                    ArrayList<String> modTourIds = new ArrayList<>();
+                                    modTourIds.add(dc.getDocument().getId());
+                                    try {
+                                        setupToursView("Pending", modUserTours, modTourIds);
+                                    } catch (ParseException ex) {
+                                        ex.printStackTrace();
+                                    }
                                     break;
                                 case REMOVED:
                                     Log.d("tourDelete", "Remove tour: " + dc.getDocument().getData());
@@ -755,9 +802,10 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             });
         }
     }
-    private void setUpFriendsButtonDialogue(Button friendsButton, final TextInputEditText invitees){
+
+    private void setUpFriendsButtonDialogue(Button friendsButton, final TextInputEditText invitees) {
         final boolean[] checkedFriends = new boolean[userFriendsEmails.size()];
-        String[] friends =  new String[userFriendsEmails.size()];
+        String[] friends = new String[userFriendsEmails.size()];
         friends = userFriendsEmails.toArray(friends);
         final String[] finalFriends = friends;
         final ArrayList<Integer> userFriends = new ArrayList<>();
@@ -771,8 +819,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 Log.d("friendsList", invites.toString());
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(SocialMediaHomeActivity.this);
                 mBuilder.setTitle("Select Friends to Invite");
-                for(int i =0; i <checkedFriends.length;i++){
-                    if (invites.contains(finalFriends[i])){
+                for (int i = 0; i < checkedFriends.length; i++) {
+                    if (invites.contains(finalFriends[i])) {
                         checkedFriends[i] = true;
                     }
                 }
@@ -786,18 +834,18 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         StringBuilder sb = new StringBuilder();
-                        for(int i = 0; i < checkedFriends.length; i++){
-                            if (checkedFriends[i]){
-                                if (!invites.contains(finalFriends[i])){
+                        for (int i = 0; i < checkedFriends.length; i++) {
+                            if (checkedFriends[i]) {
+                                if (!invites.contains(finalFriends[i])) {
                                     invites.add(finalFriends[i]);
                                 }
                             } else {
-                                if (invites.contains(finalFriends[i])){
+                                if (invites.contains(finalFriends[i])) {
                                     invites.remove(finalFriends[i]);
                                 }
                             }
                         }
-                        for (String friend : invites){
+                        for (String friend : invites) {
                             sb.append(friend + "\n");
                         }
                         invitees.setText(sb.toString().trim());
@@ -807,7 +855,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         StringBuilder sb = new StringBuilder();
-                        for (String friend : originInvites){
+                        for (String friend : originInvites) {
                             sb.append(friend + "\n");
                         }
                         invitees.setText(sb.toString().trim());
