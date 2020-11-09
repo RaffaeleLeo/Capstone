@@ -1,5 +1,6 @@
 package com.example.avi;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -170,6 +171,50 @@ public class FriendsActivity extends AppCompatActivity {
                 lastClicked = (String) parent.getItemAtPosition(position);
 
 
+            }
+
+        });
+
+        friends.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(FriendsActivity.this);
+                builder.setMessage("Delete Friend?");
+
+                final String userName = (String) parent.getItemAtPosition(position);
+
+
+
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        int index = friendsList.indexOf(userName);
+
+                        String uID = friendsTracker.get(index);
+                        String name = friendsList.get(index);
+                        friendsList.remove(name);
+                        friendsTracker.remove(name);
+                        friends_adapter.notifyDataSetChanged();
+
+                        String dest1 = "friends." + uID;
+                        db.collection("users").document(mAuth.getUid())
+                                .update(
+                                        dest1, FieldValue.delete()
+                                );
+
+                        String dest2 = "friends." + mAuth.getUid();
+                        db.collection("users").document(uID + "")
+                                .update(
+                                        dest2, FieldValue.delete()
+                                );
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+                android.app.AlertDialog dialog = builder.create();
+                dialog.show();
             }
 
         });
