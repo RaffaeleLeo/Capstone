@@ -1,14 +1,17 @@
 package com.example.avi;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.facebook.AccessToken;
@@ -59,7 +62,6 @@ public class LoadingActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         AccessToken.getCurrentAccessToken();
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("969128169123-acm8ho281ikele7r252r4urcspbf0qvs.apps.googleusercontent.com")
                 .requestEmail()
@@ -71,8 +73,13 @@ public class LoadingActivity extends AppCompatActivity {
         if(mAuth.getCurrentUser() != null || googleAccount != null || AccessToken.getCurrentAccessToken() != null){
             Toast.makeText(getApplicationContext(), "You are signed in!", Toast.LENGTH_SHORT).show();
 
-            Intent sIntent = new Intent(LoadingActivity.this, NotificationChecker.class);
-            startService(sIntent);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+                Intent intent = new Intent(this, TrackingService.class);
+                startService(intent);
+            }
+
             //CHANGE THIS LINE?
             Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
 
