@@ -110,6 +110,7 @@ public class TrackingService extends IntentService {
     };
 
     private void loginToDatabase() {
+        /*
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
@@ -122,6 +123,7 @@ public class TrackingService extends IntentService {
                 }
             }
         });
+        */
     }
 
     /**
