@@ -70,6 +70,26 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onStart(){
+        super.onStart();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInTours", true);
+        editor.commit();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInTours",  false);
+        editor.commit();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         TabLayout tabLayout = findViewById(R.id.TabLayout);

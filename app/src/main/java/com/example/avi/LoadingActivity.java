@@ -43,6 +43,7 @@ public class LoadingActivity extends AppCompatActivity {
             //intent.putExtra("IsFirst", true);
 
             Intent sIntent = new Intent(LoadingActivity.this, NotificationChecker.class);
+            sIntent.putExtra("email", mAuth.getUid());
             startService(sIntent);
 
             Intent intent = new Intent(LoadingActivity.this, LiveUpdates.class);
