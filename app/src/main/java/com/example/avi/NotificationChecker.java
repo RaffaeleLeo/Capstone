@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.avi.ChatRoom.Message;
+import com.example.avi.ChatRoom.User;
 import com.example.avi.Snapshot.SnapshotActivity;
 import com.google.common.collect.Lists;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +29,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -109,10 +112,13 @@ public class NotificationChecker extends Service {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                //var requests = documentSnapshot.get("requests");
-                //Notifications notifier = new Notifications();
-                //notifier.notification("Data",  String.valueOf(documentSnapshot.getData()), 0, context);
-
+                User user = documentSnapshot.toObject(User.class);
+                HashMap<String, String> requests = user.getRequests();
+                List<String> requestList = new ArrayList<String>(requests.values());
+                if(requestList.size() != 0) {
+                    Notifications notifier = new Notifications();
+                    notifier.notification("New friend request.", requestList.get(requestList.size() - 1), 0, context);
+                }
             }
         });
         //final DatabaseReference ref2 = db.getReference("users");// + mAuth.getUid() + "/requests");//.child(mAuth.getUid()).child("requests");
