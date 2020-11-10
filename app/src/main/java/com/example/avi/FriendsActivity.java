@@ -2,6 +2,7 @@ package com.example.avi;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,26 @@ public class FriendsActivity extends AppCompatActivity {
     String lastClicked;
 
     View pop_up_view;
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInFriends", true);
+        editor.commit();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInFriends",  false);
+        editor.commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

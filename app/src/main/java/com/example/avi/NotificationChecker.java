@@ -63,7 +63,7 @@ public class NotificationChecker extends Service {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        /*
+
         final DatabaseReference ref = database.getReference("messages");
 
         ref.addValueEventListener(new ValueEventListener() {
@@ -89,7 +89,7 @@ public class NotificationChecker extends Service {
                         if(!currentUser && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInChatRoom", false))
                         {
                             Notifications notifier = new Notifications();
-                            notifier.notification("New Message from Anonymous", message, 0, context);
+                            notifier.notification("New Message from Anonymous", message, (int)System.currentTimeMillis(), context);
                         }
                     }
 
@@ -104,7 +104,7 @@ public class NotificationChecker extends Service {
             }
         });
 
-         */
+
 
 
         DocumentReference docRef =db.collection("users").document(mAuth.getUid());
@@ -115,9 +115,9 @@ public class NotificationChecker extends Service {
                 User user = documentSnapshot.toObject(User.class);
                 HashMap<String, String> requests = user.getRequests();
                 List<String> requestList = new ArrayList<String>(requests.values());
-                if(requestList.size() != 0) {
+                if(requestList.size() != 0  && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInFriends", false)) {
                     Notifications notifier = new Notifications();
-                    notifier.notification("New friend request.", requestList.get(requestList.size() - 1), 0, context);
+                    notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int)System.currentTimeMillis(), context);
                 }
             }
         });
