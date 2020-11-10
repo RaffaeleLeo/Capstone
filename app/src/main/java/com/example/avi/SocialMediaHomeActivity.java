@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,8 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -169,7 +167,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-                final TextView lonLatText = newTour.findViewById(R.id.coordinates_text);
+                final TextView latLonText = newTour.findViewById(R.id.coordinates_text);
+                final TextView dateWarning = newTour.findViewById(R.id.date_required_label);
+                final TextView timeWarning = newTour.findViewById(R.id.time_required_label);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
@@ -186,31 +186,47 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         String invitedText;
                         String coordinates;
 
+
                         tourText = newTourName.getText().toString().trim();
                         dateText = newDate.getText().toString().trim();
                         timeText = newTourTime.getText().toString().trim();
                         notesText = newTourNotes.getText().toString().trim();
                         invitedText = newInvitedText.getText().toString().trim();
-                        coordinates = lonLatText.getText().toString().trim();
+                        coordinates = latLonText.getText().toString().trim();
 
-                        ArrayList<String> tourOwners = new ArrayList<>();
-                        ArrayList<String> acceptedList = new ArrayList<>();
-                        ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
-                        removeSpaceFromStringArray(pendingList);
-                        tourOwners.add(user.getEmail());
-                        acceptedList.add(user.getEmail());
-                        final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, coordinates);
-                        db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d("newTour", "Successfully added new Tour");
 
-                            }
+                        if (dateText.isEmpty() && timeText.isEmpty()) {
+                            dateWarning.setVisibility(View.VISIBLE);
+                            timeWarning.setVisibility(View.VISIBLE);
 
-                        });
-                        rootLayout.removeView(newTour);
+                        } else if (dateText.isEmpty() && !timeText.isEmpty()) {
+                            dateWarning.setVisibility(View.VISIBLE);
+                            timeWarning.setVisibility(View.GONE);
+                        } else if (!dateText.isEmpty() && timeText.isEmpty()) {
+                            dateWarning.setVisibility(View.GONE);
+                            timeWarning.setVisibility(View.VISIBLE);
+                        } else {
+
+                            ArrayList<String> tourOwners = new ArrayList<>();
+                            ArrayList<String> acceptedList = new ArrayList<>();
+                            ArrayList<String> pendingList = new ArrayList<>(Arrays.asList(invitedText.split("\n")));
+                            removeSpaceFromStringArray(pendingList);
+                            tourOwners.add(user.getEmail());
+                            acceptedList.add(user.getEmail());
+                            final Tours.Tour tour = new Tours.Tour(tourText, tourOwners, dateText, timeText, notesText, acceptedList, pendingList, coordinates);
+                            db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    Log.d("newTour", "Successfully added new Tour");
+
+                                }
+
+                            });
+                            rootLayout.removeView(newTour);
+                        }
                     }
                 });
+
                 ImageButton discardButton = rootLayout.findViewById(R.id.discardButton);
                 discardButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -338,7 +354,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 tourEdit.date = finalDateText;
                                 tourEdit.time = finalTimeText;
                                 tourEdit.notes = finalNotesText;
-                                tourEdit.lonLat = coordinates;
+                                tourEdit.latLon = coordinates;
 
                                 db.collection("tours").document(tourId).set(tourEdit).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -432,7 +448,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourDate.setText(tour.date);
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
-                    tourCoordinates.setText(tour.lonLat);
+                    tourCoordinates.setText(tour.latLon);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
                         sb.append(person + "\n");
@@ -531,7 +547,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     tourTime.setText(tour.time);
                     tourNotes.setText(tour.notes);
                     tourName.setTag("Accepted");
-                    tourCoordinates.setText(tour.lonLat);
+                    tourCoordinates.setText(tour.latLon);
                     StringBuilder sb = new StringBuilder();
                     for (String person : tour.acceptedInvitees) {
                         if (!person.equals(user.getEmail())) {
@@ -539,7 +555,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         }
                     }
                     for (String person : tour.pendingInvitees) {
-                        sb.append(person + "\n");
+                        if (!person.equals(user.getEmail())) {
+                            sb.append(person + "\n");
+                        }
                     }
                     tourInvites.setText(sb.toString().trim());
                     toursLinearLayout.addView(acceptedTourBox, getTourInsertPosition(acceptedTourBox));
@@ -609,11 +627,20 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         if (numChildren == 1) {
             return 1;
         }
-
+        Date now;
         String tourStatus = (String) newView.findViewById(R.id.tour_name).getTag();
         TextView dateText = newView.findViewById(R.id.date_text);
         TextView timeText = newView.findViewById(R.id.time_text);
         Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(dateText.getText().toString() + " " + timeText.getText().toString());
+        Calendar calendar = Calendar.getInstance();
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
+            String formattedDate = dateFormat.format(calendar.getTime());
+            now = dateFormat.parse(formattedDate);
+            Log.d("now", now.toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         for (int i = 1; i < numChildren; i++) {
             View child = toursLinearLayout.getChildAt(i);
             String childTourStatus = (String) child.findViewById(R.id.tour_name).getTag();
@@ -657,7 +684,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat = "MM/dd/yy";
+                String myFormat = "MM/dd/yyyy";
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
                 editDate.setText(sdf.format(myCalendar.getTime()));

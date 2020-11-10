@@ -1,15 +1,19 @@
 package com.example.avi;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
@@ -38,10 +42,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +59,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,11 +69,15 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import com.example.avi.MyDBHandler;
@@ -97,6 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float rotationInDegrees;
     private String currentElevation;
     private float convertedDegrees = 0f;
+    private Date now;
 
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
@@ -132,7 +145,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
-
         //DANGER CODE STARTS HERE
         //Code to add current dangers to database
         //Usually would be the code commented out below, but
@@ -147,6 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(int i = 0; i < 24; i++){
             dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
         }
+
 
 //        if(!currDate.equals(lastDate)) {
 //            dbHandler.clearDangerTable();
@@ -191,6 +204,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             this.journal_name = intent.getStringExtra("journal_name");
         } else {
             this.journal_name = null;
+        }
+
+        if (intent.hasExtra("FindMembers")){
+
         }
 
 
@@ -317,6 +334,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
+        addGroupPositions("-111.8833056, 40.4789458", "test");
 
         //make the camera go to the users location
         //TODO: currently this will only go to the user once the app is opened, but won't move along with the user
@@ -629,6 +647,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     }
+
+    private void addGroupPositions(String coordinates, String name){
+        String[] lonLat = coordinates.split(", ");
+        LatLng latLng = new LatLng(Double.parseDouble(lonLat[1]), Double.parseDouble(lonLat[0]));
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(name);
+    }
+
 
     //Helper method to compute compass location in array
     //based on elevation and slope aspect.
