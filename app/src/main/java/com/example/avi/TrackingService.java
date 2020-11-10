@@ -1,6 +1,7 @@
 package com.example.avi;
 
 
+import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.Journal;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -8,15 +9,21 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -37,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class TrackingService extends IntentService {
@@ -47,6 +55,11 @@ public class TrackingService extends IntentService {
 
     FusedLocationProviderClient client;
 
+    private FirebaseAuth mAuth;
+
+    private FirebaseFirestore db;
+
+    public User user;
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -97,8 +110,18 @@ public class TrackingService extends IntentService {
     };
 
     private void loginToDatabase() {
-
-        // TODO: use this method to ensure the logged in user in within the database
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+                if (user != null) {
+                    Log.d("user", user.getId());
+                }
+            }
+        });
     }
 
     /**
@@ -124,9 +147,28 @@ public class TrackingService extends IntentService {
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
+                    HashMap<String, String> location = new HashMap<>();
                     Location loc = locationResult.getLastLocation();
                     String lat = Double.toString(loc.getLatitude());
                     String lon = Double.toString(loc.getLongitude());
+                    if (user != null) {
+                        location.put("coordinates", lat + ", " + lon);
+                        location.put("name", user.getName());
+                        Log.d("tracking", "adding coordinates to db");
+                        db.collection("tracking").document(user.getId()).set(location)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                            }
+                        })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });;
+                    }
 
                     //get all journals to loop through
                     final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),

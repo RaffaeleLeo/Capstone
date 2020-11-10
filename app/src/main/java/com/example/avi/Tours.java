@@ -1,9 +1,6 @@
 package com.example.avi;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Tours{
@@ -53,12 +50,12 @@ public class Tours{
         public String notes;
         public List<String> acceptedInvitees;
         public List<String> pendingInvitees;
-        public String lonLat;
+        public String latLon;
 
         public Tour() {
         }
 
-        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, String lonLat) {
+        public Tour(String tourName, List<String> tourOwners, String date, String time, String notes, List<String> acceptedInvitees, List<String> pendingInvitees, String latLon) {
             this.tourName = tourName;
             this.tourOwners = tourOwners;
             this.date = date;
@@ -66,7 +63,7 @@ public class Tours{
             this.notes = notes;
             this.acceptedInvitees = acceptedInvitees;
             this.pendingInvitees = pendingInvitees;
-            this.lonLat = lonLat;
+            this.latLon = latLon;
         }
 
 
@@ -129,12 +126,12 @@ public class Tours{
             this.pendingInvitees = pendingInvitees;
         }
 
-        public String getLonLat() {
-            return lonLat;
+        public String getLatLon() {
+            return latLon;
         }
 
-        public void setLonLat(String lonLat) {
-            this.lonLat = lonLat;
+        public void setLatLon(String latLon) {
+            this.latLon = latLon;
         }
 
         @Override
@@ -147,7 +144,7 @@ public class Tours{
                     ", notes='" + notes + '\'' +
                     ", acceptedInvitees=" + acceptedInvitees +
                     ", pendingInvitees=" + pendingInvitees +
-                    ", coordinates='" + lonLat + '\'' +
+                    ", coordinates='" + latLon + '\'' +
                     '}';
         }
 

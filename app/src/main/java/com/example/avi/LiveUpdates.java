@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -116,8 +117,8 @@ public class LiveUpdates extends Activity {
     private void addWebView(List<View> viewList, String url) throws IOException {
         WebView webView=new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
 
         String webpage = "";
@@ -135,8 +136,7 @@ public class LiveUpdates extends Activity {
                 e.printStackTrace();
             }
 
-            //webView.loadUrl(url);
-            webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
+            webView.loadDataWithBaseURL(url, webpage,"text/html", "utf-8", null);
 
             viewList.add(webView);
 
@@ -148,7 +148,7 @@ public class LiveUpdates extends Activity {
         }
         else
         {
-            webView.loadData(this.getApplicationContext().getSharedPreferences("Prefs", 0).getString(url, ""), "text/html; charset=utf-8", "UTF-8");
+            webView.loadDataWithBaseURL(url, this.getApplicationContext().getSharedPreferences("Prefs", 0).getString(url, ""),"text/html", "utf-8", null);
             viewList.add(webView);
         }
     }
