@@ -202,7 +202,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
                             Intent sIntent = new Intent(ChooseLoginActivity.this, NotificationChecker.class);
-                            sIntent.putExtra("email", mAuth.getUid());
+                            sIntent.putExtra("email", mAuth.getCurrentUser().getEmail());
                             startService(sIntent);
 
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
@@ -286,7 +286,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
                             Intent sIntent = new Intent(ChooseLoginActivity.this, NotificationChecker.class);
-                            sIntent.putExtra("email", mAuth.getUid());
+                            sIntent.putExtra("email", mAuth.getCurrentUser().getEmail());
                             startService(sIntent);
 
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);

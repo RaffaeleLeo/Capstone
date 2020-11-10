@@ -54,12 +54,14 @@ public class NotificationChecker extends Service {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
         context = this;
         //System.out.println("Starting service");
         //System.exit(0);
         email = intent.getStringExtra("email");
+
         controlNotifications();
 
         return super.onStartCommand(intent, flags, startID);
@@ -67,6 +69,7 @@ public class NotificationChecker extends Service {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void controlNotifications()
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -116,7 +119,7 @@ public class NotificationChecker extends Service {
 
 
 
-
+        //final String[] emailAddress = {""};
         DocumentReference docRef =db.collection("users").document(mAuth.getUid());
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -125,6 +128,10 @@ public class NotificationChecker extends Service {
                 User user = documentSnapshot.toObject(User.class);
                 HashMap<String, String> requests = user.getRequests();
                 List<String> requestList = new ArrayList<String>(requests.values());
+                //emailAddress[0] = user.getEmail();
+                //Notifications notifier1 = new Notifications();
+                //notifier1.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
+
                 if(requestList.size() != 0  && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInFriends", false)) {
                     Notifications notifier = new Notifications();
                     notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int)System.currentTimeMillis(), context);
@@ -132,19 +139,27 @@ public class NotificationChecker extends Service {
             }
         });
 
-
-        /*final String[] email = {""};
-
-        final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+        /*
+        //final String[] emailAddress = {""};
+        final DocumentReference userDocRef = db.collection("users").document(email);
         userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                email[0] = documentSnapshot.toObject(User.class).getEmail();
+                User user = documentSnapshot.toObject(User.class);
+                if (user == null) {
+                    Log.d("user", "not found");
+                }
+                emailAddress[0] = user.getEmail();
 
             }
         });
 
          */
+
+        //Notifications notifier = new Notifications();
+        //notifier.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
+
+
 
 
 
@@ -159,7 +174,7 @@ public class NotificationChecker extends Service {
                                         @Nullable FirebaseFirestoreException e) {
                         if(!snapshots.isEmpty() && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInTours", false)) {
                             Notifications notifier = new Notifications();
-                            notifier.notification("New tour invite!", "", (int) System.currentTimeMillis(), context);
+                            notifier.notification("New tour invite.", "Invitation to tour \"" + snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tourName") + "\"."/* + "from "+ snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tour") +"."*/, (int) System.currentTimeMillis(), context);
                         }
                 }
             });
