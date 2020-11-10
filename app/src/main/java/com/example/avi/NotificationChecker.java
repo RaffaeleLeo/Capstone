@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.example.avi.ChatRoom.Message;
@@ -20,6 +22,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.List;
 
@@ -29,6 +36,7 @@ public class NotificationChecker extends Service {
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAuth mAuth;
     private Context context;
+    private FirebaseFirestore db;
 
     public NotificationChecker() {
     }
@@ -50,6 +58,9 @@ public class NotificationChecker extends Service {
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        /*
         final DatabaseReference ref = database.getReference("messages");
 
         ref.addValueEventListener(new ValueEventListener() {
@@ -90,40 +101,52 @@ public class NotificationChecker extends Service {
             }
         });
 
-        /*
-        final DatabaseReference ref2 = database.getReference("users").child(mAuth.getUid());
+         */
 
+
+        DocumentReference docRef =db.collection("users").document(mAuth.getUid());
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                //var requests = documentSnapshot.get("requests");
+                //Notifications notifier = new Notifications();
+                //notifier.notification("Data",  String.valueOf(documentSnapshot.getData()), 0, context);
+
+            }
+        });
+        //final DatabaseReference ref2 = db.getReference("users");// + mAuth.getUid() + "/requests");//.child(mAuth.getUid()).child("requests");
+
+        /*
         ref2.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 List<DataSnapshot> childList = Lists.newArrayList(dataSnapshot.getChildren());
+                //if(childList.size()== 0)
+                    System.exit(0);
                 for (int i = 0; i < childList.size(); i++) {
 
-                    if (i == childList.size() - 1)
-                    {
-                        DataSnapshot child = childList.get(i);
-                        String id = child.child("id").getValue(String.class);
-                        String message = child.child("message").getValue(String.class);
-                        String userName = "Anonymous";
-                        boolean currentUser = false;
-                        if (id.equals(mAuth.getUid())) {
-                            currentUser = true;
-                            userName = "Me";
-                        }
-                        final Message msg = new Message(message, id, userName, currentUser);
-                        if(!currentUser)
-                        {
+                        if(i == childList.size() - 1) {
+                            DataSnapshot child = childList.get(i);
+                            //String id = child.child("id").getValue(String.class);
+                            String name = child.child("name").getValue(String.class);
+
                             Notifications notifier = new Notifications();
-                            notifier.notification("New Message from Anonymous", message, 0, context);
+                            notifier.notification("New friend request", name + " has sent you a friend request.", 0, context);
                         }
+
                     }
 
-                }
+
+
+
+
+
 
 
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -131,6 +154,7 @@ public class NotificationChecker extends Service {
             }
         });
         */
+
 
     }
 
