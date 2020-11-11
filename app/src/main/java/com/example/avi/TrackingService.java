@@ -49,7 +49,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-public class TrackingService extends IntentService {
+public class TrackingService extends Service {
 
     private static final String TAG = TrackingService.class.getSimpleName();
 
@@ -64,57 +64,25 @@ public class TrackingService extends IntentService {
     public User user;
 
     public static boolean currentlyRunning = false;
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public TrackingService(String name) {
-        super(name);
-    }
 
-    public TrackingService() {
-        super("");
-    }
-
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        if(!currentlyRunning) {
-            currentlyRunning = true;
-        }
-    }
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
         if (!currentlyRunning) {
+            currentlyRunning = true;
+            super.onCreate();
+            sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
             //buildNotification();
             loginToDatabase();
             requestLocationUpdates();
         }
     }
 
-
-    protected BroadcastReceiver stopReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            //Unregister the BroadcastReceiver when the notification is tapped//
-
-            unregisterReceiver(stopReceiver);
-
-            //Stop the Service//
-
-            stopSelf();
-        }
-    };
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     private void loginToDatabase() {
         mAuth = FirebaseAuth.getInstance();

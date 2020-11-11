@@ -13,9 +13,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -334,7 +337,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
-        addGroupPositions("-111.8833056, 40.4789458", "test");
+        addGroupPositions("40.4790243, -111.8833337", "test");
+        addGroupPositions("37.250665, -122.177365", "tesst2");
 
         //make the camera go to the users location
         //TODO: currently this will only go to the user once the app is opened, but won't move along with the user
@@ -649,11 +653,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addGroupPositions(String coordinates, String name){
-        String[] lonLat = coordinates.split(", ");
-        LatLng latLng = new LatLng(Double.parseDouble(lonLat[1]), Double.parseDouble(lonLat[0]));
+        String[] latLon = coordinates.split(", ");
+        LatLng latLng = new LatLng(Double.parseDouble(latLon[0]), Double.parseDouble(latLon[1]));
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
+        Drawable drawable = ContextCompat.getDrawable(this,R.drawable.group_member_markers);
+        Bitmap icon = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(icon);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         markerOptions.title(name);
+        mMap.addMarker(markerOptions);
     }
 
 
