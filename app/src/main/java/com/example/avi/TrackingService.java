@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +33,7 @@ import android.icu.text.SimpleDateFormat;
 import android.location.LocationManager;
 import android.os.IBinder;
 import android.content.Intent;
+import android.os.PowerManager;
 import android.util.Log;
 import android.Manifest;
 import android.location.Location;
@@ -60,6 +62,8 @@ public class TrackingService extends IntentService {
     private FirebaseFirestore db;
 
     public User user;
+
+    public static boolean currentlyRunning = false;
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -81,17 +85,20 @@ public class TrackingService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-
+        if(!currentlyRunning) {
+            currentlyRunning = true;
+        }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         sp = getSharedPreferences(this.getPackageName(), MODE_PRIVATE);
-        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        //buildNotification();
-        loginToDatabase();
-        requestLocationUpdates();
+        if (!currentlyRunning) {
+            //buildNotification();
+            loginToDatabase();
+            requestLocationUpdates();
+        }
     }
 
 
@@ -110,20 +117,21 @@ public class TrackingService extends IntentService {
     };
 
     private void loginToDatabase() {
-        /*
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
-        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                user = documentSnapshot.toObject(User.class);
-                if (user != null) {
-                    Log.d("user", user.getId());
+        if (mAuth.getCurrentUser() != null) {
+            final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+            userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    user = documentSnapshot.toObject(User.class);
+                    if (user != null) {
+                        Log.d("user", user.getId());
+                    }
                 }
-            }
-        });
-        */
+            });
+        }
+
     }
 
     /**
@@ -170,6 +178,16 @@ public class TrackingService extends IntentService {
                                         Log.w(TAG, "Error writing document", e);
                                     }
                                 });;
+                    } else {
+                        if (mAuth.getCurrentUser() != null) {
+                            final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+                            userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    user = documentSnapshot.toObject(User.class);
+                                }
+                            });
+                        }
                     }
 
                     //get all journals to loop through
