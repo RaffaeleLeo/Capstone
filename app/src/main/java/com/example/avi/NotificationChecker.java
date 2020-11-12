@@ -233,15 +233,6 @@ public class NotificationChecker extends Service {
 
     }
 
-    public void delayNotify(long whenMillis, String title, String text){
-        Intent alarmIntent = new Intent(context, AlarmNotification.class);
-        alarmIntent.putExtra("title", title);
-        alarmIntent.putExtra("text", text);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), alarmIntent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, whenMillis, pendingIntent);
-    }
-
     @Override
     public IBinder onBind(Intent intent) {return null;}
 }

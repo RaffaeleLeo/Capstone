@@ -80,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        /*hours = (EditText) findViewById(R.id.hourCount);
+        hours = (EditText) findViewById(R.id.hourCount);
         hours.setText(getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1));
 
         hours.addTextChangedListener(new TextWatcher(){
@@ -105,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
 
-         */
+
         setupTabLayout();
     }
 

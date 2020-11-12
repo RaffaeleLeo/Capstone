@@ -1,8 +1,11 @@
 package com.example.avi;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
@@ -61,6 +65,8 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     public User user;
+
+    private Context context;
 
     private LinearLayout toursLinearLayout;
     private ImageButton addTourButton;
@@ -98,6 +104,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        context = this;
         behaveNormallyWhenBackIsPressed = true;
         setContentView(R.layout.activity_social_media_home);
 
@@ -180,9 +187,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         behaveNormallyWhenBackIsPressed = true;
-                        String tourText;
-                        String dateText;
-                        String timeText;
+                        final String tourText;
+                        final String dateText;
+                        final String timeText;
                         String notesText;
                         String invitedText;
                         String coordinates;
@@ -218,6 +225,27 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
+                                    int howManyHoursEarly = getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                                    Calendar c = new GregorianCalendar();
+                                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
+                                    try {
+                                        c.setTime(sdf.parse(dateText+timeText));
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    c.add(Calendar.HOUR, -howManyHoursEarly);
+                                    Notifications notifier = new Notifications();
+                                    notifier.notification(Long.toString(c.getTimeInMillis()), Long.toString(System.currentTimeMillis()), (int) System.currentTimeMillis(), context);
+
+                                    Intent alarmIntent = new Intent(context, AlarmNotification.class);
+                                    alarmIntent.putExtra("title", "Upcoming tour");
+                                    alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
+                                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), alarmIntent, 0);
+                                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                    alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+
+                                    //Notifications notifier = new Notifications();
+                                    //notifier.notification(dateText, timeText,(int) System.currentTimeMillis(), context);
                                     Log.d("newTour", "Successfully added new Tour");
 
                                 }
