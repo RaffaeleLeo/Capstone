@@ -109,8 +109,6 @@ public class NotificationChecker extends Service {
                                 editor.putString("LastMessage", id);
                                 editor.commit();
 
-
-
                                 Notifications notifier = new Notifications();
                                 notifier.notification("New Message from Anonymous", message, (int) System.currentTimeMillis(), context);
                             }
@@ -144,8 +142,16 @@ public class NotificationChecker extends Service {
                 //notifier1.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
 
                 if(requestList.size() != 0  && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInFriends", false)) {
-                    Notifications notifier = new Notifications();
-                    notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int)System.currentTimeMillis(), context);
+                    if(!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastFriendRequest", "").equals( requestList.get(requestList.size() - 1))))
+                    {
+                        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString("LastFriendRequest", requestList.get(requestList.size() - 1) );
+                        editor.commit();
+
+                        Notifications notifier = new Notifications();
+                        notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int) System.currentTimeMillis(), context);
+                    }
                 }
             }
         });
