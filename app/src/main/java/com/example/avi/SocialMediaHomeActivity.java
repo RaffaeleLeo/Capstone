@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -474,7 +475,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     deleteButton.setTag(acceptedTourBox);
                     editTourButton.setTag(acceptedTourBox);
                     final ImageButton editButton = acceptedTourBox.findViewById(R.id.edit_button);
+                    final Button findMembersButton = acceptedTourBox.findViewById(R.id.tours_tracking_button);
                     editButton.setTag(acceptedTourBox);
+
                     if (owners.contains(user.getEmail())) {
                         deleteButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -561,10 +564,27 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                         }
                     }
                     tourInvites.setText(sb.toString().trim());
+                    setUpTourTrackingButton(findMembersButton, tour.date + " " + tour.time, tourIds.get(i));
                     toursLinearLayout.addView(acceptedTourBox, getTourInsertPosition(acceptedTourBox));
                 }
                 break;
         }
+
+    }
+
+    private void setUpTourTrackingButton(Button toursTrackingButton, String dateString, final String tourId) throws ParseException {
+       Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(dateString);
+       if (DateUtils.isToday(date.getTime())){
+           toursTrackingButton.setVisibility(View.VISIBLE);
+           toursTrackingButton.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   Intent intent = new Intent(SocialMediaHomeActivity.this, MapsActivity.class);
+                   intent.putExtra("tourId", tourId);
+                   startActivity(intent);
+               }
+           });
+       }
 
     }
 
