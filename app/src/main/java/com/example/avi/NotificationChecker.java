@@ -190,8 +190,18 @@ public class NotificationChecker extends Service {
                     public void onEvent(@Nullable QuerySnapshot snapshots,
                                         @Nullable FirebaseFirestoreException e) {
                         if(!snapshots.isEmpty() && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInTours", false)) {
-                            Notifications notifier = new Notifications();
-                            notifier.notification("New tour invite.", "Invitation to tour \"" + snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tourName") + "\"."/* + "from "+ snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tour") +"."*/, (int) System.currentTimeMillis(), context);
+
+                            //snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId()
+                            if(!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastTourInvite", "").equals( snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId())))
+                            {
+                                SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("LastTourInvite", snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId());
+                                editor.commit();
+
+                                Notifications notifier = new Notifications();
+                                notifier.notification("New tour invite."  , "Invitation to tour \"" + snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tourName") + "\"."/* + "from "+ snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tour") +"."*/, (int) System.currentTimeMillis(), context);
+                            }
                         }
                 }
             });
