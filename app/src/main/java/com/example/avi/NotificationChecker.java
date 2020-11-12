@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -101,9 +102,19 @@ public class NotificationChecker extends Service {
                         final Message msg = new Message(message, id, userName, currentUser);
                         if(!currentUser && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInChatRoom", false))
                         {
-                            Notifications notifier = new Notifications();
-                            notifier.notification("New Message from Anonymous", message, (int)System.currentTimeMillis(), context);
-                        }
+
+                            if(!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastMessage", "").equals( id))) {
+                                SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("LastMessage", id);
+                                editor.commit();
+
+
+
+                                Notifications notifier = new Notifications();
+                                notifier.notification("New Message from Anonymous", message, (int) System.currentTimeMillis(), context);
+                            }
+                         }
                     }
 
                 }
@@ -178,6 +189,7 @@ public class NotificationChecker extends Service {
                         }
                 }
             });
+
 
 
     }
