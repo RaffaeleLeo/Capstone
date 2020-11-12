@@ -1,7 +1,9 @@
 package com.example.avi;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -45,6 +47,7 @@ public class NotificationChecker extends Service {
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAuth mAuth;
     private Context context;
+    //private Intent intention;
     private FirebaseFirestore db;
 
     private String email;
@@ -59,8 +62,7 @@ public class NotificationChecker extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
         context = this;
-        //System.out.println("Starting service");
-        //System.exit(0);
+        //intention = intent;
         email = intent.getStringExtra("email");
 
         controlNotifications();
@@ -112,6 +114,8 @@ public class NotificationChecker extends Service {
                                 Notifications notifier = new Notifications();
                                 notifier.notification("New Message from Anonymous", message, (int) System.currentTimeMillis(), context);
                             }
+
+                                
                          }
                     }
 
@@ -201,6 +205,8 @@ public class NotificationChecker extends Service {
 
                                 Notifications notifier = new Notifications();
                                 notifier.notification("New tour invite."  , "Invitation to tour \"" + snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tourName") + "\"."/* + "from "+ snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tour") +"."*/, (int) System.currentTimeMillis(), context);
+
+
                             }
                         }
                 }
@@ -225,6 +231,15 @@ public class NotificationChecker extends Service {
 
 
 
+    }
+
+    public void delayNotify(long whenMillis, String title, String text){
+        Intent alarmIntent = new Intent(context, AlarmNotification.class);
+        alarmIntent.putExtra("title", title);
+        alarmIntent.putExtra("text", text);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) System.currentTimeMillis(), alarmIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, whenMillis, pendingIntent);
     }
 
     @Override
