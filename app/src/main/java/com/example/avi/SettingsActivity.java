@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         hours = (EditText) findViewById(R.id.hourCount);
-        hours.setText(getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1));
+        hours.setText(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));
 
         hours.addTextChangedListener(new TextWatcher(){
             @Override
@@ -94,7 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
                 int hourNumber = Integer.parseInt(charSequence.toString());
                 SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("notifyHours", hourNumber);
+                editor.putString("notifyHours", charSequence.toString());
                 editor.commit();
             }
 

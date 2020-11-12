@@ -225,7 +225,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             db.collection("tours").add(tour).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
-                                    int howManyHoursEarly = getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                                    int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));
                                     Calendar c = new GregorianCalendar();
                                     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
                                     try {
@@ -234,8 +234,6 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                         e.printStackTrace();
                                     }
                                     c.add(Calendar.HOUR, -howManyHoursEarly);
-                                    Notifications notifier = new Notifications();
-                                    notifier.notification(Long.toString(c.getTimeInMillis()), Long.toString(System.currentTimeMillis()), (int) System.currentTimeMillis(), context);
 
                                     Intent alarmIntent = new Intent(context, AlarmNotification.class);
                                     alarmIntent.putExtra("title", "Upcoming tour");
@@ -319,9 +317,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         behaveNormallyWhenBackIsPressed = true;
-                        String tourText;
-                        String dateText;
-                        String timeText;
+                        final String tourText;
+                        final String dateText;
+                        final String timeText;
                         String notesText;
                         String invitedText;
                         final String coordinates;
@@ -388,6 +386,23 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                                 db.collection("tours").document(tourId).set(tourEdit).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));//getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                                        Calendar c = new GregorianCalendar();
+                                        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
+                                        try {
+                                            c.setTime(sdf.parse(dateText+timeText));
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                        c.add(Calendar.HOUR, -howManyHoursEarly);
+
+                                        Intent alarmIntent = new Intent(context, AlarmNotification.class);
+                                        alarmIntent.putExtra("title", "Upcoming tour");
+                                        alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
+                                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), alarmIntent, 0);
+                                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+
 
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -435,9 +450,9 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
             case "Pending":
                 for (int i = 0; i < tours.size(); i++) {
                     final View pendingTourBox = getLayoutInflater().inflate(R.layout.pending_tour_box, toursLinearLayout, false);
-                    TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
-                    TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
-                    TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
+                    final TextView tourName = pendingTourBox.findViewById(R.id.tour_name);
+                    final TextView tourDate = pendingTourBox.findViewById(R.id.date_text);
+                    final TextView tourTime = pendingTourBox.findViewById(R.id.time_text);
                     TextView tourNotes = pendingTourBox.findViewById(R.id.notes_text);
                     TextView tourCoordinates = pendingTourBox.findViewById(R.id.coordinates_text);
                     final TextView tourInvites = pendingTourBox.findViewById(R.id.invites_text);
@@ -462,6 +477,22 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                             String tourId = (String) pendingTourBox.getTag();
                             db.collection("tours").document(tourId).update("acceptedInvitees", FieldValue.arrayUnion(user.getEmail()));
                             db.collection("tours").document(tourId).update("pendingInvitees", FieldValue.arrayRemove(user.getEmail()));
+                            int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));//getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                            Calendar c = new GregorianCalendar();
+                            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
+                            try {
+                                c.setTime(sdf.parse(tourDate.getText().toString() + tourTime.getText().toString()));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            c.add(Calendar.HOUR, -howManyHoursEarly);
+
+                            Intent alarmIntent = new Intent(context, AlarmNotification.class);
+                            alarmIntent.putExtra("title", "Upcoming tour");
+                            alarmIntent.putExtra("text", tourName.getText().toString() + " in " + howManyHoursEarly + " hour(s).");
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), alarmIntent, 0);
+                            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
                         }
                     });
 
