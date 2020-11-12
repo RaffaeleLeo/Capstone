@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -123,10 +124,26 @@ public class LiveUpdates extends Activity {
 
         String webpage = "";
 
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.HOUR_OF_DAY, 7);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        //Date eightToday = c.getTime();
+        //Long eightEpoch = eightToday.getSeconds() * 1000L;
+        //Notifications notifier = new Notifications();
+
+        //notifier.notification(Long.toString(c.getTimeInMillis()), Long.toString(System.currentTimeMillis()), (int) System.currentTimeMillis(), this);
+
+        //Possible regex to help with caching policy, not yet in use.
+        //(January|February|March|April|May|June|July|August|September|October|November|December)(\s\d)(\d)?(,\s\d\d\d\d)
         if ( (url == "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/") || ( (System.currentTimeMillis() -
                 this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0)) > 86400000)
-                || (this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) <
-                new Date( Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), 8, 0).getSeconds() * 1000 )) {
+                || ((this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) <
+                c.getTimeInMillis()//new Date(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), 8, 0).getSeconds() * 1000
+                 )
+
+                && !(System.currentTimeMillis() - this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) < 300000)
+                )) {
             WeatherData dataGetter = new WeatherData();
             try {
                 webpage = dataGetter.execute(url).get();
