@@ -126,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     public User user;
-
+    public HashMap<String, Marker> trackingMarkers;
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
         put(0, " (No rating)");
@@ -364,6 +364,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         String tourId = getIntent().getStringExtra("tourId");
         if (tourId != null) {
+            trackingMarkers = new HashMap<>();
             getTourTrackingMembers(tourId);
         }
 
@@ -745,7 +746,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawable.draw(canvas);
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         markerOptions.title(name);
-        mMap.addMarker(markerOptions);
+
+        if (trackingMarkers.containsKey(name)){
+            trackingMarkers.get(name).remove();
+            trackingMarkers.put(name, mMap.addMarker(markerOptions));
+        }else {
+            trackingMarkers.put(name, mMap.addMarker(markerOptions));
+        }
+
     }
 
 
