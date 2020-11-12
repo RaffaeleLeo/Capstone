@@ -573,8 +573,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     }
 
     private void setUpTourTrackingButton(Button toursTrackingButton, String dateString, final String tourId) throws ParseException {
-       Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(dateString);
-       if (DateUtils.isToday(date.getTime())){
+        Calendar calendar = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US);
+        String formattedDate = dateFormat.format(calendar.getTime());
+        Date now = dateFormat.parse(formattedDate);
+        Date date = new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(dateString);
+       if (DateUtils.isToday(date.getTime()) && date.before(now)){
            toursTrackingButton.setVisibility(View.VISIBLE);
            toursTrackingButton.setOnClickListener(new View.OnClickListener() {
                @Override
