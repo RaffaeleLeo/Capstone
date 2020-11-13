@@ -37,9 +37,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 public class NotificationChecker extends Service {
@@ -212,6 +217,7 @@ public class NotificationChecker extends Service {
                 }
             });
 
+
         /*
         db.collection("tours")
                 .whereArrayContains("acceptedInvitees", email)
@@ -220,29 +226,33 @@ public class NotificationChecker extends Service {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot snapshots,
                                         @Nullable FirebaseFirestoreException e) {
-                        if(!snapshots.isEmpty() //&& !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInTours", false)
-                        ) {
-
-
-                            //snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId()
-                            //if(!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastTourInvite", "").equals( snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId())))
-                            {
-                                SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
-                                SharedPreferences.Editor editor = prefs.edit();
-                                editor.putString("LastTourInvite", snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getId());
-                                editor.commit();
-
-                                Notifications notifier = new Notifications();
-                                notifier.notification("New tour invite."  , "Invitation to tour \"" + snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tourName") + "\"."/* + "from "+ snapshots.getDocuments().get(snapshots.getDocuments().size() - 1).getString("tour") +"."
-                                , (int) System.currentTimeMillis(), context);
-
-
-
+                        for (DocumentChange dc : snapshots.getDocumentChanges())
+                        {
+                            String dateText = (String) dc.getDocument().get("date");
+                            String timeText = (String) dc.getDocument().get("time");
+                            String tourText = (String) dc.getDocument().get("tourName");
+                            int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));//getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                            Calendar c = new GregorianCalendar();
+                            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
+                            try {
+                                c.setTime(sdf.parse(dateText+timeText));
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
                             }
+                            c.add(Calendar.HOUR, -howManyHoursEarly);
+
+                            Intent alarmIntent = new Intent(context, AlarmNotification.class);
+                            alarmIntent.putExtra("title", "Upcoming tour (has been edited)");
+                            alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), alarmIntent, 0);
+                            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
                         }
                     }
                 });
-        */
+
+         */
+
 
 
     }

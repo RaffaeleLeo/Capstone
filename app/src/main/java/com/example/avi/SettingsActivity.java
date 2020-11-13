@@ -91,7 +91,10 @@ public class SettingsActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                int hourNumber = Integer.parseInt(charSequence.toString());
+                if(charSequence.length() == 0) {
+                    charSequence = "1";
+                }
+            
                 SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("notifyHours", charSequence.toString());
