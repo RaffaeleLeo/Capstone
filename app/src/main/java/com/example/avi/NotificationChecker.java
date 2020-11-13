@@ -218,7 +218,7 @@ public class NotificationChecker extends Service {
             });
 
 
-        /*
+
         db.collection("tours")
                 .whereArrayContains("acceptedInvitees", email)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -228,30 +228,32 @@ public class NotificationChecker extends Service {
                                         @Nullable FirebaseFirestoreException e) {
                         for (DocumentChange dc : snapshots.getDocumentChanges())
                         {
-                            String dateText = (String) dc.getDocument().get("date");
-                            String timeText = (String) dc.getDocument().get("time");
-                            String tourText = (String) dc.getDocument().get("tourName");
-                            int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));//getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
-                            Calendar c = new GregorianCalendar();
-                            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
-                            try {
-                                c.setTime(sdf.parse(dateText+timeText));
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
-                            c.add(Calendar.HOUR, -howManyHoursEarly);
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
 
-                            Intent alarmIntent = new Intent(context, AlarmNotification.class);
-                            alarmIntent.putExtra("title", "Upcoming tour (has been edited)");
-                            alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
-                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis(), alarmIntent, 0);
-                            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+                                String dateText = (String) dc.getDocument().get("date");
+                                String timeText = (String) dc.getDocument().get("time");
+                                String tourText = (String) dc.getDocument().get("tourName");
+                                int howManyHoursEarly = Integer.parseInt(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));//getApplicationContext().getSharedPreferences("Prefs", 0).getInt("notifyHours", 1);
+                                Calendar c = new GregorianCalendar();
+                                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyyHH:mm", Locale.ENGLISH);
+                                try {
+                                    c.setTime(sdf.parse(dateText + timeText));
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                                c.add(Calendar.HOUR, -howManyHoursEarly);
+
+                                Intent alarmIntent = new Intent(context, AlarmNotification.class);
+                                alarmIntent.putExtra("title", "Upcoming tour");
+                                alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
+                                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis() + 1, alarmIntent, 0);
+                                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+                            }
                         }
                     }
                 });
 
-         */
 
 
 
