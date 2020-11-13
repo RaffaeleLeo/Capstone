@@ -165,32 +165,6 @@ public class NotificationChecker extends Service {
             }
         });
 
-        /*
-        //final String[] emailAddress = {""};
-        final DocumentReference userDocRef = db.collection("users").document(email);
-        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                if (user == null) {
-                    Log.d("user", "not found");
-                }
-                emailAddress[0] = user.getEmail();
-
-            }
-        });
-
-         */
-
-        //Notifications notifier = new Notifications();
-        //notifier.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
-
-
-
-
-
-
-
         db.collection("tours")
                 .whereArrayContains("pendingInvitees", email)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -217,8 +191,6 @@ public class NotificationChecker extends Service {
                 }
             });
 
-
-
         db.collection("tours")
                 .whereArrayContains("acceptedInvitees", email)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -228,7 +200,8 @@ public class NotificationChecker extends Service {
                                         @Nullable FirebaseFirestoreException e) {
                         for (DocumentChange dc : snapshots.getDocumentChanges())
                         {
-                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                            if (dc.getType() == DocumentChange.Type.MODIFIED  && !dc.getDocument().get("tourOwners").toString().equals("[" + email + "]")
+                                                                            ) {
 
                                 String dateText = (String) dc.getDocument().get("date");
                                 String timeText = (String) dc.getDocument().get("time");
@@ -244,7 +217,12 @@ public class NotificationChecker extends Service {
                                 c.add(Calendar.HOUR, -howManyHoursEarly);
 
                                 Intent alarmIntent = new Intent(context, AlarmNotification.class);
-                                alarmIntent.putExtra("title", "Upcoming tour");
+                                alarmIntent.putExtra("title", "Upcoming tour"
+                                        //+
+                                         //"(" + dc.getDocument().get("tourOwners").toString() + ")"
+                                        //+
+                                        //         "\n" + "([" + email + "])"
+                                );
                                 alarmIntent.putExtra("text", tourText + " in " + howManyHoursEarly + " hour(s).");
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int) c.getTimeInMillis() + 1, alarmIntent, 0);
                                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
