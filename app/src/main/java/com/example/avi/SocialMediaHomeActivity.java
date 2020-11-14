@@ -31,6 +31,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
+import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,6 +55,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class SocialMediaHomeActivity extends AppCompatActivity {
@@ -176,14 +178,16 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newTourTime = newTour.findViewById(R.id.time_edit_text);
                 final TextInputEditText newTourNotes = newTour.findViewById(R.id.notes_edit_text);
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
-                final TextView latLonText = newTour.findViewById(R.id.coordinates_text);
+                final EditText latLonText = newTour.findViewById(R.id.coordinates_text);
                 final TextView dateWarning = newTour.findViewById(R.id.date_required_label);
                 final TextView timeWarning = newTour.findViewById(R.id.time_required_label);
+                Button journalCoordButton = newTour.findViewById(R.id.journal_coordinates);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
 
                 setUpDateListeners(newDate);
                 setUpTimeListeners(newTourTime);
                 setUpFriendsButtonDialogue(friendsButton, newInvitedText);
+                setUpJournalCoordinatesClickListener(journalCoordButton, latLonText);
                 saveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -296,10 +300,12 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                 final TextInputEditText newInvitedText = newTour.findViewById(R.id.invites_edit_text);
                 final EditText newTourCoord = newTour.findViewById(R.id.coordinates_text);
                 Button friendsButton = newTour.findViewById(R.id.gotoFriends);
+                Button journalCoordButton = newTour.findViewById(R.id.journal_coordinates);
 
                 setUpDateListeners(newDate);
                 setUpTimeListeners(newTourTime);
                 setUpFriendsButtonDialogue(friendsButton, newInvitedText);
+                setUpJournalCoordinatesClickListener(journalCoordButton, newTourCoord);
 
                 final TextView tourName = tourBox.findViewById(R.id.tour_name);
                 final TextView tourDate = tourBox.findViewById(R.id.date_text);
@@ -648,6 +654,75 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
                }
            });
        }
+
+    }
+
+
+    private void setUpJournalCoordinatesClickListener(Button journalButton, final EditText coordinateText){
+        journalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                        "journals.db", null, 1);
+                final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
+                        "data_points.db", null, 1);
+                ArrayList<Journal> journals = new ArrayList<Journal>();
+                journals = dbHandler.getAllJournals();
+                ArrayList<String> journalNames = new ArrayList<>();
+                final ArrayList<String> startingCoord = new ArrayList<>();
+                for (int i = 0; i < journals.size(); i++){
+                    ArrayList<Double> dataPoints = dbHandler_location.getAllData(journals.get(i).name);
+                    if (dataPoints.size() > 0) {
+                        journalNames.add(journals.get(i).name);
+                        startingCoord.add(dataPoints.get(0).toString() + ", " + dataPoints.get(1).toString());
+                    }
+                }
+                dbHandler.close();
+                dbHandler_location.close();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Get coordinates from journal");
+                String[] names = journalNames.toArray(new String[0]);
+                final String coordinates = coordinateText.getText().toString();
+                int index = 0;
+                if (coordinates != null && !coordinates.trim().isEmpty()){
+                    for (int i = 0; i < startingCoord.size(); i++){
+                        if (coordinates.equals(startingCoord.get(i))){
+                            index = i;
+                        }
+                    }
+                }
+                final int checkedItem = index;
+                if (index != 0){
+                    coordinateText.setText(startingCoord.get(index));
+                }else if (startingCoord.size() > 0){
+                    coordinateText.setText(startingCoord.get(0));
+                }
+                builder.setSingleChoiceItems(names, checkedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        coordinateText.setText(startingCoord.get(which));
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        coordinateText.setText(coordinates);
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
 
     }
 

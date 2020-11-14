@@ -169,4 +169,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/coordinates_text"
         app:layout_constraintTop_toTopOf="@+id/coordinates_text"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

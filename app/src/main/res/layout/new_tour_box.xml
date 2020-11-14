@@ -248,6 +248,15 @@
         app:layout_constraintStart_toEndOf="@+id/coordinates_text_label"
         app:layout_constraintTop_toBottomOf="@+id/invites_text" />
 
+    <Button
+        android:id="@+id/journal_coordinates"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/journal_icon"
+        app:layout_constraintStart_toEndOf="@id/coordinates_text"
+        app:layout_constraintTop_toTopOf="@id/coordinates_text" />
+
     <TextView
         android:id="@+id/coordinates_text_label"
         android:layout_width="wrap_content"
