@@ -555,6 +555,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             dangerD.setText(" (Elevation below 5000)");
                         } else {
                             int d = dbHandler.getDangerAtLocation(comp);
+
                             danger.setText(Integer.toString(d));
                             if (d >= 7)
                                 danger.setTextColor(getColor(android.R.color.holo_red_light));
