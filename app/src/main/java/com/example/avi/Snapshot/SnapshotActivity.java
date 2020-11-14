@@ -198,7 +198,24 @@ public class SnapshotActivity extends AppCompatActivity{
                     if(!currSelection.equals("Select a message:")) {
                         currFinalMessage = currSelection + "\n";
                         currFinalMessage = currFinalMessage + "Elevation: " + elevation + "\n";
-                        currFinalMessage = currFinalMessage + "Aspect: " + aspect + "\n";
+                        String direction = "";
+                        if(aspect >= 337.5f || aspect <= 22.5f)
+                            direction = "North";
+                        if(aspect < 337.5f && aspect > 292.5f)
+                            direction = "NorthWest";
+                        if(aspect <= 292.5f && aspect >= 247.5f)
+                            direction = "West";
+                        if(aspect < 247.5f && aspect > 202.5f)
+                            direction = "SouthWest";
+                        if(aspect <= 202.5f && aspect >= 157.5f)
+                            direction = "South";
+                        if(aspect < 157.5f && aspect > 112.5f)
+                            direction = "SouthEast";
+                        if(aspect <= 112.5f && aspect >= 67.5f)
+                            direction = "East";
+                        if(aspect < 67.5f && aspect > 22.5f)
+                            direction = "NorthEast";
+                        currFinalMessage = currFinalMessage + "Aspect: " + aspect + " (" + direction + ")" + "\n";
                         Date currentTime = Calendar.getInstance().getTime();
                         String temp = currentTime.toString();
                         currFinalMessage = currFinalMessage + "Date/Time: " + temp;
