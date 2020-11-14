@@ -539,10 +539,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //If we have an elevation, get it and the current degrees, and compute
                 //the danger based at this location.
                 //Converts degrees to 0-360 where 0 and 360 are N
-                if (degree < 0) {
-                    convertedDegrees = -degree;
+                convertedDegrees = degree;
+                if (degree <= 0) {
+                    convertedDegrees = (float) (degree + 360.0);
                 } else {
-                    convertedDegrees = (float) (360.0 - degree);
+                    //convertedDegrees = (float) (360.0 - degree);
                 }
                 if (currentElevation != null && !currentElevation.isEmpty()) {
                     int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
