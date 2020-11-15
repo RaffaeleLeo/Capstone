@@ -1,6 +1,8 @@
 package com.example.avi;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
@@ -30,6 +33,10 @@ public class LiveUpdates extends Activity {
     private MyPagerAdapter adapter;
     private List<View> webViewList;
     Button settings;
+    ConstraintLayout topBar;
+    ImageView page1;
+    ImageView page2;
+    ImageView page3;
 
     @Override
     protected void onResume(){
@@ -44,9 +51,17 @@ public class LiveUpdates extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_updates);
         setupTabLayout();
-        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
-        TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-        title.setText("Home\nWeather Info");
+        topBar = findViewById(R.id.topBar);
+        settings = topBar.findViewById(R.id.settingsButton);
+        TextView title = topBar.findViewById(R.id.pageTitle);
+        page1 = topBar.findViewById(R.id.page1);
+        page2 = topBar.findViewById(R.id.page2);
+        page3 = topBar.findViewById(R.id.page3);
+        page1.setVisibility(View.VISIBLE);
+        page2.setVisibility(View.VISIBLE);
+        page3.setVisibility(View.VISIBLE);
+        setPageHighlight(0);
+        title.setText("Report");
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,17 +108,21 @@ public class LiveUpdates extends Activity {
                 if(position == 0)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nWeather Info");
+                    title.setText("Report");
+                    setPageHighlight(position);
+
                 }
                 if(position == 1)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nTraffic Info");
+                    title.setText("Traffic");
+                    setPageHighlight(position);
                 }
                 if(position == 2)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nAvalanche Info");
+                    title.setText("Avalanches");
+                    setPageHighlight(position);
                 }
             }
 
@@ -112,6 +131,27 @@ public class LiveUpdates extends Activity {
 
             }
         });
+    }
+
+
+    private void setPageHighlight(int page){
+        switch (page){
+            case 0:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                break;
+            case 1:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                break;
+            case 2:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                break;
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
