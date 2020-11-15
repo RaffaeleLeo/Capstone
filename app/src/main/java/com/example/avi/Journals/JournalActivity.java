@@ -55,14 +55,12 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
         });
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
 
-
-
-
+        //always set up tab layout
         setupTabLayout();
+        //set up setting wheel
         settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
         TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
         title.setText("Journals");
-
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +69,7 @@ public class JournalActivity extends AppCompatActivity implements JournalAdapter
                 startActivity(intent);
             }
         });
-
+        //show the list of journals
         recyclerView = (RecyclerView) findViewById(R.id.journal_recycle);
 
         // use this setting to improve performance if you know that changes

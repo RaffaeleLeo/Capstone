@@ -119,7 +119,7 @@ public class TrackingService extends Service {
                             dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
 
                             //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
-                            String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                           //String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
 //                                    currentUser + "/journals/" + j.name + "/latlong");
                             Date timeStamp = new Date();

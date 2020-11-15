@@ -50,7 +50,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
 
 
     }
-    // initialize the data set here TODO incorporate with the database and com.example.frequency.Journal objects
+    // initialize the data set here
     public JournalAdapter(ArrayList<Journal> mDataset, JournalAdapter.JournalViewHolder.OnJournalListener onJournalListener) {
         this.mDataset = mDataset;
         this.onJournalListener = onJournalListener;
@@ -62,7 +62,6 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.my_journal_view, parent, false);
-//        ...
         JournalAdapter.JournalViewHolder vh = new JournalAdapter.JournalViewHolder(v, onJournalListener);
         return vh;
     }
@@ -83,21 +82,21 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         holder.frequencyView.setText(span_text);
 
         //holder.typeView.setImageResource(R.drawable.journal_icon);
-        switch (Journal.type) {
-            case "Skiing":
-                holder.typeView.setImageResource(R.drawable.skiing_icon_2);
-                //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
-                break;
-            case "Snowboarding":
-                holder.typeView.setImageResource(R.drawable.snowboard_icon);
-                //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
-                break;
-            case "Hiking":
-                holder.typeView.setImageResource(R.drawable.hiker_icon);
-                //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
-                break;
-            case "Peak":
-                holder.typeView.setImageResource(R.drawable.peak_icon);
+                switch (Journal.type) {
+                    case "Skiing":
+                        holder.typeView.setImageResource(R.drawable.skiing_icon_2);
+                        //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
+                        break;
+                    case "Snowboarding":
+                        holder.typeView.setImageResource(R.drawable.snowboard_icon);
+                        //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
+                        break;
+                    case "Hiking":
+                        holder.typeView.setImageResource(R.drawable.hiker_icon);
+                        //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
+                        break;
+                    case "Peak":
+                        holder.typeView.setImageResource(R.drawable.peak_icon);
                 //holder.typeView.setBackgroundResource(R.drawable.round_button_light_blue);
                 break;
 
@@ -108,22 +107,4 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
     public int getItemCount() {
         return mDataset.size();
     }
-
-//    public int addJournal(HashMap<String, Object> Journal_data){
-//
-//        Journal new_Journal = new Journal();
-//
-//        new_Journal.name = (String) Journal_data.get("name");
-//
-//        for(Journal journal : mDataset){
-//            if(journal.name.equals(new_Journal.name)){
-//                return 0;
-//            }
-//        }
-//
-//        new_Journal.description = (String) Journal_data.get("description");
-//
-//        mDataset.add(new_Journal);
-//        return 0;
-//    }
 }

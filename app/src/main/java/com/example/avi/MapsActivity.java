@@ -52,6 +52,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -124,7 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Empty right now.
+        //coordinates for journal entry
         coordinates = new ArrayList<LatLng>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -146,33 +147,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
         }
 
-//        if(!currDate.equals(lastDate)) {
-//            dbHandler.clearDangerTable();
-//            ArrayList<String> res = new ArrayList<String>();
-//            PullDangerData danger = new PullDangerData();
-//            danger.execute();
-//            try {
-//                res = danger.get();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            String url = res.get(24);
-//            String overall = res.get(25);
-//            String loc = res.get(26);
-//
-//            for (int i = 0; i < 24; i++) {
-//                dbHandler.addToDanger(i, Integer.parseInt(res.get(i)), url, overall, loc, currDate);
-//            }
-//        }
-
 
 
         //get the users current location
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        //set up sensors
         compassButton = findViewById(R.id.compass_button);
         sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
         compassButton.setOnClickListener(this);
@@ -184,6 +164,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setupTabLayout();
         requestLocationUpdates();
 
+        //see if the user got here through a journal entry
+        //if they did acquire the journal
         if(intent.hasExtra("journal_name"))
         {
             this.journal_name = intent.getStringExtra("journal_name");
@@ -221,7 +203,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
         final Button pop_up = findViewById(R.id.show_popup);
 
         pop_up.setOnClickListener(new View.OnClickListener() {
@@ -240,9 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
-        //compass stuff
-
+        //settings wheel
         settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
         TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
         title.setText("Maps");
@@ -256,11 +235,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        //snapshot stuff for chat
         final Button snapshot = findViewById(R.id.snapshot_button);
         snapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    //if snapshot button clicked, start the snapshot activity with the current conditions
                     Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                     intent.putExtra("elevation", Float.parseFloat(currentElevation));
                     intent.putExtra("aspect", currentDegree);
@@ -298,10 +279,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        //set up the google map
         mMap = googleMap;
-
         mMap.setMyLocationEnabled(true);
 
+        //sets up every time but only works if we have a journal
         //get points from a journal and show it on the map
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
                 "journals.db", null, 1);
@@ -321,7 +303,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
 
         //make the camera go to the users location
-        //TODO: currently this will only go to the user once the app is opened, but won't move along with the user
         Task task = mLocationClient.getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
@@ -333,18 +314,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        googleMap.addMarker(new MarkerOptions()
+                .position(sydney)
+                .title("Marker in Sydney"));
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
             grantResults) {
 
-        //If the permission has been granted...//
-
+        //If the permission has been granted...
         if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -352,13 +333,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
 
-            //...then start the GPS tracking service//
-
+            //...then start the GPS tracking service
             startTrackerService();
         } else {
 
-            //If the user denies the permission request, then display a toast with some more information//
-
+            //If the user denies the permission request, then display a toast with some more information
             Toast.makeText(this, "Please enable location services to allow GPS tracking", Toast.LENGTH_SHORT).show();
         }
     }
@@ -368,8 +347,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(MapsActivity.this, TrackingService.class);
         startService(intent);
 
-        //Notify the user that tracking has been enabled//
-
+        //Notify the user that tracking has been enabled
         Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
     }
 
@@ -383,18 +361,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (tab.getPosition() == 2) {
                     Intent intent = new Intent(MapsActivity.this, JournalActivity.class);
-
-//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 } else if (tab.getPosition() == 3) {
                     Intent intent = new Intent(MapsActivity.this, SocialMediaHomeActivity.class);
-
-//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }else if (tab.getPosition() == 0) {
                     Intent intent = new Intent(MapsActivity.this, LiveUpdates.class);
-
-//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
                 }
             }

@@ -47,6 +47,7 @@ public class AddJournalActivity extends AppCompatActivity {
 
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), "journals.db", null, 1);
 
+        //set up the add journal fragment
         settingsFrag = new AddJournalActivity.SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
@@ -57,8 +58,8 @@ public class AddJournalActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        //get the context from the fragment
         SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
         launcher = new UILauncher(this);
 
 
@@ -67,7 +68,6 @@ public class AddJournalActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                settingsFrag.addGoal(view);
                 addJournal(view, SP, dbHandler);
 
             }
@@ -82,9 +82,9 @@ public class AddJournalActivity extends AppCompatActivity {
 
     private void addJournal(View view, SharedPreferences sp, MyDBHandler dbHandler) {
         System.out.println(sp.getString("Journal_Name", "NA"));
-
         Journal Journal = new Journal();
 
+        //use the shared preferences from the xml fragment to get what the user input
         Journal.name = sp.getString("Journal_Name", "NA");
         if (Journal.name.equals("NA") || Journal.name.equals("")) {
             Snackbar.make(view, "Journals of interest must have a name", Snackbar.LENGTH_LONG)
@@ -122,7 +122,7 @@ public class AddJournalActivity extends AppCompatActivity {
 
         Journal.start_recording = sp.getBoolean("is_tracking", false);
 
-        // clear the goal settings after a successful
+        // clear the goal settings after a successful save
         SharedPreferences.Editor editor = sp.edit();
 
         //System.out.println(sp.getString(LoginActivity.EXTRA_ACCESS_EMAIL, "Not Here"));

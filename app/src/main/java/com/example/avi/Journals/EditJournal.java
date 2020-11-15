@@ -4,15 +4,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.avi.LoginActivity;
 import com.example.avi.MapsActivity;
 import com.example.avi.MyDBHandler;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,8 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class EditJournal extends AppCompatActivity {
@@ -90,38 +84,27 @@ public class EditJournal extends AppCompatActivity {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upload_joural(intent);
+                upload_journal(intent);
 
             }
         });
 
     }
 
-    private void upload_joural(Intent Intent)
+    /***
+     * uploads the current journal to firebase
+     * @param Intent
+     */
+    private void upload_journal(Intent Intent)
     {
+        //gets the unique firebase user ID
         String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Journal Journal = (Journal) Intent.getSerializableExtra("journal");
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(currentUser + "/journals");
 
+        //get the users latest edits
         EditText jName = (EditText)findViewById(R.id.journalName);
         Journal.name = jName.getText().toString();
-
-        /*
-        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
-                "data_points.db", null, 1);
-
-        ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
-        for(int i = 0; i < currentJournals.size(); i++){
-            Journal oneJournal = currentJournals.get(i);
-            if(oneJournal.name.equals(Journal.name)){
-                //Snackbar.make(view, "Journal cannot have the same name as another journal", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
-                Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-        
-        */
 
         EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
         Journal.description = jDesk.getText().toString();
@@ -131,10 +114,12 @@ public class EditJournal extends AppCompatActivity {
             ref.child(Journal.name).setValue(Journal);
         }
 
+        //if the user had coordinates from tracking, make sure to get those too
         final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
                 "data_points.db", null, 1);
         List<Double> coords = dbHandler_location.getAllData(Intent.getStringExtra("Name"));
 
+        //push to firebase
         DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference(
                 currentUser + "/journals/" + Journal.name + "/coordinates");
         ref2.setValue(coords);
@@ -142,15 +127,28 @@ public class EditJournal extends AppCompatActivity {
         Toast.makeText(EditJournal.this, "Successfully uploaded to cloud", Toast.LENGTH_LONG).show();
     }
 
+    /***
+     * show the path of the current journal on the map
+     * @param intent
+     */
     private void showPathOnMap(Intent intent)
     {
         Intent intent_2 = new Intent(EditJournal.this, MapsActivity.class);
-
-        //intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
         intent_2.putExtra("journal_name", intent.getStringExtra("Name"));
         startActivity(intent_2);
     }
 
+    /***
+     * gets called when the save or delete buttons are pressed
+     *
+     * If the save button is pressed, it saves the changes in the local MYSQL database and returns
+     * to the journals page
+     *
+     * If the delete button is pressed, it deletes the current journal from the local database
+     * and the remote database if it was uploaded previously
+     * @param action
+     * @param dbHandler
+     */
     private void createDialog(String action, final MyDBHandler dbHandler) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -168,19 +166,17 @@ public class EditJournal extends AppCompatActivity {
                     System.out.println("onClick: Yes delete the Journal");
 
                     //removes the object from firebase
-                    //right now the code still pulls from the local database
-                    //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
                     String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
                             currentUser + "/journals").child(journal_name);
-
                     ref.removeValue();
 
-                    Toast.makeText(EditJournal.this, "The Journal Has Been Deleted", Toast.LENGTH_LONG).show();
-
-                    Intent intent = new Intent(EditJournal.this, JournalActivity.class);
-
+                    //removes the object from the local database
                     dbHandler.deleteFromJournals(getIntent().getStringExtra("Name"));
+
+                    //tell the user the journal was deleted and go back to the journals screen
+                    Toast.makeText(EditJournal.this, "The Journal Has Been Deleted", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditJournal.this, JournalActivity.class);
                     startActivity(intent);
                 }
             });
@@ -196,7 +192,6 @@ public class EditJournal extends AppCompatActivity {
             alertDialog.setMessage("Save Changes to Current Journal?");
             alertDialog.setTitle("Save Changes");
 
-
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -204,23 +199,17 @@ public class EditJournal extends AppCompatActivity {
 
                     ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
 
+                    //collect all the edits the user made
                     EditText jName = (EditText)findViewById(R.id.journalName);
                     String journal_name = jName.getText().toString();
 
                     EditText jDesk = (EditText)findViewById(R.id.journal_desc_content);
                     String journal_description = jDesk.getText().toString();
 
-//                    ArrayList<Journal> currentJournals = dbHandler.getAllJournals();
-//                    for(int i = 0; i < currentJournals.size(); i++){
-//                        Journal oneJournal = currentJournals.get(i);
-//                        if(oneJournal.name.equals(journal_name)){
-//                            Toast.makeText(EditJournal.this, "Journal cannot have the same name as another journal", Toast.LENGTH_LONG).show();
-//                            return;
-//                        }
-//                    }
                     Spinner jType = findViewById(R.id.journal_type);
                     String journal_type = jType.getSelectedItem().toString();
 
+                    //save those edits in the local database
                     dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked(), journal_type);
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
                     startActivity(intent);
@@ -241,6 +230,11 @@ public class EditJournal extends AppCompatActivity {
 
     }
 
+    /***
+     * sets up the UI with the selected journals name, description, type, and if it's currently
+     * recording or not
+     * @param intent
+     */
     private void setupUI(Intent intent) {
 
         TextView journal_name = findViewById(R.id.journalName);
@@ -256,14 +250,6 @@ public class EditJournal extends AppCompatActivity {
 
         ToggleButton remindersToggle = findViewById(R.id.journal_tracking);
         remindersToggle.setChecked(intent.getBooleanExtra("Tracking", false));
-
-//        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
-//                "data_points.db", null, 1);
-//        ArrayList<String> data = new ArrayList<String>();
-//        data = dbHandler.getAllData(this.journal_name);
-
-
-
     }
 
 
