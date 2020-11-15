@@ -361,10 +361,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
+        for (Journal j : Journals) {
+            List<Double> coords = dbHandler_location.getAllData(j.name);
+
+            if(coords.size() > 1){
+                LatLng journal_marker = new LatLng(coords.get(0), coords.get(1));
+                googleMap.addMarker(new MarkerOptions()
+                        .position(journal_marker)
+                        .title(j.name));
+            }
+        }
     }
 
     @Override
