@@ -1,15 +1,22 @@
 package com.example.avi;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.ChatRoom.User;
@@ -57,6 +64,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 
     Button pseudoFacebook;
 
+    private static final int PERMISSIONS_REQUEST = 100;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +89,8 @@ public class ChooseLoginActivity extends AppCompatActivity {
         mCallbackManager = CallbackManager.Factory.create();
 
         db = FirebaseFirestore.getInstance();
+
+        getLocationTracking();
 
         final LoginButton facebookButton = findViewById(R.id.facebookButton);
         pseudoFacebook = findViewById(R.id.facebook_button);
@@ -192,6 +202,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
                             Intent sIntent = new Intent(ChooseLoginActivity.this, NotificationChecker.class);
+                            sIntent.putExtra("email", mAuth.getCurrentUser().getEmail());
                             startService(sIntent);
 
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);
@@ -205,6 +216,34 @@ public class ChooseLoginActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void getLocationTracking(){
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            Intent intent = new Intent(this, TrackingService.class);
+            startService(intent);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == PERMISSIONS_REQUEST && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(this, TrackingService.class);
+            startService(intent);
+        } else {
+            AlertDialog alert = new AlertDialog.Builder(this).create();
+            alert.setMessage("Many app features like route recording, avi prediction, and group member " +
+                    "tracking will not work without location permissions");
+            alert.show();
+        }
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -247,6 +286,7 @@ public class ChooseLoginActivity extends AppCompatActivity {
 //                            Intent intent = new Intent(ChooseLoginActivity.this, ChatRoomActivity.class);
 //                            intent.putExtra("IsFirst", true);
                             Intent sIntent = new Intent(ChooseLoginActivity.this, NotificationChecker.class);
+                            sIntent.putExtra("email", mAuth.getCurrentUser().getEmail());
                             startService(sIntent);
 
                             Intent intent = new Intent(ChooseLoginActivity.this, LiveUpdates.class);

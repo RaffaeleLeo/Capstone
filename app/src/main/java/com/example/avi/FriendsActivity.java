@@ -1,6 +1,8 @@
 package com.example.avi;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -51,6 +54,26 @@ public class FriendsActivity extends AppCompatActivity {
     View pop_up_view;
 
     @Override
+    protected void onStart(){
+        super.onStart();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInFriends", true);
+        editor.commit();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("AreInFriends",  false);
+        editor.commit();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -60,67 +83,7 @@ public class FriendsActivity extends AppCompatActivity {
 
         final Button pop_up = findViewById(R.id.show_popup);
 
-        pop_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                LayoutInflater inflater = getLayoutInflater();
-                pop_up_view = inflater.inflate(R.layout.add_frineds_popup, null);
-
-                sendRequest = pop_up_view.findViewById(R.id.sendRequestButton2);
-                emailField = pop_up_view.findViewById(R.id.sendRequestInput2);
-
-                sendRequest.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final String email = emailField.getText().toString().toLowerCase().trim();
-                        if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
-                            final Boolean[] userIsFound = {false};
-                            db.collection("users").whereEqualTo("email", email).get()
-                                    .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if (task.isSuccessful()) {
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    document.getId();
-                                                    String id = mAuth.getUid();
-                                                    String dest = "requests." + id;
-                                                    db.collection("users").document(document.getId())
-                                                            .update(
-                                                                    dest, mAuth.getCurrentUser().getDisplayName()
-                                                            );
-                                                    emailField.setText("");
-                                                    Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
-                                                    userIsFound[0] = true;
-                                                }
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                                emailField.setText("");
-                                            }
-                                        }
-                                    }));
-                            if(!userIsFound[0])
-                            {
-                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
-                                emailField.setText("");
-                            }
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
-                            emailField.setText("");
-                        }
-                    }
-                });
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
-                builder.setView(pop_up_view);
-                AlertDialog alertDialog = builder.create();
-                builder.show();
-
-
-            }
-        });
 
         friends = findViewById(R.id.friends_list);
         requests = findViewById(R.id.request_list);
@@ -164,12 +127,131 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
 
+
+
+        pop_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater inflater = getLayoutInflater();
+                pop_up_view = inflater.inflate(R.layout.add_frineds_popup, null);
+
+                sendRequest = pop_up_view.findViewById(R.id.sendRequestButton2);
+                emailField = pop_up_view.findViewById(R.id.sendRequestInput2);
+
+                sendRequest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String email = emailField.getText().toString().toLowerCase().trim();
+                        if(!(email.equals(mAuth.getCurrentUser().getEmail()))) {
+                            final Boolean[] userIsFound = {false};
+
+                            db.collection("users").whereEqualTo("email", email).get()
+                                    .addOnCompleteListener((new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    String newID = document.getId();
+
+                                                    if(friendsTracker.contains(newID)){
+                                                        Toast.makeText(getApplicationContext(), "User is already added as friend.", Toast.LENGTH_LONG).show();
+                                                        emailField.setText("");
+                                                    }
+                                                    else {
+
+                                                        String id = mAuth.getUid();
+                                                        String dest = "requests." + id;
+                                                        db.collection("users").document(newID)
+                                                                .update(
+                                                                        dest, mAuth.getCurrentUser().getDisplayName()
+                                                                );
+                                                        emailField.setText("");
+                                                        Toast.makeText(getApplicationContext(), "Request Sent", Toast.LENGTH_LONG).show();
+                                                        userIsFound[0] = true;
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+                                                emailField.setText("");
+                                            }
+                                        }
+                                    }));
+//                            if(!userIsFound[0])
+//                            {
+//                                Toast.makeText(getApplicationContext(), "User not found", Toast.LENGTH_LONG).show();
+//                                emailField.setText("");
+//                            }
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Cannot send friend request to self", Toast.LENGTH_LONG).show();
+                            emailField.setText("");
+                        }
+                    }
+                });
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsActivity.this);
+                builder.setView(pop_up_view);
+                AlertDialog alertDialog = builder.create();
+                builder.show();
+
+
+            }
+        });
+
+
         requests.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 lastClicked = (String) parent.getItemAtPosition(position);
 
 
+            }
+
+        });
+
+        friends.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(FriendsActivity.this);
+                builder.setMessage("Delete Friend?");
+
+                final String userName = (String) parent.getItemAtPosition(position);
+
+
+
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        int index = friendsList.indexOf(userName);
+
+                        String uID = friendsTracker.get(index);
+                        String name = friendsList.get(index);
+                        friendsList.remove(name);
+                        friendsTracker.remove(name);
+                        friends_adapter.notifyDataSetChanged();
+
+                        String dest1 = "friends." + uID;
+                        db.collection("users").document(mAuth.getUid())
+                                .update(
+                                        dest1, FieldValue.delete()
+                                );
+
+                        String dest2 = "friends." + mAuth.getUid();
+                        db.collection("users").document(uID + "")
+                                .update(
+                                        dest2, FieldValue.delete()
+                                );
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+                android.app.AlertDialog dialog = builder.create();
+                dialog.show();
             }
 
         });

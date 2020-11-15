@@ -173,7 +173,7 @@
         android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coordinates_text"
+        app:layout_constraintTop_toBottomOf="@id/time_required_label"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <ImageButton
@@ -185,7 +185,7 @@
         android:background="@drawable/tours_edit_rounded_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coordinates_text"
+        app:layout_constraintTop_toBottomOf="@id/time_required_label"
         app:srcCompat="@android:drawable/ic_delete" />
 
     <TextView
@@ -243,10 +243,19 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="70dp"
-        android:hint="Longitute, Latitude"
+        android:hint="Latitude, Longitude"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/coordinates_text_label"
         app:layout_constraintTop_toBottomOf="@+id/invites_text" />
+
+    <Button
+        android:id="@+id/journal_coordinates"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/journal_icon"
+        app:layout_constraintStart_toEndOf="@id/coordinates_text"
+        app:layout_constraintTop_toTopOf="@id/coordinates_text" />
 
     <TextView
         android:id="@+id/coordinates_text_label"
@@ -254,9 +263,34 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginBottom="5dp"
-        android:text="Lon,Lat:"
+        android:text="Lat,Lon:"
         app:layout_constraintBottom_toBottomOf="@+id/coordinates_text"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/date_required_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="* Date is required"
+        android:textColor="#F10404"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coordinates_text"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/time_required_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="* Time is required"
+        android:textColor="#FFF10404"
+        app:layout_constraintStart_toStartOf="@id/date_required_label"
+        app:layout_constraintEnd_toEndOf="@id/date_required_label"
+        app:layout_constraintTop_toBottomOf="@+id/date_required_label"
+        android:visibility="gone"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

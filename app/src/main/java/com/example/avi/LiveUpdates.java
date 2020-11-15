@@ -1,45 +1,31 @@
 package com.example.avi;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.example.avi.ChatRoom.ChatRoomActivity;
 import com.example.avi.Journals.JournalActivity;
 import com.google.android.material.tabs.TabLayout;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class LiveUpdates extends Activity {
 
@@ -47,6 +33,10 @@ public class LiveUpdates extends Activity {
     private MyPagerAdapter adapter;
     private List<View> webViewList;
     Button settings;
+    ConstraintLayout topBar;
+    ImageView page1;
+    ImageView page2;
+    ImageView page3;
 
     @Override
     protected void onResume(){
@@ -61,10 +51,17 @@ public class LiveUpdates extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_updates);
         setupTabLayout();
-
-        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
-        TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-        title.setText("Home\nWeather Info");
+        topBar = findViewById(R.id.topBar);
+        settings = topBar.findViewById(R.id.settingsButton);
+        TextView title = topBar.findViewById(R.id.pageTitle);
+        page1 = topBar.findViewById(R.id.page1);
+        page2 = topBar.findViewById(R.id.page2);
+        page3 = topBar.findViewById(R.id.page3);
+        page1.setVisibility(View.VISIBLE);
+        page2.setVisibility(View.VISIBLE);
+        page3.setVisibility(View.VISIBLE);
+        setPageHighlight(0);
+        title.setText("Report");
 
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,17 +108,21 @@ public class LiveUpdates extends Activity {
                 if(position == 0)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nWeather Info");
+                    title.setText("Report");
+                    setPageHighlight(position);
+
                 }
                 if(position == 1)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nTraffic Info");
+                    title.setText("Traffic");
+                    setPageHighlight(position);
                 }
                 if(position == 2)
                 {
                     TextView title = (TextView) findViewById(R.id.topBar).findViewById(R.id.pageTitle);
-                    title.setText("Home\nAvalanche Info");
+                    title.setText("Avalanches");
+                    setPageHighlight(position);
                 }
             }
 
@@ -132,20 +133,57 @@ public class LiveUpdates extends Activity {
         });
     }
 
+
+    private void setPageHighlight(int page){
+        switch (page){
+            case 0:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                break;
+            case 1:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                break;
+            case 2:
+                page1.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page2.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_unhighlighted));
+                page3.setBackground(ContextCompat.getDrawable(LiveUpdates.this, R.drawable.window_icon_highlighted));
+                break;
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void addWebView(List<View> viewList, String url) throws IOException {
         WebView webView=new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
 
         String webpage = "";
 
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.HOUR_OF_DAY, 7);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        //Date eightToday = c.getTime();
+        //Long eightEpoch = eightToday.getSeconds() * 1000L;
+        //Notifications notifier = new Notifications();
+
+        //notifier.notification(Long.toString(c.getTimeInMillis()), Long.toString(System.currentTimeMillis()), (int) System.currentTimeMillis(), this);
+
+        //Possible regex to help with caching policy, not yet in use.
+        //(January|February|March|April|May|June|July|August|September|October|November|December)(\s\d)(\d)?(,\s\d\d\d\d)
         if ( (url == "https://cottonwoodcanyons.udot.utah.gov/canyon-road-information/") || ( (System.currentTimeMillis() -
                 this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0)) > 86400000)
-                || (this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) <
-                new Date( Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), 8, 0).getSeconds() * 1000 )) {
+                || ((this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) <
+                c.getTimeInMillis()//new Date(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), 8, 0).getSeconds() * 1000
+                 )
+
+                && !(System.currentTimeMillis() - this.getApplicationContext().getSharedPreferences("Prefs", 0).getLong( url + "when?",  0) < 300000)
+                )) {
             WeatherData dataGetter = new WeatherData();
             try {
                 webpage = dataGetter.execute(url).get();
@@ -155,8 +193,7 @@ public class LiveUpdates extends Activity {
                 e.printStackTrace();
             }
 
-            //webView.loadUrl(url);
-            webView.loadData(webpage, "text/html; charset=utf-8", "UTF-8");
+            webView.loadDataWithBaseURL(url, webpage,"text/html", "utf-8", null);
 
             viewList.add(webView);
 
@@ -168,7 +205,7 @@ public class LiveUpdates extends Activity {
         }
         else
         {
-            webView.loadData(this.getApplicationContext().getSharedPreferences("Prefs", 0).getString(url, ""), "text/html; charset=utf-8", "UTF-8");
+            webView.loadDataWithBaseURL(url, this.getApplicationContext().getSharedPreferences("Prefs", 0).getString(url, ""),"text/html", "utf-8", null);
             viewList.add(webView);
         }
     }
@@ -187,6 +224,8 @@ public class LiveUpdates extends Activity {
         }
     }
 */
+
+
     private void setupTabLayout() {
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
             @Override

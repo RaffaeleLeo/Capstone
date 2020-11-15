@@ -2,11 +2,16 @@ package com.example.avi.Journals;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.avi.MapsActivity;
 import com.example.avi.MyDBHandler;
+import com.example.avi.Notifications;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -193,6 +198,7 @@ public class EditJournal extends AppCompatActivity {
             alertDialog.setTitle("Save Changes");
 
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     System.out.println("onClick: Yes save changes to the Journal");
@@ -211,6 +217,10 @@ public class EditJournal extends AppCompatActivity {
 
                     //save those edits in the local database
                     dbHandler.editJournal(getIntent().getStringExtra("Name"), journal_name, journal_description, remindersToggle.isChecked(), journal_type);
+                    if(remindersToggle.isChecked()) {
+                        Notifications notifier = new Notifications();
+                        notifier.notification("Route tracking started.", "Your location will be periodically recorded.", (int) System.currentTimeMillis(), getApplicationContext());
+                    }
                     Intent intent = new Intent(EditJournal.this, JournalActivity.class);
                     startActivity(intent);
                 }

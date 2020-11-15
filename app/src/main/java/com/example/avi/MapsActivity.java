@@ -1,17 +1,25 @@
 package com.example.avi;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -25,6 +33,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.avi.ChatRoom.ChatRoomActivity;
+import com.example.avi.ChatRoom.User;
 import com.example.avi.Journals.Journal;
 import com.example.avi.Journals.JournalActivity;
 import com.example.avi.Snapshot.SnapshotActivity;
@@ -38,9 +47,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,23 +64,37 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import com.example.avi.MyDBHandler;
 import com.google.common.collect.Maps;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
 
@@ -90,12 +116,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float orgY;
 
     private float[] gravityData = new float[3];
-    private float[] geomagneticData  = new float[3];
+    private float[] geomagneticData = new float[3];
     private boolean hasGravityData = false;
     private boolean hasGeomagneticData = false;
     private float rotationInDegrees;
     private String currentElevation;
-
+    private float convertedDegrees = 0f;
+    private Date now;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    public User user;
+    public HashMap<String, Marker> trackingMarkers;
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
         put(0, " (No rating)");
@@ -122,7 +153,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     View pop_up_view;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //coordinates for journal entry
@@ -131,7 +161,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
-
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+                if (user != null) {
+                    Log.d("user", user.getId());
+                }
+            }
+        });
         //DANGER CODE STARTS HERE
         //Code to add current dangers to database
         //Usually would be the code commented out below, but
@@ -143,10 +184,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String currDate = split[1] + " " + split[2] + " " + split[5];
         String lastDate = dbHandler.getDangerDate();
         dbHandler.clearDangerTable();
-        for(int i = 0; i < 24; i++){
+        for (int i = 0; i < 24; i++) {
             dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
         }
-
 
 
         //get the users current location
@@ -162,17 +202,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
 
         setupTabLayout();
-        requestLocationUpdates();
+        Handler elevationHandler = new Handler();
+        requestLocationUpdates(elevationHandler);
 
         //see if the user got here through a journal entry
         //if they did acquire the journal
-        if(intent.hasExtra("journal_name"))
-        {
+        if(intent.hasExtra("journal_name")) {
             this.journal_name = intent.getStringExtra("journal_name");
-        }
-        else
-        {
+        } else {
             this.journal_name = null;
+        }
+
+        if (intent.hasExtra("FindMembers")) {
+
         }
 
 
@@ -191,8 +233,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-            startTrackerService();
         } else {
 
             //If the app doesn’t currently have access to the user’s location, then request access
@@ -211,6 +251,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LayoutInflater inflater = getLayoutInflater();
                 pop_up_view = inflater.inflate(R.layout.sensors_layout, null);
+                TextView altimeter = pop_up_view.findViewById(R.id.altimeter_value);
+                if (currentElevation != null) {
+                    altimeter.setText(currentElevation);
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
                 builder.setView(pop_up_view);
@@ -244,13 +288,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //if snapshot button clicked, start the snapshot activity with the current conditions
                     Intent intent = new Intent(MapsActivity.this, SnapshotActivity.class);
                     intent.putExtra("elevation", Float.parseFloat(currentElevation));
-                    intent.putExtra("aspect", currentDegree);
+                    intent.putExtra("aspect", convertedDegrees);
                     intent.putExtra("PRIOR", 1);
                     startActivity(intent);
-                }
-                catch(NullPointerException e){
-                }
-                catch(NumberFormatException e){
+                } catch (NullPointerException e) {
+                } catch (NumberFormatException e) {
                 }
             }
         });
@@ -259,11 +301,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Input a list of latitudes and longitudes. This method will make the map display a line from the beginning of the list to the end of the list.
      */
-    public void createAndShowPathOnMap(List<Double> coords){
+    public void createAndShowPathOnMap(List<Double> coords) {
         ArrayList<LatLng> newCoords = new ArrayList<LatLng>();
-        for (int i = 0; i < coords.size(); i += 2)
-        {
-            newCoords.add(new LatLng(coords.get(i), coords.get(i+1)));
+        for (int i = 0; i < coords.size(); i += 2) {
+            newCoords.add(new LatLng(coords.get(i), coords.get(i + 1)));
         }
         this.coordinates = newCoords;
     }
@@ -292,15 +333,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ArrayList<Journal> Journals = new ArrayList<Journal>();
         Journals = dbHandler.getAllJournals();
 
-        for(Journal j : Journals)
-        {
-            if(j.name.equals(this.journal_name))
-            {
+        for (Journal j : Journals) {
+            if (j.name.equals(this.journal_name)) {
                 createAndShowPathOnMap(dbHandler_location.getAllData(j.name));
             }
         }
 
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
+
+
+        String tourId = getIntent().getStringExtra("tourId");
+        if (tourId != null) {
+            trackingMarkers = new HashMap<>();
+            getTourTrackingMembers(tourId);
+        }
 
         //make the camera go to the users location
         Task task = mLocationClient.getLastLocation();
@@ -332,24 +378,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-            //...then start the GPS tracking service
-            startTrackerService();
-        } else {
-
-            //If the user denies the permission request, then display a toast with some more information
-            Toast.makeText(this, "Please enable location services to allow GPS tracking", Toast.LENGTH_SHORT).show();
         }
     }
 
-    //Start the TrackerService
-    private void startTrackerService() {
-        Intent intent = new Intent(MapsActivity.this, TrackingService.class);
-        startService(intent);
+    public void getTourTrackingMembers(String tourId) {
+        if (user != null){
+            db.collection("tours").document(tourId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Tours.Tour tour = documentSnapshot.toObject(Tours.Tour.class);
+                    for (String accepted: tour.acceptedInvitees){
 
-        //Notify the user that tracking has been enabled
-        Toast.makeText(this, "GPS tracking enabled", Toast.LENGTH_SHORT).show();
+                            db.collection("users").whereEqualTo("email", accepted).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                        User person = doc.toObject(User.class);
+                                        if (person != null){
+                                            if (!user.getId().equals(person.getId())) {
+                                                setUpToursTrackingListener(person.getId());
+                                            }
+                                        }
+
+                                    }
+                                }
+                            });
+
+
+                        }
+                    }
+            });
+        }
     }
+
+    public void setUpToursTrackingListener(String acceptedId){
+        final DocumentReference docRef = db.collection("tracking").document(acceptedId);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("memberTracking", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    Log.d("memberTracking", "Current data: " + snapshot.getData());
+                    Map<String, Object> tracking = snapshot.getData();
+                    addGroupPositions(tracking.get("coordinates").toString(), tracking.get("name").toString());
+                } else {
+                    Log.d("memberTracking", "Current data: null");
+                }
+            }
+        });
+    }
+
 
     /**
      * sets up the tab layout at the bottom of the screen
@@ -365,7 +448,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else if (tab.getPosition() == 3) {
                     Intent intent = new Intent(MapsActivity.this, SocialMediaHomeActivity.class);
                     startActivity(intent);
-                }else if (tab.getPosition() == 0) {
+                } else if (tab.getPosition() == 0) {
                     Intent intent = new Intent(MapsActivity.this, LiveUpdates.class);
                     startActivity(intent);
                 }
@@ -392,7 +475,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        switch (event.sensor.getType()){
+        switch (event.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
                 System.arraycopy(event.values, 0, gravityData, 0, 3);
                 hasGravityData = true;
@@ -420,18 +503,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rotationInDegrees = (float) Math.round(Math.toDegrees(rotationInRadians));
 
                 float degree = rotationInDegrees;
-                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX()+compassButton.getWidth()/2,
-                        compassButton.getY()+compassButton.getHeight()/2);
+                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX() + compassButton.getWidth() / 2,
+                        compassButton.getY() + compassButton.getHeight() / 2);
                 ra.setDuration(100);
                 ra.setFillAfter(true);
                 compassButton.startAnimation(ra);
-
                 //DANGER CODE STARTS HERE
                 //If we have an elevation, get it and the current degrees, and compute
                 //the danger based at this location.
-                if(currentElevation != null && !currentElevation.isEmpty()) {
-                    int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
-                    if(pop_up_view != null) {
+                //Converts degrees to 0-360 where 0 and 360 are N
+                convertedDegrees = degree;
+                if (degree <= 0) {
+                    convertedDegrees = (float) (degree + 360.0);
+                } else {
+                    //convertedDegrees = (float) (360.0 - degree);
+                }
+                if (currentElevation != null && !currentElevation.isEmpty()) {
+                    int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
+                    if (pop_up_view != null) {
                         TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
                         if (comp == -1) {
@@ -440,8 +529,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             dangerD.setText(" (Elevation below 5000)");
                         } else {
                             int d = dbHandler.getDangerAtLocation(comp);
+
                             danger.setText(Integer.toString(d));
-                            if(d >= 7)
+                            if (d >= 7)
                                 danger.setTextColor(getColor(android.R.color.holo_red_light));
                             else if (d >= 5)
                                 danger.setTextColor(getColor(android.R.color.holo_orange_dark));
@@ -456,9 +546,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 currentDegree = -degree;
-                if(!inclineLocked)
+                if (!inclineLocked)
                     incline = (float) Math.round(Math.abs(Math.toDegrees(orientationMatrix[1])));
-                if(pop_up_view != null) {
+                if (pop_up_view != null) {
                     TextView inclineTxt = (TextView) pop_up_view.findViewById(R.id.inclinometer_value);
 
                     inclineTxt.setText(Float.toString(incline));
@@ -474,8 +564,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             inclineLocked = isChecked;
                         }
                     });
-                    
-
 
 
                 }
@@ -491,6 +579,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -498,6 +587,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // to stop the listener and save battery
         sensorManager.unregisterListener(this);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -515,10 +605,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (!pressed) {
             compassButton.setScaleX(5);
             compassButton.setScaleY(5);
-            compassButton.setX(this.getResources().getDisplayMetrics().widthPixels / 2 - compassButton.getWidth()/2);
-            compassButton.setY(this.getResources().getDisplayMetrics().heightPixels / 2 - compassButton.getHeight()/2);
+            compassButton.setX(this.getResources().getDisplayMetrics().widthPixels / 2 - compassButton.getWidth() / 2);
+            compassButton.setY(this.getResources().getDisplayMetrics().heightPixels / 2 - compassButton.getHeight() / 2);
             pressed = true;
-        }else{
+        } else {
             compassButton.setScaleX(1);
             compassButton.setScaleY(1);
             compassButton.setX(orgX);
@@ -529,124 +619,148 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
-
-        //How often the app will track the users location
-        request.setInterval(10000);
-
-
-        //Try to get as accurate of an approximation as we can
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        final FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-        int permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-
-        //If the user already gave permission to track their location
-        if (permission == PackageManager.PERMISSION_GRANTED) {
-
-            //...then request location updates
-            client.requestLocationUpdates(request, new LocationCallback() {
+    private void requestLocationUpdates(final Handler handler) {
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            final int delay = 10000; //milliseconds
+            //If the user already gave permission to track their location
+            mLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    Location loc = locationResult.getLastLocation();
-                    String lat = Double.toString(loc.getLatitude());
-                    String lon = Double.toString(loc.getLongitude());
+                public void onSuccess(Location location) {
+                    String lat = Double.toString(location.getLatitude());
+                    String lon = Double.toString(location.getLongitude());
                     //TODO: now we can place the users current location into the database
                     try {
                         ElevationData eleData = new ElevationData();
                         eleData.execute(lat, lon);
                         currentElevation = eleData.get();
-                        if(pop_up_view != null) {
-                            TextView elevationText = (TextView) pop_up_view.findViewById(R.id.altimeter_value);
-                            elevationText.setText(currentElevation);
-                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                String lat = Double.toString(location.getLatitude());
+                                String lon = Double.toString(location.getLongitude());
+                                //TODO: now we can place the users current location into the database
+                                try {
+                                    ElevationData eleData = new ElevationData();
+                                    eleData.execute(lat, lon);
+                                    currentElevation = eleData.get();
+                                    if (pop_up_view != null) {
+                                        TextView elevationText = (TextView) pop_up_view.findViewById(R.id.altimeter_value);
+                                        elevationText.setText(currentElevation);
+                                    }
 
 
-                        //DANGER CODE STARTS HERE
-                        //If we have an elevation, get it and the current degrees, and compute
-                        //the danger based at this location.
-                        if(currentElevation != null && !currentElevation.isEmpty()) {
-                            if(pop_up_view != null) {
-                                int comp = getCompassLocation(Float.parseFloat(currentElevation), currentDegree);
-                                TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
-                                TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
+                                    //DANGER CODE STARTS HERE
+                                    //If we have an elevation, get it and the current degrees, and compute
+                                    //the danger based at this location.
+                                    if (currentElevation != null && !currentElevation.isEmpty()) {
+                                        if (pop_up_view != null) {
+                                            int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
+                                            TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
+                                            TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
 
-                                if (comp == -1) {
-                                    danger.setText("N/A");
-                                    danger.setTextColor(getColor(android.R.color.holo_green_dark));
+                                            if (comp == -1) {
+                                                danger.setText("N/A");
+                                                danger.setTextColor(getColor(android.R.color.holo_green_dark));
 
-                                    dangerD.setText(" (Elevation below 5000)");
-                                } else {
-                                    int d = dbHandler.getDangerAtLocation(comp);
-                                    if(d >= 7)
-                                        danger.setTextColor(getColor(android.R.color.holo_red_light));
-                                    else if (d >= 5)
-                                        danger.setTextColor(getColor(android.R.color.holo_orange_dark));
-                                    else if (d >= 3)
-                                        danger.setTextColor(getColor(android.R.color.holo_orange_light));
-                                    else
-                                        danger.setTextColor(getColor(android.R.color.holo_green_dark));
-                                    danger.setText(Integer.toString(d));
-                                    dangerD.setText(dangerDesc.get(d));
+                                                dangerD.setText(" (Elevation below 5000)");
+                                            } else {
+                                                int d = dbHandler.getDangerAtLocation(comp);
+                                                if (d >= 7)
+                                                    danger.setTextColor(getColor(android.R.color.holo_red_light));
+                                                else if (d >= 5)
+                                                    danger.setTextColor(getColor(android.R.color.holo_orange_dark));
+                                                else if (d >= 3)
+                                                    danger.setTextColor(getColor(android.R.color.holo_orange_light));
+                                                else
+                                                    danger.setTextColor(getColor(android.R.color.holo_green_dark));
+                                                danger.setText(Integer.toString(d));
+                                                dangerD.setText(dangerDesc.get(d));
+                                            }
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+
                                 }
                             }
                         }
+                    });
 
-                    } catch (Exception e) {
 
-                    }
+                    handler.postDelayed(this, delay);
                 }
-            }, null);
+            }, delay);
+            //...then request location updates
+
         }
     }
 
+    private void addGroupPositions(String coordinates, String name) {
+        String[] latLon = coordinates.split(", ");
+        LatLng latLng = new LatLng(Double.parseDouble(latLon[0]), Double.parseDouble(latLon[1]));
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.group_member_markers);
+        Bitmap icon = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(icon);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        markerOptions.title(name);
+
+        if (trackingMarkers.containsKey(name)){
+            trackingMarkers.get(name).remove();
+            trackingMarkers.put(name, mMap.addMarker(markerOptions));
+        }else {
+            trackingMarkers.put(name, mMap.addMarker(markerOptions));
+        }
+
+    }
+
+
     //Helper method to compute compass location in array
     //based on elevation and slope aspect.
-    private int getCompassLocation(float elevation, float degrees){
+    private int getCompassLocation(float elevation, float degrees) {
         int res = 0;
-        if(elevation < 5000){
+        if (elevation < 5000) {
             return -1;
-        }
-        else if(elevation <= 7000){
+        } else if (elevation <= 7000) {
             res = 16;
-        }
-        else if(elevation <= 8500){
+        } else if (elevation <= 8500) {
             res = 8;
-        }
-        else{
+        } else {
             res = 0;
         }
 
-        if(degrees >= 22.5 && degrees < 67.5){
+        if (degrees >= 22.5 && degrees < 67.5) {
             res = res + 1;
-        }
-
-        else if(degrees >= 67.5 && degrees < 112.5){
+        } else if (degrees >= 67.5 && degrees < 112.5) {
             res = res + 2;
-        }
-
-        else if(degrees >= 112.5 && degrees < 157.5){
+        } else if (degrees >= 112.5 && degrees < 157.5) {
             res = res + 3;
-        }
-
-        else if(degrees >= 157.5 && degrees < 202.5){
+        } else if (degrees >= 157.5 && degrees < 202.5) {
             res = res + 4;
-        }
-
-        else if(degrees >= 202.5 && degrees < 247.5){
+        } else if (degrees >= 202.5 && degrees < 247.5) {
             res = res + 5;
-        }
-
-        else if(degrees >= 247.5 && degrees < 292.5){
+        } else if (degrees >= 247.5 && degrees < 292.5) {
             res = res + 6;
-        }
-
-        else if(degrees >= 292.5 && degrees < 337.5){
+        } else if (degrees >= 292.5 && degrees < 337.5) {
             res = res + 7;
-        }
-        else{
+        } else {
             res = res + 0;
         }
 

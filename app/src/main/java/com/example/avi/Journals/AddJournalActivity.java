@@ -3,9 +3,11 @@ package com.example.avi.Journals;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -25,6 +27,7 @@ import java.util.List;
 
 import com.example.avi.LoginActivity;
 import com.example.avi.MyDBHandler;
+import com.example.avi.Notifications;
 import com.example.avi.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -80,6 +83,7 @@ public class AddJournalActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void addJournal(View view, SharedPreferences sp, MyDBHandler dbHandler) {
         System.out.println(sp.getString("Journal_Name", "NA"));
         Journal Journal = new Journal();
@@ -134,6 +138,8 @@ public class AddJournalActivity extends AppCompatActivity {
         //add journal to database
         if(Journal.start_recording) {
             dbHandler.addToJournals(Journal.name, Journal.description, 1, Journal.type);
+            Notifications notifier = new Notifications();
+            notifier.notification("Route tracking started.", "Your location will be periodically recorded.", (int) System.currentTimeMillis(),this);
         }
         else
         {

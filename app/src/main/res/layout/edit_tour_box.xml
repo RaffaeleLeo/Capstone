@@ -243,10 +243,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="70dp"
-            android:hint="Longitute, Latitude"
+            android:hint="Latitude, Longitude"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/coordinates_text_label"
             app:layout_constraintTop_toBottomOf="@+id/invites_text" />
+        <Button
+            android:id="@+id/journal_coordinates"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/journal_icon"
+            app:layout_constraintStart_toEndOf="@id/coordinates_text"
+            app:layout_constraintTop_toTopOf="@id/coordinates_text" />
 
         <TextView
             android:id="@+id/coordinates_text_label"
@@ -254,7 +262,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginBottom="5dp"
-            android:text="Lon,Lat:"
+            android:text="Lat,Lon:"
             app:layout_constraintBottom_toBottomOf="@+id/coordinates_text"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

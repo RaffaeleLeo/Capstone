@@ -3,9 +3,12 @@ package com.example.avi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -25,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button logOutButton;
     Switch notifications;
+    EditText hours;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -75,6 +79,34 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.commit();
             }
         });
+
+        hours = (EditText) findViewById(R.id.hourCount);
+        hours.setText(getApplicationContext().getSharedPreferences("Prefs", 0).getString("notifyHours", "1"));
+
+        hours.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(charSequence.length() == 0) {
+                    charSequence = "1";
+                }
+            
+                SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("notifyHours", charSequence.toString());
+                editor.commit();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
 
 
         setupTabLayout();

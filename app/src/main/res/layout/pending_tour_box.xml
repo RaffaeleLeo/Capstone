@@ -148,7 +148,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/invites_button"
         app:layout_constraintTop_toBottomOf="@+id/invites_button"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
     <TextView
         android:id="@+id/coordinates_text"
         android:layout_width="0dp"
@@ -169,4 +169,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/coordinates_text"
         app:layout_constraintTop_toTopOf="@+id/coordinates_text"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
