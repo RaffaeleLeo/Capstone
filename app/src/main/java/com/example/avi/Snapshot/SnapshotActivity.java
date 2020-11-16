@@ -105,23 +105,7 @@ public class SnapshotActivity extends AppCompatActivity{
         elevation = getIntent().getFloatExtra("elevation", 0f);
         aspect = getIntent().getFloatExtra("aspect", 0f);
 
-        String direction = "";
-        if(aspect >= 337.5f || aspect <= 22.5f)
-            direction = "North";
-        if(aspect < 337.5f && aspect > 292.5f)
-            direction = "NorthWest";
-        if(aspect <= 292.5f && aspect >= 247.5f)
-            direction = "West";
-        if(aspect < 247.5f && aspect > 202.5f)
-            direction = "SouthWest";
-        if(aspect <= 202.5f && aspect >= 157.5f)
-            direction = "South";
-        if(aspect < 157.5f && aspect > 112.5f)
-            direction = "SouthEast";
-        if(aspect <= 112.5f && aspect >= 67.5f)
-            direction = "East";
-        if(aspect < 67.5f && aspect > 22.5f)
-            direction = "NorthEast";
+        String direction = getDirection();
 
         //Set them in the header textview
         elevText = findViewById(R.id.Altitude);
@@ -164,8 +148,9 @@ public class SnapshotActivity extends AppCompatActivity{
                             snapshotList.add(stemp);
                             for(int i = 0; i < snapshotList.size(); i++){
                                 Snapshot s = snapshotList.get(i);
-                                String trimmed_aspect = s.getAspect().replace("°", "");
-                                int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+                                //String trimmed_aspect = s.getAspect().replace("°", "");
+                                //int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+                                int loc = getDangerWithDirection(Float.parseFloat(s.getElevation()), s.getAspect());
                                 int danger = dbHandler.getDangerAtLocation(loc);
                                 snapshotList.get(i).setRating(danger + ": " + dangerDesc.get(danger));
                             }
@@ -180,8 +165,9 @@ public class SnapshotActivity extends AppCompatActivity{
 
         for(int i = 0; i < snapshotList.size(); i++){
             Snapshot s = snapshotList.get(i);
-            String trimmed_aspect = s.getAspect().replace("°", "");
-            int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+            //String trimmed_aspect = s.getAspect().replace("°", "");
+            //int loc = getCompassLocation(Float.parseFloat(s.getElevation()), Float.parseFloat(trimmed_aspect));
+            int loc = getDangerWithDirection(Float.parseFloat(s.getElevation()), s.getAspect());
             int danger = dbHandler.getDangerAtLocation(loc);
             snapshotList.get(i).setRating(danger + ": " + dangerDesc.get(danger));
         }
@@ -198,23 +184,7 @@ public class SnapshotActivity extends AppCompatActivity{
                     if(!currSelection.equals("Select a message:")) {
                         currFinalMessage = currSelection + "\n";
                         currFinalMessage = currFinalMessage + "Elevation: " + elevation + "\n";
-                        String direction = "";
-                        if(aspect >= 337.5f || aspect <= 22.5f)
-                            direction = "North";
-                        if(aspect < 337.5f && aspect > 292.5f)
-                            direction = "NorthWest";
-                        if(aspect <= 292.5f && aspect >= 247.5f)
-                            direction = "West";
-                        if(aspect < 247.5f && aspect > 202.5f)
-                            direction = "SouthWest";
-                        if(aspect <= 202.5f && aspect >= 157.5f)
-                            direction = "South";
-                        if(aspect < 157.5f && aspect > 112.5f)
-                            direction = "SouthEast";
-                        if(aspect <= 112.5f && aspect >= 67.5f)
-                            direction = "East";
-                        if(aspect < 67.5f && aspect > 22.5f)
-                            direction = "NorthEast";
+                        String direction = getDirection();
                         currFinalMessage = currFinalMessage + "Aspect: " + aspect + " (" + direction + ")" + "\n";
                         Date currentTime = Calendar.getInstance().getTime();
                         String temp = currentTime.toString();
@@ -283,7 +253,8 @@ public class SnapshotActivity extends AppCompatActivity{
                     int loc = getCompassLocation(elevation, aspect);
                     int danger = dbHandler.getDangerAtLocation(loc);
                     String dangerString = danger + ": " + dangerDesc.get(danger);
-                    Snapshot s = new Snapshot(name, elevation + "", aspect + "°", dangerString, date);
+                    String direction = getDirection();
+                    Snapshot s = new Snapshot(name, elevation + "", direction, dangerString, date);
                     dbHandler.addToSnapshot(s.getName(), s.getElevation(), s.getAspect(), s.getRating(), s.getDate());
                     snapshotList.add(s);
                     adapter.notifyDataSetChanged();
@@ -432,6 +403,78 @@ public class SnapshotActivity extends AppCompatActivity{
         }
 
         else if(degrees >= 292.5 && degrees < 337.5){
+            res = res + 7;
+        }
+        else{
+            res = res + 0;
+        }
+
+
+        return res;
+    }
+
+    private String getDirection(){
+        String direction = "";
+        if(aspect >= 337.5f || aspect <= 22.5f)
+            direction = "North";
+        if(aspect < 337.5f && aspect > 292.5f)
+            direction = "NorthWest";
+        if(aspect <= 292.5f && aspect >= 247.5f)
+            direction = "West";
+        if(aspect < 247.5f && aspect > 202.5f)
+            direction = "SouthWest";
+        if(aspect <= 202.5f && aspect >= 157.5f)
+            direction = "South";
+        if(aspect < 157.5f && aspect > 112.5f)
+            direction = "SouthEast";
+        if(aspect <= 112.5f && aspect >= 67.5f)
+            direction = "East";
+        if(aspect < 67.5f && aspect > 22.5f)
+            direction = "NorthEast";
+
+        return direction;
+    }
+
+    private int getDangerWithDirection(float elevation, String direction){
+        int res = 0;
+        if(elevation < 5000){
+            return -1;
+        }
+        else if(elevation <= 7000){
+            res = 16;
+        }
+        else if(elevation <= 8500){
+            res = 8;
+        }
+        else{
+            res = 0;
+        }
+
+        if(direction.equals("NorthEast")){
+            res = res + 1;
+        }
+
+        else if(direction.equals("East")){
+            res = res + 2;
+        }
+
+        else if(direction.equals("SouthEast")){
+            res = res + 3;
+        }
+
+        else if(direction.equals("South")){
+            res = res + 4;
+        }
+
+        else if(direction.equals("SouthWest")){
+            res = res + 5;
+        }
+
+        else if(direction.equals("West")){
+            res = res + 6;
+        }
+
+        else if(direction.equals("NorthWest")){
             res = res + 7;
         }
         else{
