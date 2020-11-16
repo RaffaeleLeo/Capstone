@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/maps_side_bar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_rect"
+    android:padding="12dp"
+    app:layout_constraintBottom_toBottomOf="@id/hide_bar_button">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/compass_button_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+    <ImageButton
+        android:id="@+id/compass_button_sidebar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/compass_rose"
+        android:scaleType="fitCenter"
+        android:src="@drawable/compass_rose"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/show_popup"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/toolbox_icon"
+        app:layout_constraintStart_toStartOf="@id/compass_button_layout"
+        app:layout_constraintTop_toBottomOf="@id/compass_button_layout"
+        app:layout_constraintVertical_bias="0.5"
+        />
+
+    <Button
+        android:id="@+id/snapshot_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/camera_2"
+        app:layout_constraintStart_toStartOf="@id/show_popup"
+        app:layout_constraintTop_toBottomOf="@id/show_popup" />
+
+    <ImageButton
+        android:id="@+id/hide_bar_button"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/ic_arrow_drop_up_black_24dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/snapshot_button"
+        app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

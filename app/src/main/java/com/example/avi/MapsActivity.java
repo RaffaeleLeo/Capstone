@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -56,9 +57,13 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -96,7 +101,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener, View.OnClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener{
 
     private boolean inclineLocked = false;
     float incline = 0.0f;
@@ -107,13 +112,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mLocationClient;
     private double wayLatitude = 0.0, wayLongitude = 0.0;
     //compass stuff
-    private ImageView compassButton;
+    private ImageButton compassButton;
     private float currentDegree = 0f;
     private SensorManager sensorManager;
     private boolean pressed = false;
     //x and y coordinates for button
-    private float orgX;
-    private float orgY;
 
     private float[] gravityData = new float[3];
     private float[] geomagneticData = new float[3];
@@ -152,6 +155,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //dialog view
     View pop_up_view;
 
+    ConstraintLayout toolsBar;
+
+    ConstraintLayout rootView;
+
+    ConstraintLayout compass_view;
+
+    ImageButton compass_layout_button;
+
+    ImageButton hideBarButton;
+
+    Button pop_up;
+
+    Button snapshot;
+
+    ConstraintLayout smallCompassButtonLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +177,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         coordinates = new ArrayList<LatLng>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        rootView = findViewById(R.id.maps);
+        toolsBar = rootView.findViewById(R.id.maps_side_bar);
+        compass_view = rootView.findViewById(R.id.compass_layout);
+        compass_layout_button = findViewById(R.id.compass_layout_button);
+        hideBarButton = findViewById(R.id.hide_bar_button);
+        smallCompassButtonLayout = findViewById(R.id.compass_button_layout);
         dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -193,11 +216,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationClient = LocationServices.getFusedLocationProviderClient(this);
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         //set up sensors
-        compassButton = findViewById(R.id.compass_button);
+        compassButton = toolsBar.findViewById(R.id.compass_button_sidebar);
         sensorManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);
-        compassButton.setOnClickListener(this);
-        orgX = compassButton.getX();
-        orgY = compassButton.getY();
+        setUpCompassOnClick(compassButton, compass_layout_button);
+
 
         Intent intent = getIntent();
 
@@ -243,7 +265,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        final Button pop_up = findViewById(R.id.show_popup);
+
+        pop_up = toolsBar.findViewById(R.id.show_popup);
 
         pop_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,8 +302,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        //snapshot stuff for chat
-        final Button snapshot = findViewById(R.id.snapshot_button);
+        snapshot = toolsBar.findViewById(R.id.snapshot_button);
         snapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,6 +318,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+        setUpHideBarOnClick(hideBarButton);
     }
 
     /**
@@ -320,11 +344,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        //set up the google map
         mMap = googleMap;
+
         mMap.setMyLocationEnabled(true);
 
-        //sets up every time but only works if we have a journal
         //get points from a journal and show it on the map
         final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
                 "journals.db", null, 1);
@@ -415,6 +438,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
             });
         }
+    }
+
+
+    public void setUpHideBarOnClick(final ImageButton hideBar){
+        hideBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (snapshot.getVisibility() == View.GONE){
+                    smallCompassButtonLayout.setVisibility(View.VISIBLE);
+                    compassButton.setVisibility(View.VISIBLE);
+                    pop_up.setVisibility(View.VISIBLE);
+                    snapshot.setVisibility(View.VISIBLE);
+                    float deg = hideBar.getRotation() + 180F;
+                    hideBar.animate().rotation(deg).setInterpolator(new AccelerateDecelerateInterpolator());
+
+
+                } else {
+                    smallCompassButtonLayout.setVisibility(View.GONE);
+                    compassButton.setVisibility(View.GONE);
+                    pop_up.setVisibility(View.GONE);
+                    snapshot.setVisibility(View.GONE);
+                    float deg = hideBar.getRotation() + 180F;
+                    hideBar.animate().rotation(deg).setInterpolator(new AccelerateDecelerateInterpolator());
+                }
+            }
+        });
+    }
+
+
+    public void setUpCompassOnClick(final ImageButton compassButton, ImageButton bigCompassButton){
+        compassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (compass_view.getVisibility() == View.GONE){
+                    compass_view.setVisibility(View.VISIBLE);
+                }else {
+                    compass_view.setVisibility(View.GONE);
+                }
+            }
+        });
+        bigCompassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (compass_view.getVisibility() == View.GONE){
+                    compass_view.setVisibility(View.VISIBLE);
+                }else {
+                    compass_view.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void setUpToursTrackingListener(String acceptedId){
@@ -509,11 +582,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rotationInDegrees = (float) Math.round(Math.toDegrees(rotationInRadians));
 
                 float degree = rotationInDegrees;
-                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, compassButton.getX() + compassButton.getWidth() / 2,
-                        compassButton.getY() + compassButton.getHeight() / 2);
-                ra.setDuration(100);
+                RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF, 0.5f);
                 ra.setFillAfter(true);
-                compassButton.startAnimation(ra);
+                ra.setInterpolator(new LinearInterpolator());
+                ra.setDuration(50);
+                if(compassButton.getVisibility() != View.GONE) {
+                    compassButton.startAnimation(ra);
+                }
+                if (compass_view.getVisibility() != View.GONE){
+                    RotateAnimation raLayout = new RotateAnimation(currentDegree, -degree, compass_layout_button.getX()+ compass_layout_button.getWidth()/2,
+                            compass_layout_button.getY() + compass_layout_button.getHeight()/2);
+                    ra.setFillAfter(true);
+                    ra.setInterpolator(new LinearInterpolator());
+                    ra.setDuration(50);
+                    compass_layout_button.startAnimation(raLayout);
+                }
+
                 //DANGER CODE STARTS HERE
                 //If we have an elevation, get it and the current degrees, and compute
                 //the danger based at this location.
@@ -606,24 +691,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (!pressed) {
-            compassButton.setScaleX(5);
-            compassButton.setScaleY(5);
-            compassButton.setX(this.getResources().getDisplayMetrics().widthPixels / 2 - compassButton.getWidth() / 2);
-            compassButton.setY(this.getResources().getDisplayMetrics().heightPixels / 2 - compassButton.getHeight() / 2);
-            pressed = true;
-        } else {
-            compassButton.setScaleX(1);
-            compassButton.setScaleY(1);
-            compassButton.setX(orgX);
-            compassButton.setY(orgY);
-            pressed = false;
-        }
 
-
-    }
 
     private void requestLocationUpdates(final Handler handler) {
         if (ContextCompat.checkSelfPermission(
