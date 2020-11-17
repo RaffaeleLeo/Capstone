@@ -73,16 +73,16 @@ public class SnapshotActivity extends AppCompatActivity{
 
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
         put(0, " (No rating)");
-        put(1, " (Pockets of low danger)");
-        put(2, " (Low danger)");
-        put(3, " (Pockets of moderate danger)");
-        put(4, " (Moderate danger)");
-        put(5, " (Pockets of considerable danger)");
-        put(6, " (Considerable danger)");
-        put(7, " (Pockets of high danger)");
-        put(8, " (High danger)");
-        put(9, " (Pockets of extreme danger)");
-        put(10, " (Extreme danger)");
+        put(1, " (Low)");
+        put(2, " (Low)");
+        put(3, " (Moderate)");
+        put(4, " (Moderate)");
+        put(5, " (Considerable)");
+        put(6, " (Considerable)");
+        put(7, " (High)");
+        put(8, " (High)");
+        put(9, " (Extreme)");
+        put(10, " (Extreme)");
 
     }};
 
@@ -132,7 +132,7 @@ public class SnapshotActivity extends AppCompatActivity{
         final ListView slist = (ListView) findViewById(R.id.snapshot_list);
         final listviewAdapter adapter = new listviewAdapter(this, snapshotList);
         slist.setAdapter(adapter);
-        dbHandler = new MyDBHandler(getApplicationContext(), "snapshot.db", null, 1);
+        dbHandler = new MyDBHandler(getApplicationContext(), "danger.db", null, 1);
         ArrayList<Snapshot> tempList = dbHandler.getAllSnapshots();
         snapshotList.clear();
         snapshotList.addAll(tempList);

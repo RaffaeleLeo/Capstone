@@ -130,6 +130,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseFirestore db;
     public User user;
     public HashMap<String, Marker> trackingMarkers;
+
+
     //Strings for actual danger
     private HashMap<Integer, String> dangerDesc = new HashMap<Integer, String>() {{
         put(0, " (No rating)");
@@ -206,9 +208,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String split[] = temp.split(" ");
         String currDate = split[1] + " " + split[2] + " " + split[5];
         String lastDate = dbHandler.getDangerDate();
-        dbHandler.clearDangerTable();
-        for (int i = 0; i < 24; i++) {
-            dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
+
+        //Dummy code for added fake dangers
+//        dbHandler.clearDangerTable();
+//        for (int i = 0; i < 24; i++) {
+//            dbHandler.addToDanger(i, (24 - i) / 3, "tempurl", "None", "Salt Lake", currDate);
+//        }
+
+        if(!currDate.equals(lastDate)) {
+            dbHandler.clearDangerTable();
+            ArrayList<String> res = new ArrayList<String>();
+            PullDangerData danger = new PullDangerData();
+            danger.execute();
+            try {
+                res = danger.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String url = res.get(24);
+            String overall = res.get(25);
+            String loc = res.get(26);
+
+            for (int i = 0; i < 24; i++) {
+                dbHandler.addToDanger(i, Integer.parseInt(res.get(i)), url, overall, loc, currDate);
+            }
         }
 
 
