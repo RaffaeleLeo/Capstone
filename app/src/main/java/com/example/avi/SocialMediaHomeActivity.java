@@ -75,7 +75,7 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
     private ImageButton addTourButton;
     private ConstraintLayout rootLayout;
     private ArrayList<String> userFriendsEmails;
-
+    TextView topBarText;
 
     @Override
     protected void onStart(){
@@ -115,9 +115,11 @@ public class SocialMediaHomeActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         rootLayout = findViewById(R.id.social_media_constraint);
-        settings = (Button) findViewById(R.id.gotoSettings);
-        chat = (Button) findViewById(R.id.gotoChat);
-        friends = (Button) findViewById(R.id.gotoFriends);
+        settings = findViewById(R.id.topBar).findViewById(R.id.settingsButton);
+        TextView title = findViewById(R.id.topBar).findViewById(R.id.pageTitle);
+        title.setText("Social");
+        chat = findViewById(R.id.gotoChat);
+        friends = findViewById(R.id.gotoFriends);
         toursLinearLayout = findViewById(R.id.tour_linear_layout);
         addTourButton = findViewById(R.id.add_tour);
         userFriendsEmails = new ArrayList<>();
