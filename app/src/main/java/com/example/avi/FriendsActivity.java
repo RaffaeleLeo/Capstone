@@ -386,11 +386,6 @@ public class FriendsActivity extends AppCompatActivity {
 
 //                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
                     startActivity(intent);
-                } else if (tab.getPosition() == 3) {
-                    Intent intent = new Intent(FriendsActivity.this, SocialMediaHomeActivity.class);
-
-//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
-                    startActivity(intent);
                 } else if (tab.getPosition() == 0) {
                     Intent intent = new Intent(FriendsActivity.this, LiveUpdates.class);
 
@@ -410,7 +405,10 @@ public class FriendsActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                Intent intent = new Intent(FriendsActivity.this, SocialMediaHomeActivity.class);
 
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                startActivity(intent);
             }
         };
 

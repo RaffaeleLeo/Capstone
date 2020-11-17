@@ -4,19 +4,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.avi.Journals.JournalActivity;
 import com.example.avi.LiveUpdates;
-import com.example.avi.LoadingActivity;
+
 import com.example.avi.MapsActivity;
-import com.example.avi.Notifications;
+
 import com.example.avi.R;
+import com.example.avi.SocialMediaHomeActivity;
 import com.google.android.material.tabs.TabLayout;
 import com.google.common.collect.Lists;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,10 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRoomActivity extends AppCompatActivity {
@@ -139,7 +135,10 @@ public class ChatRoomActivity extends AppCompatActivity {
      * sets up the tab layout at the bottom of the screen
      */
     private void setupTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        tabLayout.getTabAt(3).select();
         TabLayout.OnTabSelectedListener listener = new TabLayout.OnTabSelectedListener() {
+
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
@@ -168,14 +167,15 @@ public class ChatRoomActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                Intent intent = new Intent(ChatRoomActivity.this, SocialMediaHomeActivity.class);
 
+//                    intent.putExtra(LoginActivity.EXTRA_ACCESS_AUTHENTICATED, credentials.getAccessToken());
+                startActivity(intent);
             }
         };
 
-        TabLayout tabLayout = findViewById(R.id.TabLayout);
-
         tabLayout.addOnTabSelectedListener(listener);
 
-        tabLayout.getTabAt(3).select();
+
     }
 }
