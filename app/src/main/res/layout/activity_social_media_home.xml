@@ -16,44 +16,38 @@
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/avi_logo" />
 
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/top_bar_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
-            android:id="@+id/gotoSettings"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="50dp"
-            android:background="@drawable/settings_wheel_icon"
-            android:text=""
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/gotoFriends"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="60dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <Button
             android:id="@+id/gotoChat"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="50dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="5dp"
             android:background="@drawable/speech_bubble"
-            android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/gotoFriends"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/gotoFriends"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/friends_button_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/add_friend_icon"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/gotoChat"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -66,7 +60,7 @@
         app:layout_constraintBottom_toTopOf="@id/TabLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttons_layout">
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <LinearLayout
             android:id="@+id/tour_linear_layout"
