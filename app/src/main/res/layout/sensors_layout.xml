@@ -240,7 +240,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Low"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:maxLines="1"
+                    android:autoSizeMaxTextSize="100sp"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"/>
 
                 <TextView
                     android:id="@+id/dager_moderate_text"
@@ -248,7 +253,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Moderate"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:maxLines="1"
+                    android:autoSizeMaxTextSize="100sp"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"/>
 
                 <TextView
                     android:id="@+id/danger_considerable_text"
@@ -257,7 +267,11 @@
                     android:layout_weight="1"
                     android:text="Considerable"
                     android:textAlignment="center"
-                    android:textSize="12sp" />
+                    android:maxLines="1"
+                    android:autoSizeMaxTextSize="100sp"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"/>
 
                 <TextView
                     android:id="@+id/dangr_high_text"
@@ -265,7 +279,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="High"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:maxLines="1"
+                    android:autoSizeMaxTextSize="100sp"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"/>
 
                 <TextView
                     android:id="@+id/danger_extreme_text"
@@ -273,7 +292,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Extreme"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:maxLines="1"
+                    android:autoSizeMaxTextSize="100sp"
+                    android:autoSizeMinTextSize="8sp"
+                    android:autoSizeStepGranularity="2sp"
+                    android:autoSizeTextType="uniform"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
