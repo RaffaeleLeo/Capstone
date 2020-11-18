@@ -652,7 +652,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         } else {
                             int d = dbHandler.getDangerAtLocation(comp);
                             danger.setText(Integer.toString(d));
-                            dangerBar.setProgress(d);
+                            if (d < 3){
+                                dangerBar.setProgress(d);
+                            } else if (d < 5){
+                                dangerBar.setProgress(d+2);
+                            } else if (d < 7){
+                                dangerBar.setProgress(d+4);
+                            } else if (d < 9){
+                                dangerBar.setProgress(d+6);
+                            } else {
+                                dangerBar.setProgress(d+8);
+                            }
                             dangerD.setText(dangerDesc.get(d));
                         }
                     }
@@ -775,7 +785,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                 dangerD.setText(" (Elevation below 5000)");
                                             } else {
                                                 int d = dbHandler.getDangerAtLocation(comp);
-                                                dangerBar.setProgress(d);
+                                                if (d < 3){
+                                                    dangerBar.setProgress(d);
+                                                } else if (d < 5){
+                                                    dangerBar.setProgress(d+2);
+                                                } else if (d < 7){
+                                                    dangerBar.setProgress(d+4);
+                                                } else if (d < 9){
+                                                    dangerBar.setProgress(d+6);
+                                                } else {
+                                                    dangerBar.setProgress(d+8);
+                                                }
+
                                                 danger.setText(Integer.toString(d));
                                                 dangerD.setText(dangerDesc.get(d));
                                             }

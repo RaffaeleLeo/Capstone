@@ -307,14 +307,14 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:indeterminate="false"
-            android:max="10"
-            android:progress="0"
+            android:max="20"
+            android:progress="6"
             android:progressDrawable="@drawable/transparent_progress"
             android:thumb="@drawable/blue_square"
             app:layout_constraintBottom_toBottomOf="@id/danger_bar_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/danger_bar_layout"/>
+            app:layout_constraintTop_toTopOf="@id/danger_bar_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
