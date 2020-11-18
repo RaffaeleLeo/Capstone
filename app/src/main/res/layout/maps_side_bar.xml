@@ -13,6 +13,7 @@
     android:layout_height="wrap_content"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
+
     <ImageButton
         android:id="@+id/compass_button_sidebar"
         android:layout_width="50dp"
@@ -22,7 +23,7 @@
         android:src="@drawable/compass_rose"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        tools:src="@drawable/compass_rose" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
