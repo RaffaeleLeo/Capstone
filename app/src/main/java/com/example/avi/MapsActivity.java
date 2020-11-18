@@ -65,6 +65,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -171,6 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     ConstraintLayout smallCompassButtonLayout;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //coordinates for journal entry
@@ -275,6 +277,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LayoutInflater inflater = getLayoutInflater();
                 pop_up_view = inflater.inflate(R.layout.sensors_layout, null);
                 TextView altimeter = pop_up_view.findViewById(R.id.altimeter_value);
+                SeekBar dangerBar = pop_up_view.findViewById(R.id.seekBar);
+                dangerBar.setEnabled(false);
                 if (currentElevation != null) {
                     altimeter.setText(currentElevation);
                 }
@@ -614,22 +618,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (pop_up_view != null) {
                         TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                         TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
+                        SeekBar dangerBar = pop_up_view.findViewById(R.id.seekBar);
                         if (comp == -1) {
                             danger.setText("N/A");
-                            danger.setTextColor(getColor(android.R.color.holo_green_dark));
+                            dangerBar.setProgress(0);
                             dangerD.setText(" (Elevation below 5000)");
                         } else {
                             int d = dbHandler.getDangerAtLocation(comp);
-
                             danger.setText(Integer.toString(d));
-                            if (d >= 7)
-                                danger.setTextColor(getColor(android.R.color.holo_red_light));
-                            else if (d >= 5)
-                                danger.setTextColor(getColor(android.R.color.holo_orange_dark));
-                            else if (d >= 3)
-                                danger.setTextColor(getColor(android.R.color.holo_orange_light));
-                            else
-                                danger.setTextColor(getColor(android.R.color.holo_green_dark));
+                            dangerBar.setProgress(d);
                             dangerD.setText(dangerDesc.get(d));
                         }
                     }
@@ -745,22 +742,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             int comp = getCompassLocation(Float.parseFloat(currentElevation), convertedDegrees);
                                             TextView danger = (TextView) pop_up_view.findViewById(R.id.Danger_value);
                                             TextView dangerD = (TextView) pop_up_view.findViewById(R.id.Danger_explanation);
-
+                                            SeekBar dangerBar = pop_up_view.findViewById(R.id.seekBar);
                                             if (comp == -1) {
                                                 danger.setText("N/A");
-                                                danger.setTextColor(getColor(android.R.color.holo_green_dark));
-
+                                                dangerBar.setProgress(0);
                                                 dangerD.setText(" (Elevation below 5000)");
                                             } else {
                                                 int d = dbHandler.getDangerAtLocation(comp);
-                                                if (d >= 7)
-                                                    danger.setTextColor(getColor(android.R.color.holo_red_light));
-                                                else if (d >= 5)
-                                                    danger.setTextColor(getColor(android.R.color.holo_orange_dark));
-                                                else if (d >= 3)
-                                                    danger.setTextColor(getColor(android.R.color.holo_orange_light));
-                                                else
-                                                    danger.setTextColor(getColor(android.R.color.holo_green_dark));
+                                                dangerBar.setProgress(d);
                                                 danger.setText(Integer.toString(d));
                                                 dangerD.setText(dangerDesc.get(d));
                                             }
