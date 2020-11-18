@@ -6,8 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_rect"
-    android:padding="12dp"
-    app:layout_constraintBottom_toBottomOf="@id/hide_bar_button">
+    android:padding="12dp">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/compass_button_layout"
     android:layout_width="wrap_content"
