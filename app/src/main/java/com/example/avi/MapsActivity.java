@@ -252,8 +252,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
 
         setupTabLayout();
-        Handler elevationHandler = new Handler();
-        requestLocationUpdates(elevationHandler);
+
 
         //see if the user got here through a journal entry
         //if they did acquire the journal
@@ -394,7 +393,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Polyline polylines = googleMap.addPolyline(new PolylineOptions().clickable(true).addAll(this.coordinates));
 
-
+        Handler elevationHandler = new Handler();
+        requestLocationUpdates(elevationHandler);
         String tourId = getIntent().getStringExtra("tourId");
         if (tourId != null) {
             trackingMarkers = new HashMap<>();
