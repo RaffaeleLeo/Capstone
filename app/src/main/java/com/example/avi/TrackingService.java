@@ -127,67 +127,68 @@ public class TrackingService extends Service {
                 public void onLocationResult(LocationResult locationResult) {
                     HashMap<String, String> location = new HashMap<>();
                     Location loc = locationResult.getLastLocation();
-                    String lat = Double.toString(loc.getLatitude());
-                    String lon = Double.toString(loc.getLongitude());
-                    if (user != null) {
-                        location.put("coordinates", lat + ", " + lon);
-                        location.put("name", user.getName());
-                        Log.d("tracking", "adding coordinates to db");
-                        db.collection("tracking").document(user.getId()).set(location)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot successfully written!");
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener() {
+                    if (loc != null) {
+                        String lat = Double.toString(loc.getLatitude());
+                        String lon = Double.toString(loc.getLongitude());
+                        if (user != null) {
+                            location.put("coordinates", lat + ", " + lon);
+                            location.put("name", user.getName());
+                            Log.d("tracking", "adding coordinates to db");
+                            db.collection("tracking").document(user.getId()).set(location)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error writing document", e);
+                                        }
+                                    });
+                            ;
+                        } else {
+                            if (mAuth.getCurrentUser() != null) {
+                                final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
+                                userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        user = documentSnapshot.toObject(User.class);
                                     }
-                                });;
-                    } else {
-                        if (mAuth.getCurrentUser() != null) {
-                            final DocumentReference userDocRef = db.collection("users").document(mAuth.getUid());
-                            userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    user = documentSnapshot.toObject(User.class);
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
 
-                    //get all journals to loop through
-                    final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
-                            "journals.db", null, 1);
-                    final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
-                            "data_points.db", null, 1);
-                    ArrayList<Journal> Journals = new ArrayList<Journal>();
-                    Journals = dbHandler.getAllJournals();
-                    Log.d("Tracking", "In location result callback");
-                    for(Journal j : Journals)
-                    {
-                        if(j.start_recording)
-                        {
-                            dbHandler_location.add_to_data_points(j.name, (Double)loc.getLatitude(), (Double)loc.getLongitude());
-                            Log.d("Tracking", "Storing coords in journals");
-                            //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
-                           //String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        //get all journals to loop through
+                        final MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(),
+                                "journals.db", null, 1);
+                        final MyDBHandler dbHandler_location = new MyDBHandler(getApplicationContext(),
+                                "data_points.db", null, 1);
+                        ArrayList<Journal> Journals = new ArrayList<Journal>();
+                        Journals = dbHandler.getAllJournals();
+                        Log.d("Tracking", "In location result callback");
+                        for (Journal j : Journals) {
+                            if (j.start_recording) {
+                                dbHandler_location.add_to_data_points(j.name, (Double) loc.getLatitude(), (Double) loc.getLongitude());
+                                Log.d("Tracking", "Storing coords in journals");
+                                //String clean_email = LoginActivity.USER_EMAIL.replaceAll(".com", "");
+                                //String currentUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(
 //                                    currentUser + "/journals/" + j.name + "/latlong");
-                            Date timeStamp = new Date();
-                            String s = timeStamp.toString();
+                                Date timeStamp = new Date();
+                                String s = timeStamp.toString();
 //                            ref.child(s).setValue(lat + lon);
+                            }
                         }
-                    }
 
-                    try {
-                        ElevationData eleData = new ElevationData();
-                        eleData.execute(lat, lon);
-                        eleData.get();
-                    } catch (Exception e){
+                        try {
+                            ElevationData eleData = new ElevationData();
+                            eleData.execute(lat, lon);
+                            eleData.get();
+                        } catch (Exception e) {
 
+                        }
                     }
                 }
             }, null);
