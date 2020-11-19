@@ -144,22 +144,23 @@ public class NotificationChecker extends Service {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 User user = documentSnapshot.toObject(User.class);
-                HashMap<String, String> requests = user.getRequests();
-                List<String> requestList = new ArrayList<String>(requests.values());
-                //emailAddress[0] = user.getEmail();
-                //Notifications notifier1 = new Notifications();
-                //notifier1.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
+                if (user != null) {
+                    HashMap<String, String> requests = user.getRequests();
+                    List<String> requestList = new ArrayList<String>(requests.values());
+                    //emailAddress[0] = user.getEmail();
+                    //Notifications notifier1 = new Notifications();
+                    //notifier1.notification(emailAddress[0], email, (int) System.currentTimeMillis(), context);
 
-                if(requestList.size() != 0  && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInFriends", false)) {
-                    if(!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastFriendRequest", "").equals( requestList.get(requestList.size() - 1))))
-                    {
-                        SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString("LastFriendRequest", requestList.get(requestList.size() - 1) );
-                        editor.commit();
+                    if (requestList.size() != 0 && !getApplicationContext().getSharedPreferences("Prefs", 0).getBoolean("AreInFriends", false)) {
+                        if (!(getApplicationContext().getSharedPreferences("Prefs", 0).getString("LastFriendRequest", "").equals(requestList.get(requestList.size() - 1)))) {
+                            SharedPreferences prefs = getApplicationContext().getSharedPreferences("Prefs", 0);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString("LastFriendRequest", requestList.get(requestList.size() - 1));
+                            editor.commit();
 
-                        Notifications notifier = new Notifications();
-                        notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int) System.currentTimeMillis(), context);
+                            Notifications notifier = new Notifications();
+                            notifier.notification("New friend request.", requestList.get(requestList.size() - 1), (int) System.currentTimeMillis(), context);
+                        }
                     }
                 }
             }
