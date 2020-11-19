@@ -612,6 +612,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 rotationInDegrees = (float) Math.round(Math.toDegrees(rotationInRadians));
 
                 float degree = rotationInDegrees;
+                Log.d("degrees", String.valueOf(currentDegree));
+                Log.d("degrees", String.valueOf(-degree));
+
                 RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
                 ra.setFillAfter(true);
@@ -621,11 +624,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     compassButton.startAnimation(ra);
                 }
                 if (compass_view.getVisibility() != View.GONE){
-                    RotateAnimation raLayout = new RotateAnimation(currentDegree, -degree, compass_layout_button.getX()+ compass_layout_button.getWidth()/2,
-                            compass_layout_button.getY() + compass_layout_button.getHeight()/2);
-                    ra.setFillAfter(true);
-                    ra.setInterpolator(new LinearInterpolator());
-                    ra.setDuration(50);
+                    RotateAnimation raLayout = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_PARENT, 0.5f,
+                            Animation.RELATIVE_TO_PARENT, 0.5f);
+                    raLayout.setFillAfter(true);
+                    raLayout.setInterpolator(new LinearInterpolator());
+                    raLayout.setDuration(50);
                     compass_layout_button.startAnimation(raLayout);
                 }
 
