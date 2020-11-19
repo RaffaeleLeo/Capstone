@@ -619,7 +619,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Animation.RELATIVE_TO_SELF, 0.5f);
                 ra.setFillAfter(true);
                 ra.setInterpolator(new LinearInterpolator());
-                ra.setDuration(50);
+                ra.setDuration(100);
                 if(compassButton.getVisibility() != View.GONE) {
                     compassButton.startAnimation(ra);
                 }
@@ -628,7 +628,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Animation.RELATIVE_TO_PARENT, 0.5f);
                     raLayout.setFillAfter(true);
                     raLayout.setInterpolator(new LinearInterpolator());
-                    raLayout.setDuration(50);
+                    raLayout.setDuration(100);
                     compass_layout_button.startAnimation(raLayout);
                 }
 
@@ -739,17 +739,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onSuccess(Location location) {
-                    String lat = Double.toString(location.getLatitude());
-                    String lon = Double.toString(location.getLongitude());
-                    //TODO: now we can place the users current location into the database
-                    try {
-                        ElevationData eleData = new ElevationData();
-                        eleData.execute(lat, lon);
-                        currentElevation = eleData.get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
+                    if (location != null) {
+                        String lat = Double.toString(location.getLatitude());
+                        String lon = Double.toString(location.getLongitude());
+                        //TODO: now we can place the users current location into the database
+                        try {
+                            ElevationData eleData = new ElevationData();
+                            eleData.execute(lat, lon);
+                            currentElevation = eleData.get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             });
