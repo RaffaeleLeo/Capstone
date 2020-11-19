@@ -91,7 +91,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".LoadingActivity"
-            android:label="LoadingActivity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <intent-filter>
